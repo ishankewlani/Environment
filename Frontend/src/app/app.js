@@ -536,8 +536,222 @@ const ThreeBackground = (function () {
 // Auto-init
 document.addEventListener('DOMContentLoaded', () => {
   ThreeBackground.init();
+  if(document.getElementById('earth-canvas')) InteractiveEarth.init();
 });
 
+/* ── MODULE: InteractiveEarth ──────────────────────────────────── */
+/**
+ * EARTH IMMUNE SYSTEM AI
+ * 3D Realistic Textured Earth (Landing Page Right Side)
+ * Uses NASA Blue Marble textures — drag to rotate, auto-spins
+ */
+const InteractiveEarth = (function () {
+  let scene, camera, renderer, earthGroup, cloudsMesh, atmosphereMesh;
+  let frameId;
+  let isDragging = false;
+  let previousMousePosition = { x: 0, y: 0 };
+  let targetRotation  = { x: 0.2, y: 0 };
+  let currentRotation = { x: 0.2, y: 0 };
+  let autoSpin = true;
+
+  // ── Texture URLs (local files) ───────────────────────────
+  const TEX = {
+    day:      'earth_day.jpg',
+    bump:     'earth_bump.jpg',
+    specular: 'earth_specular.jpg',
+    clouds:   'earth_clouds.png',
+  };
+
+  function init() {
+    const canvas = document.getElementById('earth-canvas');
+    if (!canvas) return;
+
+    const SIZE = 480;
+
+    // Scene & Camera
+    scene  = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+    camera.position.z = 2.8;
+
+    // Renderer — transparent background so page bg shows through
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setSize(SIZE, SIZE);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 0);
+
+    // Group to hold earth layers
+    earthGroup = new THREE.Group();
+    scene.add(earthGroup);
+
+    const loader = new THREE.TextureLoader();
+
+    // ── 1. Earth Surface ──────────────────────────────────────
+    loader.load(TEX.day, (dayTex) => {
+      loader.load(TEX.bump, (bumpTex) => {
+        loader.load(TEX.specular, (specTex) => {
+
+          const geo = new THREE.SphereGeometry(1, 64, 64);
+          const mat = new THREE.MeshPhongMaterial({
+            map:          dayTex,
+            bumpMap:      bumpTex,
+            bumpScale:    0.04,
+            specularMap:  specTex,
+            specular:     new THREE.Color(0x333333),
+            shininess:    18,
+          });
+          const earth = new THREE.Mesh(geo, mat);
+          earthGroup.add(earth);
+
+          // ── 2. Cloud Layer ──────────────────────────────────
+          loader.load(TEX.clouds, (cloudTex) => {
+            const cloudGeo = new THREE.SphereGeometry(1.008, 64, 64);
+            const cloudMat = new THREE.MeshPhongMaterial({
+              map:         cloudTex,
+              transparent: true,
+              opacity:     0.55,
+              depthWrite:  false,
+            });
+            cloudsMesh = new THREE.Mesh(cloudGeo, cloudMat);
+            earthGroup.add(cloudsMesh);
+          });
+        });
+      });
+    });
+
+    // ── 3. Atmosphere Glow (blue halo) ────────────────────────
+    const atmGeo = new THREE.SphereGeometry(1.18, 64, 64);
+    const atmMat = new THREE.MeshBasicMaterial({
+      color: 0x4FC3F7,
+      transparent: true,
+      opacity: 0.07,
+      side: THREE.BackSide,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    atmosphereMesh = new THREE.Mesh(atmGeo, atmMat);
+    scene.add(atmosphereMesh); // NOT in earthGroup — always faces camera
+
+    // ── 4. Inner bright ring glow ─────────────────────────────
+    const innerAtmGeo = new THREE.SphereGeometry(1.04, 64, 64);
+    const innerAtmMat = new THREE.MeshBasicMaterial({
+      color: 0x80D8FF,
+      transparent: true,
+      opacity: 0.04,
+      side: THREE.BackSide,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    scene.add(new THREE.Mesh(innerAtmGeo, innerAtmMat));
+
+    // ── 5. Lighting ───────────────────────────────────────────
+    // Sun-like directional light (top-right — matches image)
+    const sunLight = new THREE.DirectionalLight(0xffffff, 1.4);
+    sunLight.position.set(5, 3, 5);
+    scene.add(sunLight);
+
+    // Soft fill from the left (space ambient)
+    const fillLight = new THREE.DirectionalLight(0x2244AA, 0.3);
+    fillLight.position.set(-5, -2, -3);
+    scene.add(fillLight);
+
+    // Very dim ambient so dark side isn't pitch black
+    scene.add(new THREE.AmbientLight(0x111122, 0.8));
+
+    // ── Events ────────────────────────────────────────────────
+    canvas.addEventListener('mousedown',  onMouseDown);
+    window.addEventListener('mousemove',  onMouseMove);
+    window.addEventListener('mouseup',    onMouseUp);
+    canvas.addEventListener('touchstart', onTouchStart, { passive: false });
+    window.addEventListener('touchmove',  onTouchMove,  { passive: false });
+    window.addEventListener('touchend',   onTouchEnd);
+    canvas.addEventListener('mouseenter', hideDragHint);
+
+    // Initial tilt (matches image angle)
+    targetRotation  = { x: 0.15, y: 1.2 };
+    currentRotation = { x: 0.15, y: 1.2 };
+    earthGroup.rotation.x = currentRotation.x;
+    earthGroup.rotation.y = currentRotation.y;
+
+    animate();
+  }
+
+  // ── Drag hint ─────────────────────────────────────────────
+  function hideDragHint() {
+    const hint = document.getElementById('earth-drag-hint');
+    if (hint) hint.classList.add('hidden');
+  }
+
+  // ── Mouse ─────────────────────────────────────────────────
+  function onMouseDown(e) {
+    isDragging = true;
+    autoSpin   = false;
+    previousMousePosition = { x: e.clientX, y: e.clientY };
+    hideDragHint();
+  }
+  function onMouseMove(e) {
+    if (!isDragging) return;
+    const dx = e.clientX - previousMousePosition.x;
+    const dy = e.clientY - previousMousePosition.y;
+    targetRotation.y += dx * 0.006;
+    targetRotation.x += dy * 0.006;
+    targetRotation.x = Math.max(-Math.PI / 2.5, Math.min(Math.PI / 2.5, targetRotation.x));
+    previousMousePosition = { x: e.clientX, y: e.clientY };
+  }
+  function onMouseUp() {
+    isDragging = false;
+    autoSpin   = true;
+  }
+
+  // ── Touch ─────────────────────────────────────────────────
+  function onTouchStart(e) {
+    if (e.touches.length !== 1) return;
+    isDragging = true;
+    autoSpin   = false;
+    previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    hideDragHint();
+  }
+  function onTouchMove(e) {
+    if (!isDragging || e.touches.length !== 1) return;
+    e.preventDefault();
+    const dx = e.touches[0].clientX - previousMousePosition.x;
+    const dy = e.touches[0].clientY - previousMousePosition.y;
+    targetRotation.y += dx * 0.006;
+    targetRotation.x += dy * 0.006;
+    targetRotation.x = Math.max(-Math.PI / 2.5, Math.min(Math.PI / 2.5, targetRotation.x));
+    previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  }
+  function onTouchEnd() {
+    isDragging = false;
+    autoSpin   = true;
+  }
+
+  // ── Render loop ───────────────────────────────────────────
+  function animate() {
+    frameId = requestAnimationFrame(animate);
+
+    if (autoSpin) targetRotation.y += 0.0018;
+
+    // Smooth lerp
+    currentRotation.x += (targetRotation.x - currentRotation.x) * 0.08;
+    currentRotation.y += (targetRotation.y - currentRotation.y) * 0.08;
+
+    earthGroup.rotation.x = currentRotation.x;
+    earthGroup.rotation.y = currentRotation.y;
+
+    // Clouds drift slightly faster than earth
+    if (cloudsMesh) cloudsMesh.rotation.y += 0.0003;
+
+    // Atmosphere stays centred (no rotation needed)
+    renderer.render(scene, camera);
+  }
+
+  function destroy() {
+    cancelAnimationFrame(frameId);
+    if (renderer) renderer.dispose();
+  }
+
+  return { init, destroy };
+})();
 
 /* ── MODULE: charts.js ─────────────────────────────────────── */
 /**

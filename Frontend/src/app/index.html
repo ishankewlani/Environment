@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <!-- Main CSS -->
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
@@ -97,169 +97,13 @@
       </div>
     </div>
 
-    <!-- ─── GLOWING INDIA MAP (hero right side) ─── -->
-    <div class="india-glow-wrap">
-      <svg class="india-glow-svg" viewBox="0 0 510 575" xmlns="http://www.w3.org/2000/svg">
-        <!-- Coordinate grid -->
-        <g class="ig-grid">
-          <line x1="0" y1="98"  x2="510" y2="98"/>
-          <line x1="0" y1="219" x2="510" y2="219"/>
-          <line x1="0" y1="340" x2="510" y2="340"/>
-          <line x1="0" y1="460" x2="510" y2="460"/>
-          <line x1="109" y1="0" x2="109" y2="575"/>
-          <line x1="250" y1="0" x2="250" y2="575"/>
-          <line x1="391" y1="0" x2="391" y2="575"/>
-        </g>
-
-        <!-- India outline path — three glow layers -->
-        <!-- Outermost glow -->
-        <path class="ig-outer-glow" d="
-          M 101,96 C 100,82 106,68 110,48 C 122,24 145,13 165,16
-          C 182,18 200,36 210,58 L 212,94 L 212,121
-          C 232,130 258,140 290,155 L 345,165
-          C 360,162 375,154 398,148 C 420,140 442,128 456,130
-          C 468,130 480,140 480,158 L 476,176
-          C 466,196 448,212 432,228 C 418,242 406,256 400,262
-          L 370,270 L 345,278 L 312,292
-          C 296,302 284,316 272,330 C 254,350 238,370 226,390
-          C 216,406 212,424 208,448 L 200,480 L 172,508
-          C 156,492 140,470 130,448 C 118,424 110,400 104,376
-          C 96,350 88,322 80,288 L 60,248
-          L 38,232 C 48,215 62,204 70,190 C 78,176 80,160 76,142
-          C 78,126 86,110 101,96 Z
-        "/>
-        <!-- Mid glow -->
-        <path class="ig-mid-glow" d="
-          M 101,96 C 100,82 106,68 110,48 C 122,24 145,13 165,16
-          C 182,18 200,36 210,58 L 212,94 L 212,121
-          C 232,130 258,140 290,155 L 345,165
-          C 360,162 375,154 398,148 C 420,140 442,128 456,130
-          C 468,130 480,140 480,158 L 476,176
-          C 466,196 448,212 432,228 C 418,242 406,256 400,262
-          L 370,270 L 345,278 L 312,292
-          C 296,302 284,316 272,330 C 254,350 238,370 226,390
-          C 216,406 212,424 208,448 L 200,480 L 172,508
-          C 156,492 140,470 130,448 C 118,424 110,400 104,376
-          C 96,350 88,322 80,288 L 60,248
-          L 38,232 C 48,215 62,204 70,190 C 78,176 80,160 76,142
-          C 78,126 86,110 101,96 Z
-        "/>
-        <!-- Inner bright glow -->
-        <path class="ig-inner-glow" d="
-          M 101,96 C 100,82 106,68 110,48 C 122,24 145,13 165,16
-          C 182,18 200,36 210,58 L 212,94 L 212,121
-          C 232,130 258,140 290,155 L 345,165
-          C 360,162 375,154 398,148 C 420,140 442,128 456,130
-          C 468,130 480,140 480,158 L 476,176
-          C 466,196 448,212 432,228 C 418,242 406,256 400,262
-          L 370,270 L 345,278 L 312,292
-          C 296,302 284,316 272,330 C 254,350 238,370 226,390
-          C 216,406 212,424 208,448 L 200,480 L 172,508
-          C 156,492 140,470 130,448 C 118,424 110,400 104,376
-          C 96,350 88,322 80,288 L 60,248
-          L 38,232 C 48,215 62,204 70,190 C 78,176 80,160 76,142
-          C 78,126 86,110 101,96 Z
-        "/>
-        <!-- Highlight edge -->
-        <path class="ig-highlight" d="
-          M 101,96 C 100,82 106,68 110,48 C 122,24 145,13 165,16
-          C 182,18 200,36 210,58 L 212,94 L 212,121
-          C 232,130 258,140 290,155 L 345,165
-          C 360,162 375,154 398,148 C 420,140 442,128 456,130
-          C 468,130 480,140 480,158 L 476,176
-          C 466,196 448,212 432,228 C 418,242 406,256 400,262
-          L 370,270 L 345,278 L 312,292
-          C 296,302 284,316 272,330 C 254,350 238,370 226,390
-          C 216,406 212,424 208,448 L 200,480 L 172,508
-          C 156,492 140,470 130,448 C 118,424 110,400 104,376
-          C 96,350 88,322 80,288 L 60,248
-          L 38,232 C 48,215 62,204 70,190 C 78,176 80,160 76,142
-          C 78,126 86,110 101,96 Z
-        "/>
-
-        <!-- Interior dark teal fill -->
-        <path class="ig-fill" d="
-          M 101,96 C 100,82 106,68 110,48 C 122,24 145,13 165,16
-          C 182,18 200,36 210,58 L 212,94 L 212,121
-          C 232,130 258,140 290,155 L 345,165
-          C 360,162 375,154 398,148 C 420,140 442,128 456,130
-          C 468,130 480,140 480,158 L 476,176
-          C 466,196 448,212 432,228 C 418,242 406,256 400,262
-          L 370,270 L 345,278 L 312,292
-          C 296,302 284,316 272,330 C 254,350 238,370 226,390
-          C 216,406 212,424 208,448 L 200,480 L 172,508
-          C 156,492 140,470 130,448 C 118,424 110,400 104,376
-          C 96,350 88,322 80,288 L 60,248
-          L 38,232 C 48,215 62,204 70,190 C 78,176 80,160 76,142
-          C 78,126 86,110 101,96 Z
-        "/>
-
-        <!-- State divider lines (dashed) -->
-        <g class="ig-state-lines">
-          <line x1="212" y1="94"  x2="212" y2="280"/>
-          <line x1="80"  y1="290" x2="312" y2="290"/>
-          <line x1="100" y1="180" x2="400" y2="165"/>
-          <line x1="130" y1="380" x2="290" y2="360"/>
-        </g>
-
-        <!-- Andaman & Nicobar Islands (small circles to the right) -->
-        <circle class="ig-island" cx="468" cy="360" r="4"/>
-        <circle class="ig-island" cx="472" cy="376" r="3"/>
-        <circle class="ig-island" cx="468" cy="392" r="3.5"/>
-        <circle class="ig-island" cx="472" cy="408" r="2.5"/>
-        <circle class="ig-island" cx="466" cy="420" r="2"/>
-
-        <!-- INDIA label -->
-        <text x="248" y="330" class="ig-india-text">INDIA</text>
-
-        <!-- ── City Markers ── -->
-        <!-- Delhi -->
-        <g>
-          <circle cx="158" cy="158" r="4.5" class="ig-city-dot"/>
-          <circle cx="158" cy="158" r="10" class="ig-city-ring"/>
-          <text x="168" y="162" class="ig-city-label">Delhi</text>
-        </g>
-        <!-- Mumbai -->
-        <g>
-          <circle cx="90" cy="322" r="4.5" class="ig-city-dot alert"/>
-          <circle cx="90" cy="322" r="10" class="ig-city-ring"/>
-          <text x="42" y="326" class="ig-city-label">Mumbai</text>
-        </g>
-        <!-- Kolkata -->
-        <g>
-          <circle cx="332" cy="265" r="4.5" class="ig-city-dot alert"/>
-          <circle cx="332" cy="265" r="10" class="ig-city-ring"/>
-          <text x="342" y="269" class="ig-city-label">Kolkata</text>
-        </g>
-        <!-- Bengaluru -->
-        <g>
-          <circle cx="162" cy="432" r="4" class="ig-city-dot"/>
-          <text x="104" y="436" class="ig-city-label">Bengaluru</text>
-        </g>
-        <!-- Chennai -->
-        <g>
-          <circle cx="215" cy="432" r="4" class="ig-city-dot"/>
-          <text x="222" y="436" class="ig-city-label">Chennai</text>
-        </g>
-
-        <!-- ── Environmental Alert Zones ── -->
-        <!-- Assam (deforestation - red) -->
-        <g>
-          <circle cx="368" cy="175" r="6" class="ig-city-dot crit"/>
-          <circle cx="368" cy="175" r="13" class="ig-city-ring"/>
-        </g>
-        <!-- Rajasthan (heat - orange) -->
-        <g>
-          <circle cx="118" cy="188" r="5" class="ig-city-dot alert"/>
-          <circle cx="118" cy="188" r="11" class="ig-city-ring"/>
-        </g>
-        <!-- Bihar (flood) -->
-        <g>
-          <circle cx="248" cy="205" r="5" class="ig-city-dot crit"/>
-          <circle cx="248" cy="205" r="11" class="ig-city-ring"/>
-        </g>
-      </svg>
-
+    <!-- ─── INTERACTIVE 3D EARTH (hero right side) ─── -->
+    <div class="earth-hero-wrap" id="earth-hero-wrap">
+      <canvas id="earth-canvas"></canvas>
+      <div class="earth-drag-hint" id="earth-drag-hint">
+        <span class="earth-hint-icon">🖱</span>
+        <span>Drag to rotate</span>
+      </div>
       <!-- Status chips -->
       <div class="ig-chips">
         <div class="ig-chip"><span class="ig-chip-dot"></span>LIVE SATELLITE FEED</div>
@@ -1059,6 +903,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
   <!-- Single combined app bundle -->
-  <script src="js/app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
