@@ -8,7 +8,7 @@
   /* Backgrounds — deep forest-black like Raveon */
   --bg-base:       #030B04;
   --bg-mid:        #071A09;
-  --bg-card:       rgba(5, 20, 7, 0.72);
+  --bg-card:       rgba(2, 10, 3, 0.72);
   --bg-card-hover: rgba(0, 232, 64, 0.04);
 
   /* Accents — single bold Raveon green system */
@@ -86,7 +86,7 @@ canvas { display: block; }
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden; /* allow vertical scroll for Explore Features */
+  overflow-x: hidden;
 }
 
 .landing-overlay {
@@ -326,6 +326,7 @@ canvas { display: block; }
     0 0 160px rgba(0, 150, 220, 0.18);
 }
 
+
 /* Drag hint badge */
 .earth-drag-hint {
   display: flex;
@@ -501,12 +502,12 @@ body.light-mode .fp-title       { color: #082010; }
 body.light-mode .fp-desc        { color: #2A5E36; }
 body.light-mode .ss-label       { color: #6B9678; }
 body.light-mode .detection-item { background: rgba(0,0,0,0.03); }
-body.light-mode .scroll-cue span { color: #6B9678; }
 body.light-mode .hero-badge     { background: rgba(0,168,48,0.08); border-color: rgba(0,168,48,0.22); }
 body.light-mode .hero-subtitle  { color: #2A5E36; }
 body.light-mode .fp-section-title { color: #082010; }
 body.light-mode .btn-ghost { border-color: rgba(0,160,50,0.3); color: #082010; }
 body.light-mode .ig-chip  { background: rgba(0,168,48,0.06); border-color: rgba(0,168,48,0.2); color: #007A28; }
+body.light-mode .scroll-cue span { color: #6B9678; }
 
 /* Light mode toast */
 body.light-mode .toast {
@@ -625,6 +626,8 @@ body.light-mode .toast {
   0%,100% { opacity: 0.3; transform: scaleY(1); }
   50%      { opacity: 1; transform: scaleY(1.3); }
 }
+
+
 
 /* Pulse Dot */
 .pulse-dot {
@@ -792,6 +795,23 @@ body.light-mode .toast {
   border-color: var(--neon);
   color: var(--neon);
   background: rgba(0,255,136,0.05);
+}
+
+/* Top-nav placement for persistent back button */
+#top-nav .btn-back-landing {
+  margin-top: 0;
+  margin-left: 0.5rem;
+  width: auto;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  align-items: center;
+  display: inline-flex;
+  gap: 0.5rem;
+  z-index: 40;
+  background: linear-gradient(180deg, rgba(0,232,64,0.08), rgba(0,232,64,0.03));
+  border: 1px solid rgba(0,232,64,0.18);
+  color: var(--neon);
 }
 
 /* ─── MAIN AREA ─── */
@@ -1092,13 +1112,37 @@ body.light-mode .toast {
 .dashboard-grid {
   display: grid;
   grid-template-columns: 1fr 320px;
+  grid-template-rows: 1fr;
   gap: 1rem;
   margin-bottom: 1rem;
+  align-items: stretch;
+  min-height: calc(100vh - var(--topnav-h) - 4rem);
 }
-.map-card { padding-bottom: 1rem; }
-.right-panel { display: flex; flex-direction: column; gap: 1rem; }
-.alerts-card { flex: 1; overflow: hidden; }
+.map-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+.map-card .map-container {
+  flex: 1;
+  height: auto;
+  min-height: 460px;
+}
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1;
+  min-height: 0;
+  max-height: calc(100vh - var(--topnav-h) - 4rem);
+  overflow: hidden;
+}
+.alerts-card { flex: 1; min-height: 0; overflow: auto; }
 .activity-card { flex-shrink: 0; }
+
+/* Ensure alerts list scrolls internally and doesn't cause page scroll */
+.alerts-list, .detection-feed { max-height: calc(100vh - var(--topnav-h) - 24rem); }
 
 /* Alert Cards */
 .alerts-list, .detection-feed {
@@ -1209,8 +1253,11 @@ body.light-mode .toast {
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
 }
-.chart-card { padding: 1rem; }
-.chart-card canvas { max-height: 200px; }
+.chart-card { padding: 1rem; min-width: 0; box-sizing: border-box; }
+.chart-card canvas { max-height: 200px; display: block; width: 100%; }
+
+/* Give right-side breathing room so last card isn't flush to page edge */
+.charts-row { padding-right: 1.25rem; }
 
 /* ════════════════════════════════════════════
    FOREST MONITOR PAGE
@@ -1220,6 +1267,7 @@ body.light-mode .toast {
   grid-template-columns: 1fr 300px 320px;
   gap: 1rem;
   min-height: calc(100vh - 200px);
+  align-items: start;
 }
 .forest-map-card { display: flex; flex-direction: column; }
 .forest-map-card .map-container { flex: 1; height: auto; min-height: 380px; }
@@ -1240,12 +1288,13 @@ body.light-mode .toast {
 .detection-item.medium { border-left-color: var(--orange); }
 .detection-item.low    { border-left-color: var(--neon); }
 
-.impact-card { display: flex; flex-direction: column; gap: 0.75rem; overflow-y: auto; max-height: calc(100vh - 200px); }
+.impact-card { display: flex; flex-direction: column; gap: 0.75rem; min-height: auto; align-self: start; }
 .scenario-box {
-  background: rgba(0,255,136,0.05);
-  border: 1px solid rgba(0,255,136,0.2);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.12);
   border-radius: var(--radius);
   padding: 0.85rem;
+  flex-shrink: 0;
 }
 .scenario-title {
   font-size: 0.82rem;
@@ -1259,7 +1308,7 @@ body.light-mode .toast {
   font-family: var(--font-mono);
 }
 
-.impact-metrics { display: flex; flex-direction: column; gap: 0.6rem; }
+.impact-metrics { display: flex; flex-direction: column; gap: 0.6rem; flex: 0; overflow: visible; }
 .impact-metric {
   background: rgba(0,0,0,0.2);
   border-radius: var(--radius);
@@ -1316,8 +1365,6 @@ body.light-mode .toast {
 .im-bar-fill.neon   { background: linear-gradient(90deg, var(--neon), var(--cyan)); }
 .im-bar-fill.gold   { background: linear-gradient(90deg, var(--gold), #FFA500); }
 
-.impact-chart-wrap { flex-shrink: 0; }
-
 /* ════════════════════════════════════════════
    TREE PLANNER PAGE
    ════════════════════════════════════════════ */
@@ -1325,14 +1372,22 @@ body.light-mode .toast {
   display: grid;
   grid-template-columns: 240px 1fr 300px;
   gap: 1rem;
-  min-height: calc(100vh - 200px);
+  min-height: calc(100vh - var(--topnav-h) - 4rem);
+  align-items: stretch;
 }
-.plantation-left { display: flex; flex-direction: column; gap: 1rem; overflow-y: auto; max-height: calc(100vh - 200px); }
+.plantation-left, .simulation-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow-y: auto;
+  max-height: calc(100vh - var(--topnav-h) - 4rem);
+}
 .plantation-map-card {
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
-.plantation-map-card .map-container { flex: 1; height: auto; min-height: 400px; }
+.plantation-map-card .map-container { flex: 1; height: auto; min-height: 420px; }
 
 /* Selects */
 .select-group { margin-bottom: 0.65rem; }
@@ -1447,7 +1502,9 @@ body.light-mode .toast {
   flex-direction: column;
   gap: 0.75rem;
   overflow-y: auto;
-  max-height: calc(100vh - 200px);
+  max-height: calc(100vh - var(--topnav-h) - 4rem);
+  height: 100%;
+  min-height: 0;
 }
 .sim-location {
   background: rgba(0,255,136,0.06);
@@ -1511,15 +1568,24 @@ body.light-mode .toast {
   display: grid;
   grid-template-columns: 260px 1fr 300px;
   gap: 1rem;
-  min-height: calc(100vh - 200px);
+  min-height: calc(100vh - var(--topnav-h) - 4rem);
+  align-items: stretch;
 }
-.disaster-left  { display: flex; flex-direction: column; gap: 1rem; overflow-y: auto; max-height: calc(100vh - 200px); }
-.disaster-right { display: flex; flex-direction: column; gap: 0.85rem; overflow-y: auto; max-height: calc(100vh - 200px); }
+.disaster-left, .disaster-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow-y: auto;
+  max-height: calc(100vh - var(--topnav-h) - 4rem);
+  height: 100%;
+  min-height: 0;
+}
 .disaster-map-card {
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
-.disaster-map-card .map-container { flex: 1; height: auto; min-height: 400px; }
+.disaster-map-card .map-container { flex: 1; height: auto; min-height: 420px; }
 
 /* Risk Regions */
 .risk-regions { display: flex; flex-direction: column; gap: 0.5rem; }
@@ -1668,15 +1734,24 @@ body.light-mode .toast {
   display: grid;
   grid-template-columns: 240px 1fr 300px;
   gap: 1rem;
-  min-height: calc(100vh - 200px);
+  min-height: calc(100vh - var(--topnav-h) - 4rem);
+  align-items: stretch;
 }
-.farmer-left  { display: flex; flex-direction: column; gap: 1rem; overflow-y: auto; max-height: calc(100vh - 200px); }
-.farmer-right { display: flex; flex-direction: column; gap: 0.85rem; overflow-y: auto; max-height: calc(100vh - 200px); }
+.farmer-left, .farmer-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow-y: auto;
+  max-height: calc(100vh - var(--topnav-h) - 4rem);
+  height: 100%;
+  min-height: 0;
+}
 .farmer-map-card {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  min-height: 0;
 }
+.farmer-map-card .map-container { flex: 1; height: auto; min-height: 420px; }
 
 /* Warning Banner */
 .warning-banner {
@@ -1865,4 +1940,234 @@ body.light-mode .toast {
 @keyframes slideOutRight {
   from { opacity: 1; transform: translateX(0); }
   to   { opacity: 0; transform: translateX(120%); }
+}
+/* ── ENHANCED MAP STYLING ────────────────────────────────── */
+
+.leaflet-container {
+  background: linear-gradient(135deg, #030B04 0%, #071A09 100%);
+  font-family: 'Inter', sans-serif;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.leaflet-popup-content-wrapper {
+  background: rgba(7, 18, 10, 0.98) !important;
+  border: 1.5px solid rgba(0, 255, 136, 0.3) !important;
+  backdrop-filter: blur(12px);
+  color: var(--text-primary);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7), 0 0 20px rgba(0, 255, 136, 0.15);
+}
+
+.leaflet-popup-tip {
+  background: rgba(7, 18, 10, 0.98) !important;
+  border-color: rgba(0, 255, 136, 0.3) !important;
+}
+
+.leaflet-popup-content {
+  font-size: 12px;
+  color: var(--text-primary);
+  margin: 0 !important;
+}
+
+.custom-tooltip {
+  background: rgba(7, 18, 10, 0.95) !important;
+  border: 1px solid rgba(0, 255, 136, 0.25) !important;
+  border-radius: 6px !important;
+  color: var(--neon) !important;
+  font-size: 11px !important;
+  padding: 4px 8px !important;
+  font-weight: 600 !important;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+}
+
+.leaflet-control-zoom {
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 8px !important;
+  background: rgba(7, 18, 10, 0.9) !important;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+}
+
+.leaflet-control-zoom a {
+  background: transparent !important;
+  color: var(--neon) !important;
+  border-bottom: 1px solid var(--glass-border) !important;
+  font-weight: 700 !important;
+  transition: all 0.3s ease;
+}
+
+.leaflet-control-zoom a:hover {
+  background: rgba(0, 255, 136, 0.12) !important;
+  color: #1FFF58 !important;
+}
+
+.leaflet-control-zoom a:last-child {
+  border-bottom: none !important;
+}
+
+.leaflet-control-attribution {
+  background: rgba(7, 18, 10, 0.7) !important;
+  color: var(--text-muted) !important;
+  font-size: 10px !important;
+  padding: 4px 8px !important;
+  border-radius: 4px !important;
+  backdrop-filter: blur(10px);
+}
+
+.leaflet-control-attribution a {
+  color: var(--neon) !important;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.leaflet-control-attribution a:hover {
+  color: #1FFF58 !important;
+}
+
+.risk-region {
+  transition: all 0.3s ease !important;
+}
+
+.risk-region:hover {
+  filter: drop-shadow(0 0 12px currentColor);
+}
+
+/* ── IMPROVED GLASS CARD SPACING ───────────────────────── */
+
+.glass-card {
+  padding: 1.5rem !important;
+  margin-bottom: 1.25rem !important;
+  border-radius: 16px !important;
+}
+
+.glass-card .map-container {
+  margin: -1.5rem -1.5rem 1rem -1.5rem;
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;
+}
+
+.card-header {
+  margin-bottom: 1.25rem !important;
+  gap: 1rem !important;
+}
+
+.card-title {
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+}
+
+/* ── PLANTATION SELECTOR IMPROVEMENTS ─────────────────── */
+
+.select-group {
+  margin-bottom: 1rem !important;
+}
+
+.premium-select {
+  width: 100% !important;
+  padding: 0.75rem !important;
+  border-radius: 10px !important;
+  border: 1.5px solid var(--glass-border) !important;
+  background: rgba(0, 0, 0, 0.3) !important;
+  color: var(--text-primary) !important;
+  font-size: 0.9rem !important;
+  transition: all 0.3s ease !important;
+  font-family: 'Inter', sans-serif;
+}
+
+.premium-select:hover {
+  border-color: rgba(0, 255, 136, 0.35) !important;
+  background: rgba(0, 255, 136, 0.04) !important;
+}
+
+.premium-select:focus {
+  outline: none !important;
+  border-color: var(--neon) !important;
+  background: rgba(0, 255, 136, 0.06) !important;
+  box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1) !important;
+}
+
+.premium-select option {
+  background: #0E2415 !important;
+  color: var(--text-primary) !important;
+  padding: 8px !important;
+}
+
+/* ── REDUCED CONGESTION IN STATS/ALERTS ──────────────– */
+
+.stat-card {
+  padding: 1.25rem !important;
+  gap: 1rem !important;
+}
+
+.stat-card + .stat-card {
+  margin-top: 0.75rem !important;
+}
+
+.alerts-list,
+.detection-feed {
+  gap: 0.75rem !important;
+}
+
+.alert-item,
+.detection-item {
+  padding: 1rem !important;
+  border-radius: 10px !important;
+  transition: all 0.3s ease;
+}
+
+.alert-item:hover,
+.detection-item:hover {
+  transform: translateX(4px);
+  background: rgba(0, 255, 136, 0.08) !important;
+}
+
+/* ── SMOOTHER ANIMATIONS ────────────────────────────── */
+
+@keyframes mapPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.5; transform: scale(1.2); }
+}
+
+.im-bar-fill {
+  transition: width 1.5s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.sim-metric {
+  transition: all 0.3s ease;
+}
+
+.sim-metric:hover {
+  background: rgba(0, 255, 136, 0.06) !important;
+  border-color: rgba(0, 255, 136, 0.3) !important;
+}
+
+/* ── RESPONSIVE IMPROVEMENTS ────────────────────────── */
+
+@media (max-width: 1100px) {
+  .glass-card {
+    padding: 1.25rem !important;
+  }
+  
+  .map-container {
+    height: 350px !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .plantation-grid,
+  .disaster-grid,
+  .farmer-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .glass-card {
+    padding: 1rem !important;
+  }
+  
+  .premium-select {
+    font-size: 0.85rem !important;
+    padding: 0.65rem !important;
+  }
 }

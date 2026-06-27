@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Earth Immune System AI — India Environmental Intelligence</title>
 
   <!-- Fonts -->
@@ -219,7 +220,7 @@
           <span class="ss-row"><span class="pulse-dot sm cyan"></span>AI Model · Running</span>
           <span class="ss-row"><span class="status-time">⏱ Last scan: 30s ago</span></span>
         </div>
-        <button class="btn-back-landing" id="btn-back">← Back to Home</button>
+        <!-- Back button moved to top-nav for persistent visibility -->
       </div>
     </aside>
 
@@ -237,7 +238,6 @@
             <button class="tab-pill active" data-page="dashboard">Dashboard</button>
             <button class="tab-pill" data-page="forest">Forest Monitor</button>
             <button class="tab-pill" data-page="plantation">Tree Planner</button>
-            <button class="tab-pill" data-page="disaster">Disaster Risk</button>
             <button class="tab-pill" data-page="farmer">Farmer Advisory</button>
           </div>
         </div>
@@ -251,6 +251,7 @@
             <span>98.7% Coverage</span>
           </div>
           <div class="live-chip">● LIVE</div>
+          <button class="btn-back-landing" id="btn-back" title="Back to Home"> <- Back to Home</button>
           <button class="light-mode-btn" id="lm-toggle-app" title="Toggle light mode">☀️</button>
         </div>
       </header>
@@ -466,11 +467,6 @@
                   <div class="im-bar"><div class="im-bar-fill gold" style="width:80%"></div></div>
                 </div>
               </div>
-
-              <!-- Forest trend chart -->
-              <div class="impact-chart-wrap">
-                <canvas id="chart-forest-impact"></canvas>
-              </div>
             </div>
           </div>
         </div>
@@ -598,13 +594,7 @@
                     <div class="im-bar"><div class="im-bar-fill gold" style="width:61%"></div></div>
                   </div>
                 </div>
-
-                <canvas id="chart-plantation" style="margin-top:1rem;height:140px"></canvas>
               </div>
-
-              <button class="btn-generate" id="btn-generate-report">
-                🌱 Generate Plantation Report
-              </button>
             </div>
           </div>
         </div>
@@ -628,10 +618,6 @@
                 <div class="risk-regions" id="risk-regions"></div>
               </div>
 
-              <div class="glass-card">
-                <div class="card-header"><span class="card-title">📈 Historical Trend</span></div>
-                <canvas id="chart-disaster-trend" style="height:160px"></canvas>
-              </div>
             </div>
 
             <!-- Center Map -->
@@ -755,9 +741,6 @@
                 </select>
                 <select class="premium-select" id="farmer-district" style="margin-top:0.75rem">
                   <option value="">Select District</option>
-                  <option>Ludhiana</option>
-                  <option>Amritsar</option>
-                  <option>Patiala</option>
                 </select>
               </div>
 
@@ -788,11 +771,6 @@
                 </div>
               </div>
 
-              <!-- Historical Trend -->
-              <div class="glass-card">
-                <div class="card-header"><span class="card-title">📈 Historical Analysis</span></div>
-                <canvas id="chart-farmer-trend" style="height:150px"></canvas>
-              </div>
             </div>
 
             <!-- Center Map -->
@@ -810,7 +788,7 @@
                 </div>
               </div>
 
-              <div id="farmer-map" class="map-container" style="height:calc(100% - 80px)"></div>
+              <div id="farmer-map" class="map-container"></div>
             </div>
 
             <!-- Right -->
