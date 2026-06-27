@@ -64,7 +64,7 @@ const ThreeBackground = (function () {
     renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setClearColor(0x030B04, 1);
+    renderer.setClearColor(0x000000, 0);
 
     clock = new THREE.Clock();
 
@@ -530,7 +530,30 @@ const ThreeBackground = (function () {
     renderer.dispose();
   }
 
-  return { init, destroy };
+  function setLightMode(on) {
+    if (!particles) return;
+    const cols = particles.geometry.attributes.color;
+    for (let i = 0; i < cols.count; i++) {
+      const r = Math.random();
+      if (on) {
+        // Dark forest green — visible on white/light background
+        if (r < 0.55)      { cols.setXYZ(i, 0.00, 0.48, 0.16); }
+        else if (r < 0.80) { cols.setXYZ(i, 0.04, 0.38, 0.12); }
+        else if (r < 0.92) { cols.setXYZ(i, 0.08, 0.55, 0.20); }
+        else               { cols.setXYZ(i, 0.60, 0.08, 0.08); }
+      } else {
+        // Bright neon — visible on dark background
+        if (r < 0.55)      { cols.setXYZ(i, 0.00, 0.91, 0.25); }
+        else if (r < 0.80) { cols.setXYZ(i, 0.00, 0.78, 0.33); }
+        else if (r < 0.92) { cols.setXYZ(i, 0.48, 1.00, 0.43); }
+        else               { cols.setXYZ(i, 1.00, 0.27, 0.27); }
+      }
+    }
+    cols.needsUpdate = true;
+    particles.material.opacity = on ? 0.85 : 0.65;
+  }
+
+  return { init, destroy, setLightMode };
 })();
 
 // Auto-init
@@ -3046,6 +3069,7 @@ const Farmer = (function () {
     // Persist preference
     try { localStorage.setItem('eis-light-mode', lightMode ? '1' : '0'); } catch(e) {}
 
+    ThreeBackground.setLightMode(lightMode);
     showToast(lightMode ? '☀️ Light mode enabled' : '🌙 Dark mode enabled');
   }
 

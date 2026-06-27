@@ -418,9 +418,9 @@ body.light-mode {
   --gold:          #3E8A00;
   --glow-neon:     0 0 16px rgba(0,168,48,0.30);
 }
-body.light-mode #bg-canvas { opacity: 0.12; }
+body.light-mode #bg-canvas { opacity: 0.9; }
 body.light-mode #landing {
-  background: linear-gradient(135deg, #E8F5EC 0%, #F5FFF7 50%, #EAF7EE 100%);
+  background: transparent;
 }
 body.light-mode .landing-topbar {
   background: rgba(240,255,244,0.92);
