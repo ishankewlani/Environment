@@ -1,0 +1,290 @@
+{
+  "overview": {
+    "forest_area_monitored": "2.4M km²",
+    "trees_saved": "8.2M",
+    "farmers_protected": "1.3M",
+    "active_alerts": 147,
+    "coverage": 98.7,
+    "satellite_feed": "Active",
+    "ai_model": "Running",
+    "live_data_points": "4.2M"
+  },
+
+  "map": {
+    "markers": [
+      {
+        "id": "MK001",
+        "title": "Assam Deforestation Alert",
+        "state": "Assam",
+        "district": "Kamrup",
+        "lat": 26.2006,
+        "lng": 92.9376,
+        "type": "forest",
+        "severity": "critical",
+        "description": "Rapid deforestation detected in Sector 18. Approx 340 hectares affected in last 72 hours.",
+        "updated_at": "2025-06-26T14:22:00Z"
+      },
+      {
+        "id": "MK002",
+        "title": "Bihar Flood Risk",
+        "state": "Bihar",
+        "district": "Darbhanga",
+        "lat": 25.9176,
+        "lng": 85.8245,
+        "type": "flood",
+        "severity": "high",
+        "description": "Kosi river water level rising. Flood risk elevated for 3 downstream districts.",
+        "updated_at": "2025-06-26T13:45:00Z"
+      },
+      {
+        "id": "MK003",
+        "title": "Rajasthan Heat Wave",
+        "state": "Rajasthan",
+        "district": "Barmer",
+        "lat": 25.7521,
+        "lng": 71.3967,
+        "type": "heat",
+        "severity": "high",
+        "description": "Surface temperature recorded at 48.2°C. Extreme heat advisory issued for 6 districts.",
+        "updated_at": "2025-06-26T12:00:00Z"
+      },
+      {
+        "id": "MK004",
+        "title": "Odisha Cyclone Risk",
+        "state": "Odisha",
+        "district": "Puri",
+        "lat": 19.8135,
+        "lng": 85.8312,
+        "type": "storm",
+        "severity": "medium",
+        "description": "Low pressure system forming in Bay of Bengal. Coastal districts on watch.",
+        "updated_at": "2025-06-26T11:30:00Z"
+      },
+      {
+        "id": "MK005",
+        "title": "Kerala Forest Risk",
+        "state": "Kerala",
+        "district": "Wayanad",
+        "lat": 11.6854,
+        "lng": 76.1320,
+        "type": "forest",
+        "severity": "medium",
+        "description": "Dry spell increasing forest fire risk in Western Ghats buffer zone.",
+        "updated_at": "2025-06-26T10:15:00Z"
+      },
+      {
+        "id": "MK006",
+        "title": "Punjab Farmer Advisory",
+        "state": "Punjab",
+        "district": "Ludhiana",
+        "lat": 30.9010,
+        "lng": 75.8573,
+        "type": "farmer",
+        "severity": "warning",
+        "description": "Groundwater depletion advisory. 1,240 farmers notified via SMS to switch to micro-irrigation.",
+        "updated_at": "2025-06-26T09:00:00Z"
+      },
+      {
+        "id": "MK007",
+        "title": "Maharashtra Flood Risk",
+        "state": "Maharashtra",
+        "district": "Kolhapur",
+        "lat": 16.7050,
+        "lng": 74.2433,
+        "type": "flood",
+        "severity": "medium",
+        "description": "Heavy monsoon predicted. Flood watch active for Panchganga basin.",
+        "updated_at": "2025-06-26T08:45:00Z"
+      },
+      {
+        "id": "MK008",
+        "title": "Madhya Pradesh Deforestation",
+        "state": "Madhya Pradesh",
+        "district": "Balaghat",
+        "lat": 21.8135,
+        "lng": 80.1860,
+        "type": "forest",
+        "severity": "high",
+        "description": "Illegal logging activity detected in Kanha buffer zone. 200 hectares at risk.",
+        "updated_at": "2025-06-26T07:30:00Z"
+      }
+    ],
+
+    "heat_zones": [
+      {
+        "id": "HZ001",
+        "state": "Assam",
+        "center_lat": 26.2006,
+        "center_lng": 92.9376,
+        "radius_km": 80,
+        "risk_type": "forest",
+        "severity": "critical",
+        "intensity": 0.95
+      },
+      {
+        "id": "HZ002",
+        "state": "Bihar",
+        "center_lat": 25.9176,
+        "center_lng": 85.8245,
+        "radius_km": 100,
+        "risk_type": "flood",
+        "severity": "high",
+        "intensity": 0.78
+      },
+      {
+        "id": "HZ003",
+        "state": "Rajasthan",
+        "center_lat": 25.7521,
+        "center_lng": 71.3967,
+        "radius_km": 150,
+        "risk_type": "heat",
+        "severity": "high",
+        "intensity": 0.82
+      },
+      {
+        "id": "HZ004",
+        "state": "Madhya Pradesh",
+        "center_lat": 21.8135,
+        "center_lng": 80.1860,
+        "radius_km": 90,
+        "risk_type": "forest",
+        "severity": "high",
+        "intensity": 0.71
+      },
+      {
+        "id": "HZ005",
+        "state": "Odisha",
+        "center_lat": 19.8135,
+        "center_lng": 85.8312,
+        "radius_km": 120,
+        "risk_type": "storm",
+        "severity": "medium",
+        "intensity": 0.55
+      },
+      {
+        "id": "HZ006",
+        "state": "Kerala",
+        "center_lat": 11.6854,
+        "center_lng": 76.1320,
+        "radius_km": 60,
+        "risk_type": "forest",
+        "severity": "medium",
+        "intensity": 0.48
+      }
+    ]
+  },
+
+  "charts": {
+    "forest_coverage_trend": {
+      "title": "Forest Coverage Trend (Monthly)",
+      "unit": "% coverage",
+      "labels": ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+      "datasets": [
+        {
+          "label": "2024",
+          "data": [68.2, 67.8, 67.1, 66.5, 66.0, 65.8, 66.3, 67.1, 68.0, 68.9, 69.2, 69.5]
+        },
+        {
+          "label": "2025",
+          "data": [69.8, 69.4, 68.9, 68.2, 67.6, 67.1, 67.8, 68.5, 69.1, 69.9, 70.3, 70.8]
+        }
+      ]
+    },
+
+    "temperature_vs_deforestation": {
+      "title": "Temperature vs Deforestation Rate (State-wise)",
+      "states": ["Assam", "MP", "Bihar", "Rajasthan", "Kerala", "Odisha", "Punjab", "Maharashtra"],
+      "avg_temp_celsius": [28.4, 32.1, 29.6, 41.2, 27.8, 30.5, 31.8, 29.9],
+      "deforestation_rate_percent": [4.8, 3.9, 1.2, 0.8, 1.5, 2.3, 0.4, 1.9]
+    },
+
+    "groundwater_trend": {
+      "title": "Groundwater Level Trend (Yearly)",
+      "unit": "meters below ground",
+      "labels": ["2019", "2020", "2021", "2022", "2023", "2024", "2025"],
+      "datasets": [
+        {
+          "state": "Punjab",
+          "data": [12.1, 13.4, 14.8, 16.2, 17.9, 19.3, 21.1]
+        },
+        {
+          "state": "Rajasthan",
+          "data": [18.5, 19.8, 21.2, 22.9, 24.6, 26.4, 28.3]
+        },
+        {
+          "state": "Maharashtra",
+          "data": [8.2, 8.9, 9.5, 10.2, 11.0, 11.8, 12.7]
+        }
+      ]
+    }
+  },
+
+  "activity": {
+    "items": [
+      {
+        "id": "ACT001",
+        "type": "satellite_scan",
+        "message": "Satellite scan completed — 847 zones analyzed across 14 states",
+        "region": "All India",
+        "timestamp": "2025-06-26T14:30:00Z",
+        "icon": "satellite"
+      },
+      {
+        "id": "ACT002",
+        "type": "ai_update",
+        "message": "AI model updated deforestation risk scores for Northeast India",
+        "region": "Northeast India",
+        "timestamp": "2025-06-26T14:15:00Z",
+        "icon": "brain"
+      },
+      {
+        "id": "ACT003",
+        "type": "sms_dispatch",
+        "message": "SMS alert dispatched — 1,240 farmers notified in Punjab",
+        "region": "Punjab",
+        "timestamp": "2025-06-26T13:50:00Z",
+        "icon": "message"
+      },
+      {
+        "id": "ACT004",
+        "type": "report",
+        "message": "Status report generated for Bihar flood risk assessment",
+        "region": "Bihar",
+        "timestamp": "2025-06-26T13:30:00Z",
+        "icon": "file"
+      },
+      {
+        "id": "ACT005",
+        "type": "alert_created",
+        "message": "Critical deforestation alert raised — Assam Sector 18",
+        "region": "Assam",
+        "timestamp": "2025-06-26T13:00:00Z",
+        "icon": "alert"
+      },
+      {
+        "id": "ACT006",
+        "type": "satellite_scan",
+        "message": "Thermal imaging scan completed — Rajasthan heat map updated",
+        "region": "Rajasthan",
+        "timestamp": "2025-06-26T12:45:00Z",
+        "icon": "satellite"
+      },
+      {
+        "id": "ACT007",
+        "type": "ai_update",
+        "message": "AI flood prediction model recalibrated with 3-day rainfall forecast",
+        "region": "Bihar, Odisha",
+        "timestamp": "2025-06-26T12:00:00Z",
+        "icon": "brain"
+      },
+      {
+        "id": "ACT008",
+        "type": "report",
+        "message": "Monthly forest coverage report published — 98.7% monitoring coverage",
+        "region": "All India",
+        "timestamp": "2025-06-26T11:00:00Z",
+        "icon": "file"
+      }
+    ]
+  }
+}

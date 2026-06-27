@@ -1,0 +1,107 @@
+{
+  "live_alerts": {
+    "total": 147,
+    "critical": 12,
+    "high": 38,
+    "medium": 61,
+    "low": 36,
+    "items": [
+      {
+        "id": "ALT001",
+        "title": "Farmer Advisory Sent",
+        "region": "Punjab",
+        "state": "Punjab",
+        "type": "farmer",
+        "severity": "warning",
+        "description": "Groundwater depletion alert sent. 1,240 farmers notified via SMS to adopt micro-irrigation.",
+        "recipients_notified": 1240,
+        "timestamp": "2025-06-26T14:00:00Z",
+        "is_active": true
+      },
+      {
+        "id": "ALT002",
+        "title": "Wetland Encroachment Detected",
+        "region": "Assam Wetlands",
+        "state": "Assam",
+        "type": "wetland",
+        "severity": "high",
+        "description": "Unauthorized encroachment detected in Deepor Beel wetland area. Forest dept notified.",
+        "recipients_notified": 48,
+        "timestamp": "2025-06-26T13:45:00Z",
+        "is_active": true
+      },
+      {
+        "id": "ALT003",
+        "title": "Deforestation Detected",
+        "region": "Assam Sector 18",
+        "state": "Assam",
+        "type": "forest",
+        "severity": "critical",
+        "description": "AI detected 340 hectares of rapid tree cover loss. Satellite confirmed. Authorities alerted.",
+        "recipients_notified": 320,
+        "timestamp": "2025-06-26T13:00:00Z",
+        "is_active": true
+      },
+      {
+        "id": "ALT004",
+        "title": "Flood Risk Rising",
+        "region": "Darbhanga, Bihar",
+        "state": "Bihar",
+        "type": "flood",
+        "severity": "high",
+        "description": "Kosi river at 87% capacity. Flood warning issued. NDRF teams on standby.",
+        "recipients_notified": 5600,
+        "timestamp": "2025-06-26T12:30:00Z",
+        "is_active": true
+      },
+      {
+        "id": "ALT005",
+        "title": "Plantation Priority Generated",
+        "region": "Barmer, Rajasthan",
+        "state": "Rajasthan",
+        "type": "plantation",
+        "severity": "medium",
+        "description": "AI recommends urgent afforestation in 3 zones. Priority plantation schedule generated.",
+        "recipients_notified": 210,
+        "timestamp": "2025-06-26T11:00:00Z",
+        "is_active": true
+      },
+      {
+        "id": "ALT006",
+        "title": "Cyclone Watch Active",
+        "region": "Puri Coast, Odisha",
+        "state": "Odisha",
+        "type": "storm",
+        "severity": "medium",
+        "description": "Low pressure system in Bay of Bengal tracking toward Odisha coast. Storm watch active.",
+        "recipients_notified": 890,
+        "timestamp": "2025-06-26T10:30:00Z",
+        "is_active": true
+      },
+      {
+        "id": "ALT007",
+        "title": "Illegal Logging Activity",
+        "region": "Balaghat, Madhya Pradesh",
+        "state": "Madhya Pradesh",
+        "type": "forest",
+        "severity": "high",
+        "description": "Sound anomaly sensors detected chainsaw activity. Real-time alert sent to forest rangers.",
+        "recipients_notified": 64,
+        "timestamp": "2025-06-26T09:45:00Z",
+        "is_active": true
+      },
+      {
+        "id": "ALT008",
+        "title": "Extreme Heat Advisory",
+        "region": "Barmer, Rajasthan",
+        "state": "Rajasthan",
+        "type": "heat",
+        "severity": "high",
+        "description": "Surface temperature exceeds 48°C. Advisory issued for outdoor laborers and livestock.",
+        "recipients_notified": 3200,
+        "timestamp": "2025-06-26T08:00:00Z",
+        "is_active": false
+      }
+    ]
+  }
+}
