@@ -23,114 +23,81 @@
   <canvas id="bg-canvas"></canvas>
 
   <!-- ─────────────────────────────────────────────
-     LANDING PAGE - UPDATED
-───────────────────────────────────────────── -->
-<section id="landing">
-  <!-- Particle overlay -->
-  <div class="landing-overlay"></div>
+       LANDING PAGE
+  ───────────────────────────────────────────── -->
+  <section id="landing">
+    <!-- Particle overlay -->
+    <div class="landing-overlay"></div>
 
-  <!-- Top bar -->
-  <div class="landing-topbar">
-    <div class="logo-mark">
-      <span class="logo-icon">🌍</span>
-      <span class="logo-text">Earth<span class="logo-accent">AI</span></span>
-    </div>
-    <div class="landing-nav-links">
-      <a href="#" class="nav-link">Platform</a>
-      <a href="#" class="nav-link">Research</a>
-      <a href="#" class="nav-link">API</a>
-      <button class="btn-outline-sm" id="btn-launch-top">Launch Dashboard</button>
-      <button class="light-mode-btn" id="lm-toggle-landing" title="Toggle light mode">☀️</button>
-    </div>
-  </div>
-
-  <!-- Hero Content -->
-  <div class="hero-content">
-    <!-- Status badge -->
-    <div class="hero-badge">
-      <span class="pulse-dot"></span>
-      <span>Live · Monitoring 2.4M km² of Indian Forest</span>
-    </div>
-
-    <h1 class="hero-title">
-      Earth Immune<br />
-      <span class="hero-title-accent">System AI</span>
-    </h1>
-
-    <p class="hero-subtitle">
-      India's AI-Powered Environmental Intelligence Platform.<br />
-      Real-time forest monitoring, disaster prediction &amp; farmer protection.
-    </p>
-
-    <!-- Stats row -->
-    <div class="hero-stats">
-      <div class="hero-stat">
-        <span class="hero-stat-num" data-target="2400000" data-suffix=" km²">0</span>
-        <span class="hero-stat-label">Forest Area Monitored</span>
+    <!-- Top bar -->
+    <div class="landing-topbar">
+      <div class="logo-mark">
+        <span class="logo-icon">🌍</span>
+        <span class="logo-text">Earth<span class="logo-accent">AI</span></span>
       </div>
-      <div class="hero-stat-divider"></div>
-      <div class="hero-stat">
-        <span class="hero-stat-num" data-target="8200000" data-suffix="">0</span>
-        <span class="hero-stat-label">Trees Saved</span>
-      </div>
-      <div class="hero-stat-divider"></div>
-      <div class="hero-stat">
-        <span class="hero-stat-num" data-target="1300000" data-suffix="">0</span>
-        <span class="hero-stat-label">Farmers Protected</span>
-      </div>
-      <div class="hero-stat-divider"></div>
-      <div class="hero-stat">
-        <span class="hero-stat-num" data-target="147" data-suffix="">0</span>
-        <span class="hero-stat-label">Active Alerts</span>
+      <div class="landing-nav-links">
+        <a href="#" class="nav-link">Platform</a>
+        <a href="#" class="nav-link">Research</a>
+        <a href="#" class="nav-link">API</a>
+        <button class="btn-outline-sm" id="btn-launch-top">Launch Dashboard</button>
+        <button class="light-mode-btn" id="lm-toggle-landing" title="Toggle light mode">☀️</button>
       </div>
     </div>
 
-    <!-- CTA Buttons - REMOVED EXPLORE FEATURES -->
-    <div class="hero-cta">
-      <button class="btn-primary" id="btn-launch">
-        <span class="btn-icon">⚡</span>
-        Launch Dashboard
-      </button>
+    <!-- Hero Content -->
+    <div class="hero-content">
+      <!-- Status badge -->
+      <div class="hero-badge">
+        <span class="pulse-dot"></span>
+        <span>Live · Monitoring 2.4M km² of Indian Forest</span>
+      </div>
+
+      <h1 class="hero-title">
+        Earth Immune<br />
+        <span class="hero-title-accent">System AI</span>
+      </h1>
+
+      <p class="hero-subtitle">
+        India's AI-Powered Environmental Intelligence Platform.<br />
+        Real-time forest monitoring, disaster prediction &amp; farmer protection.
+      </p>
+
+      <!-- Stats row -->
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-num" data-target="2400000" data-suffix=" km²">0</span>
+          <span class="hero-stat-label">Forest Area Monitored</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-num" data-target="8200000" data-suffix="">0</span>
+          <span class="hero-stat-label">Trees Saved</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-num" data-target="1300000" data-suffix="">0</span>
+          <span class="hero-stat-label">Farmers Protected</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-num" data-target="147" data-suffix="">0</span>
+          <span class="hero-stat-label">Active Alerts</span>
+        </div>
+      </div>
+
+      <!-- CTA Buttons -->
+      <div class="hero-cta">
+        <button class="btn-primary" id="btn-launch">
+          <span class="btn-icon">⚡</span>
+          Launch Dashboard
+        </button>
+        <button class="btn-ghost" id="btn-explore">
+          <span class="btn-icon">🔍</span>
+          Explore Features
+        </button>
+      </div>
     </div>
-  </div>
 
-  <!-- Features section HIDDEN - No more scroll cue -->
-  <div class="features-preview" id="features-section" style="display: none;">
-    <div class="fp-label">Platform Capabilities</div>
-    <h2 class="fp-section-title">One Platform.<br /><span>Four Superpowers.</span></h2>
-    <div class="fp-grid">
-      <div class="fp-card">
-        <div class="fp-icon">🌲</div>
-        <div class="fp-title">Forest Monitor</div>
-        <div class="fp-desc">Satellite-based illegal deforestation detection with real-time AI alerts and impact prediction</div>
-        <div class="fp-arrow">→ Explore</div>
-      </div>
-      <div class="fp-card">
-        <div class="fp-icon">🌱</div>
-        <div class="fp-title">Tree Planner</div>
-        <div class="fp-desc">AI-driven plantation recommendations by state, soil type &amp; climate with full simulation</div>
-        <div class="fp-arrow">→ Explore</div>
-      </div>
-      <div class="fp-card">
-        <div class="fp-icon">⚠️</div>
-        <div class="fp-title">Disaster Risk</div>
-        <div class="fp-desc">Early warning system for floods, cyclones &amp; heatwaves with SMS alerts to authorities</div>
-        <div class="fp-arrow">→ Explore</div>
-      </div>
-      <div class="fp-card">
-        <div class="fp-icon">🌾</div>
-        <div class="fp-title">Farmer Advisory</div>
-        <div class="fp-desc">Crop-specific guidance &amp; advance SMS warnings before floods and environmental events</div>
-        <div class="fp-arrow">→ Explore</div>
-      </div>
-    </div>
-  </div>
-
-<<<<<<< HEAD
-  <!-- Scroll cue REMOVED -->
-
-</section>
-=======
     <!-- ─── INTERACTIVE 3D EARTH (hero right side) ─── -->
     <div class="earth-hero-wrap" id="earth-hero-wrap">
       <canvas id="earth-canvas"></canvas>
@@ -184,7 +151,6 @@
       <div class="scroll-arrow"></div>
     </div>
   </section>
->>>>>>> f2049e11aef88aca734cd1f871b09d4d30f0820b
 
   <!-- ─────────────────────────────────────────────
        APP CONTAINER

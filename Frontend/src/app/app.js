@@ -2891,12 +2891,18 @@ const Farmer = (function () {
       .from('.hero-title',        { y: 40, opacity: 0, duration: 0.7 }, '-=0.3')
       .from('.hero-subtitle',     { y: 25, opacity: 0, duration: 0.6 }, '-=0.4')
       .from('.hero-stats',        { y: 20, opacity: 0, duration: 0.5 }, '-=0.3')
-      .from('.hero-cta',          { y: 20, opacity: 0, duration: 0.5 }, '-=0.2');
+      .from('.hero-cta',          { y: 20, opacity: 0, duration: 0.5 }, '-=0.2')
+      .from('.earth-hero-wrap',   { x: 80, opacity: 0, duration: 1.0, ease: 'power2.out' }, '-=0.7');
 
-    // Feature cards scroll reveal
+        // Feature cards scroll reveal
     gsap.from('.fp-card', {
       scrollTrigger: { trigger: '.features-preview', start: 'top 85%' },
       y: 30, opacity: 0, duration: 0.5, stagger: 0.1, ease: 'power2.out',
+    });
+
+    // Scroll cue
+    gsap.to('.scroll-cue', {
+      opacity: 0.4, duration: 1.5, repeat: -1, yoyo: true, ease: 'sine.inOut',
     });
   }
 

@@ -287,8 +287,6 @@ canvas { display: block; }
 }
 .btn-icon { font-size: 1rem; }
 
-<<<<<<< HEAD
-=======
 /* ══════════════════════════════════
    HERO 3D EARTH
    ══════════════════════════════════ */
@@ -327,7 +325,7 @@ canvas { display: block; }
     0 0 80px rgba(0, 200, 255, 0.35),
     0 0 160px rgba(0, 150, 220, 0.18);
 }
->>>>>>> f2049e11aef88aca734cd1f871b09d4d30f0820b
+
 
 /* Drag hint badge */
 .earth-drag-hint {
@@ -509,6 +507,7 @@ body.light-mode .hero-subtitle  { color: #2A5E36; }
 body.light-mode .fp-section-title { color: #082010; }
 body.light-mode .btn-ghost { border-color: rgba(0,160,50,0.3); color: #082010; }
 body.light-mode .ig-chip  { background: rgba(0,168,48,0.06); border-color: rgba(0,168,48,0.2); color: #007A28; }
+body.light-mode .scroll-cue span { color: #6B9678; }
 
 /* Light mode toast */
 body.light-mode .toast {
@@ -604,6 +603,30 @@ body.light-mode .toast {
   transition: all var(--t-fast);
 }
 .fp-card:hover .fp-arrow { opacity: 1; transform: translateX(0); }
+
+/* Scroll Cue */
+.scroll-cue {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+.scroll-arrow {
+  width: 1px;
+  height: 32px;
+  background: linear-gradient(to bottom, var(--neon), transparent);
+  animation: scrollBounce 1.5s ease-in-out infinite;
+}
+@keyframes scrollBounce {
+  0%,100% { opacity: 0.3; transform: scaleY(1); }
+  50%      { opacity: 1; transform: scaleY(1.3); }
+}
+
 
 
 /* Pulse Dot */
