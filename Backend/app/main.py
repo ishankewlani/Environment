@@ -1,5 +1,5 @@
 # Earth Immune System AI — FastAPI Backend
-# Phase 1: Demo backend using sample JSON data
+# Phase 1 + Phase 2A: Forest Monitoring & Impact Prediction
 # Run: uvicorn app.main:app --reload
 
 from fastapi import FastAPI
@@ -8,12 +8,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import APP_NAME, APP_VERSION, CORS_ORIGINS
 from app.api.dashboard import router as dashboard_router
 from app.api.alerts import router as alerts_router
+from app.api.forest import router as forest_router  # Phase 2A
 
 # ── App init ────────────────────────────────────────────────────────────────
 app = FastAPI(
     title=APP_NAME,
     version=APP_VERSION,
-    description="AI-powered environmental monitoring backend for India — Phase 1 Demo",
+    description=(
+        "AI-powered environmental monitoring backend for India — "
+        "Phase 1 (Dashboard & Alerts) + Phase 2A (Forest Monitoring)"
+    ),
     docs_url="/docs",
     redoc_url="/redoc",
 )
@@ -29,7 +33,8 @@ app.add_middleware(
 
 # ── Routers ──────────────────────────────────────────────────────────────────
 app.include_router(dashboard_router, prefix="/api/dashboard", tags=["Dashboard"])
-app.include_router(alerts_router, prefix="/api/alerts", tags=["Alerts"])
+app.include_router(alerts_router,    prefix="/api/alerts",    tags=["Alerts"])
+app.include_router(forest_router,    prefix="/api/forest",    tags=["Forest Monitoring"])  # Phase 2A
 
 
 # ── Root endpoint ─────────────────────────────────────────────────────────────

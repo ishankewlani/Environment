@@ -1,0 +1,339 @@
+{
+  "detections": [
+    {
+      "id": "FD-ASSAM-18",
+      "sector": "Assam Sector 18",
+      "state": "Assam",
+      "district": "Kamrup",
+      "lat": 26.1445,
+      "lng": 91.7362,
+      "severity": "critical",
+      "trees_removed": 1240,
+      "area_km2": 4.2,
+      "green_cover_loss_percent": 18.5,
+      "confidence": 97.3,
+      "detected_at": "2025-06-26T08:14:00Z",
+      "time_ago": "2 hours ago",
+      "description": "Large-scale illegal deforestation detected via satellite thermal imaging. 1,240 trees removed across 4.2 km². Fire activity also observed on perimeter."
+    },
+    {
+      "id": "FD-KERALA-WD",
+      "sector": "Kerala Wayanad",
+      "state": "Kerala",
+      "district": "Wayanad",
+      "lat": 11.6930,
+      "lng": 76.1320,
+      "severity": "high",
+      "trees_removed": 500,
+      "area_km2": 1.8,
+      "green_cover_loss_percent": 9.2,
+      "confidence": 91.5,
+      "detected_at": "2025-06-26T06:50:00Z",
+      "time_ago": "3.5 hours ago",
+      "description": "Encroachment into forest buffer zone detected near Wayanad Wildlife Sanctuary. Approximately 500 trees removed for agriculture expansion."
+    },
+    {
+      "id": "FD-MP-Z12",
+      "sector": "MP Zone 12",
+      "state": "Madhya Pradesh",
+      "district": "Balaghat",
+      "lat": 21.8050,
+      "lng": 80.1870,
+      "severity": "medium",
+      "trees_removed": 380,
+      "area_km2": 1.2,
+      "green_cover_loss_percent": 5.8,
+      "confidence": 85.0,
+      "detected_at": "2025-06-26T04:30:00Z",
+      "time_ago": "5 hours ago",
+      "description": "Selective logging activity detected in Kanha buffer zone. Pattern suggests organized extraction. 380 trees removed over 1.2 km²."
+    },
+    {
+      "id": "FD-CG-Z5",
+      "sector": "Chhattisgarh Zone 5",
+      "state": "Chhattisgarh",
+      "district": "Korba",
+      "lat": 22.3595,
+      "lng": 82.7501,
+      "severity": "high",
+      "trees_removed": 415,
+      "area_km2": 1.5,
+      "green_cover_loss_percent": 7.4,
+      "confidence": 88.2,
+      "detected_at": "2025-06-26T03:15:00Z",
+      "time_ago": "7 hours ago",
+      "description": "Deforestation linked to suspected mining activity expansion. 415 trees removed near protected zone boundary in Hasdeo Aranya forest area."
+    },
+    {
+      "id": "FD-MANIPUR-ES",
+      "sector": "Manipur Eastern Sector",
+      "state": "Manipur",
+      "district": "Churachandpur",
+      "lat": 24.3330,
+      "lng": 93.6340,
+      "severity": "critical",
+      "trees_removed": 289,
+      "area_km2": 0.9,
+      "green_cover_loss_percent": 16.1,
+      "confidence": 79.4,
+      "detected_at": "2025-06-25T22:10:00Z",
+      "time_ago": "12 hours ago",
+      "description": "Critical green cover loss in hill district. Despite lower tree count, high green cover loss percentage indicates dense canopy removal. Slope erosion risk elevated."
+    },
+    {
+      "id": "FD-ODISHA-S3",
+      "sector": "Odisha Simlipal Zone 3",
+      "state": "Odisha",
+      "district": "Mayurbhanj",
+      "lat": 21.6300,
+      "lng": 85.6500,
+      "severity": "medium",
+      "trees_removed": 270,
+      "area_km2": 0.95,
+      "green_cover_loss_percent": 4.9,
+      "confidence": 82.1,
+      "detected_at": "2025-06-25T19:40:00Z",
+      "time_ago": "15 hours ago",
+      "description": "Forest thinning detected near Simlipal Tiger Reserve buffer. Activity pattern consistent with firewood collection at commercial scale."
+    },
+    {
+      "id": "FD-UTTARAKHAND-D4",
+      "sector": "Uttarakhand Dehradun Zone 4",
+      "state": "Uttarakhand",
+      "district": "Dehradun",
+      "lat": 30.3165,
+      "lng": 78.0322,
+      "severity": "low",
+      "trees_removed": 95,
+      "area_km2": 0.3,
+      "green_cover_loss_percent": 1.8,
+      "confidence": 74.0,
+      "detected_at": "2025-06-25T16:00:00Z",
+      "time_ago": "18 hours ago",
+      "description": "Minor clearance activity detected. Possibly related to road widening. Low confidence — awaiting ground verification."
+    }
+  ],
+
+  "forest_cover_layers": [
+    {
+      "id": "FCL-NE",
+      "name": "Northeast Dense Forest Belt",
+      "states": ["Assam", "Meghalaya", "Manipur", "Mizoram", "Nagaland", "Arunachal Pradesh"],
+      "cover_type": "dense_forest",
+      "cover_percent": 68.4,
+      "area_km2": 167800,
+      "color_hint": "#1a6b2f"
+    },
+    {
+      "id": "FCL-WG",
+      "name": "Western Ghats Forest Corridor",
+      "states": ["Kerala", "Karnataka", "Tamil Nadu", "Goa", "Maharashtra"],
+      "cover_type": "dense_forest",
+      "cover_percent": 54.2,
+      "area_km2": 89200,
+      "color_hint": "#2d8c4e"
+    },
+    {
+      "id": "FCL-CF",
+      "name": "Central India Forest Zone",
+      "states": ["Madhya Pradesh", "Chhattisgarh", "Jharkhand", "Odisha"],
+      "cover_type": "sparse_forest",
+      "cover_percent": 31.7,
+      "area_km2": 124500,
+      "color_hint": "#5aaa6f"
+    },
+    {
+      "id": "FCL-HIM",
+      "name": "Himalayan Foothills Belt",
+      "states": ["Uttarakhand", "Himachal Pradesh", "Sikkim"],
+      "cover_type": "sparse_forest",
+      "cover_percent": 43.1,
+      "area_km2": 51200,
+      "color_hint": "#5aaa6f"
+    },
+    {
+      "id": "FCL-DEC",
+      "name": "Deccan Plateau Dry Forests",
+      "states": ["Telangana", "Andhra Pradesh", "Maharashtra"],
+      "cover_type": "degraded",
+      "cover_percent": 12.4,
+      "area_km2": 41800,
+      "color_hint": "#c9a84c"
+    },
+    {
+      "id": "FCL-RAJ",
+      "name": "Rajasthan Arid Scrub Zone",
+      "states": ["Rajasthan"],
+      "cover_type": "degraded",
+      "cover_percent": 3.8,
+      "area_km2": 13200,
+      "color_hint": "#c9a84c"
+    }
+  ],
+
+  "deforestation_hotspots": [
+    {
+      "id": "HS-001",
+      "state": "Assam",
+      "district": "Kamrup",
+      "lat": 26.1445,
+      "lng": 91.7362,
+      "radius_km": 18,
+      "severity": "critical",
+      "forest_loss_percent": 18.5,
+      "color_hint": "#e63946"
+    },
+    {
+      "id": "HS-002",
+      "state": "Manipur",
+      "district": "Churachandpur",
+      "lat": 24.3330,
+      "lng": 93.6340,
+      "radius_km": 12,
+      "severity": "critical",
+      "forest_loss_percent": 16.1,
+      "color_hint": "#e63946"
+    },
+    {
+      "id": "HS-003",
+      "state": "Kerala",
+      "district": "Wayanad",
+      "lat": 11.6930,
+      "lng": 76.1320,
+      "radius_km": 14,
+      "severity": "high",
+      "forest_loss_percent": 9.2,
+      "color_hint": "#f4a261"
+    },
+    {
+      "id": "HS-004",
+      "state": "Chhattisgarh",
+      "district": "Korba",
+      "lat": 22.3595,
+      "lng": 82.7501,
+      "radius_km": 16,
+      "severity": "high",
+      "forest_loss_percent": 7.4,
+      "color_hint": "#f4a261"
+    },
+    {
+      "id": "HS-005",
+      "state": "Madhya Pradesh",
+      "district": "Balaghat",
+      "lat": 21.8050,
+      "lng": 80.1870,
+      "radius_km": 11,
+      "severity": "medium",
+      "forest_loss_percent": 5.8,
+      "color_hint": "#e9c46a"
+    },
+    {
+      "id": "HS-006",
+      "state": "Odisha",
+      "district": "Mayurbhanj",
+      "lat": 21.6300,
+      "lng": 85.6500,
+      "radius_km": 10,
+      "severity": "medium",
+      "forest_loss_percent": 4.9,
+      "color_hint": "#e9c46a"
+    },
+    {
+      "id": "HS-007",
+      "state": "Uttarakhand",
+      "district": "Dehradun",
+      "lat": 30.3165,
+      "lng": 78.0322,
+      "radius_km": 6,
+      "severity": "low",
+      "forest_loss_percent": 1.8,
+      "color_hint": "#a8dadc"
+    }
+  ],
+
+  "protected_forest_zones": [
+    {
+      "id": "PZ-001",
+      "name": "Kaziranga National Park",
+      "state": "Assam",
+      "lat": 26.5775,
+      "lng": 93.1711,
+      "area_km2": 859,
+      "status": "protected",
+      "threat_level": "low"
+    },
+    {
+      "id": "PZ-002",
+      "name": "Kanha Tiger Reserve",
+      "state": "Madhya Pradesh",
+      "lat": 22.2614,
+      "lng": 80.6072,
+      "area_km2": 1945,
+      "status": "protected",
+      "threat_level": "medium"
+    },
+    {
+      "id": "PZ-003",
+      "name": "Wayanad Wildlife Sanctuary",
+      "state": "Kerala",
+      "lat": 11.6930,
+      "lng": 76.1320,
+      "area_km2": 344,
+      "status": "protected",
+      "threat_level": "high"
+    },
+    {
+      "id": "PZ-004",
+      "name": "Simlipal Tiger Reserve",
+      "state": "Odisha",
+      "lat": 21.6300,
+      "lng": 85.6500,
+      "area_km2": 2750,
+      "status": "protected",
+      "threat_level": "medium"
+    },
+    {
+      "id": "PZ-005",
+      "name": "Hasdeo Aranya Forest",
+      "state": "Chhattisgarh",
+      "lat": 22.3595,
+      "lng": 82.7501,
+      "area_km2": 1878,
+      "status": "protected",
+      "threat_level": "high"
+    },
+    {
+      "id": "PZ-006",
+      "name": "Jim Corbett National Park",
+      "state": "Uttarakhand",
+      "lat": 29.5300,
+      "lng": 78.7747,
+      "area_km2": 520,
+      "status": "protected",
+      "threat_level": "low"
+    }
+  ],
+
+  "legend": {
+    "dense_forest": {
+      "label": "Dense Forest",
+      "description": "Canopy cover > 40%. Includes evergreen, semi-evergreen and moist deciduous forest.",
+      "color_hint": "#1a6b2f"
+    },
+    "sparse_forest": {
+      "label": "Sparse / Open Forest",
+      "description": "Canopy cover 10–40%. Includes dry deciduous and scrub forests.",
+      "color_hint": "#5aaa6f"
+    },
+    "degraded": {
+      "label": "Degraded Forest",
+      "description": "Previously forested land with significant canopy loss. Under observation.",
+      "color_hint": "#c9a84c"
+    },
+    "deforested": {
+      "label": "Active Deforestation",
+      "description": "Recent tree cover loss confirmed by satellite detection. Requires immediate action.",
+      "color_hint": "#e63946"
+    }
+  }
+}
