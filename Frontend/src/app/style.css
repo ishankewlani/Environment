@@ -287,107 +287,68 @@ canvas { display: block; }
 }
 .btn-icon { font-size: 1rem; }
 
-
-/* Grid coordinate lines */
-.ig-grid line {
-  stroke: rgba(0,200,220,0.08);
-  stroke-width: 0.8;
+<<<<<<< HEAD
+=======
+/* ══════════════════════════════════
+   HERO 3D EARTH
+   ══════════════════════════════════ */
+.earth-hero-wrap {
+  position: absolute;
+  right: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 520px;
+  height: 580px;
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  /* Outer radial glow to blend Earth into scene */
+  filter: drop-shadow(0 0 60px rgba(0,200,255,0.18));
 }
 
-/* Glow layers — outermost to innermost */
-.ig-outer-glow {
-  fill: rgba(0,200,230,0.04);
-  stroke: rgba(0,220,255,0.18);
-  stroke-width: 10;
-  stroke-linejoin: round;
+#earth-canvas {
+  width: 480px !important;
+  height: 480px !important;
+  border-radius: 50%;
+  cursor: grab;
+  display: block;
+  box-shadow:
+    0 0 60px rgba(0, 150, 255, 0.25),
+    0 0 120px rgba(0, 100, 200, 0.12),
+    inset 0 0 0 1px rgba(255,255,255,0.03);
+  transition: box-shadow 0.3s ease;
 }
-.ig-mid-glow {
-  fill: rgba(0,200,230,0.05);
-  stroke: rgba(0,220,255,0.38);
-  stroke-width: 4;
-  stroke-linejoin: round;
+#earth-canvas:active {
+  cursor: grabbing;
+  box-shadow:
+    0 0 80px rgba(0, 200, 255, 0.35),
+    0 0 160px rgba(0, 150, 220, 0.18);
 }
-.ig-inner-glow {
-  fill: rgba(0,210,235,0.07);
-  stroke: rgba(0,235,255,0.7);
-  stroke-width: 1.8;
-  stroke-linejoin: round;
-}
-.ig-highlight {
-  fill: none;
-  stroke: rgba(160,255,255,0.85);
-  stroke-width: 0.8;
-  stroke-linejoin: round;
-}
+>>>>>>> f2049e11aef88aca734cd1f871b09d4d30f0820b
 
-/* Interior fill */
-.ig-fill {
-  fill: rgba(0,40,60,0.45);
+/* Drag hint badge */
+.earth-drag-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(0, 20, 40, 0.75);
+  border: 1px solid rgba(0, 200, 255, 0.2);
+  border-radius: 999px;
+  padding: 0.3rem 0.9rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: rgba(0, 220, 255, 0.75);
+  letter-spacing: 0.06em;
+  backdrop-filter: blur(8px);
+  opacity: 1;
+  transition: opacity 1s ease;
+  pointer-events: none;
 }
-
-/* State border lines */
-.ig-state-lines {
-  fill: none;
-  stroke: rgba(0,200,220,0.12);
-  stroke-width: 0.6;
-  stroke-dasharray: 3 4;
-}
-
-/* City markers */
-.ig-city-dot {
-  fill: #00E4FF;
-  filter: drop-shadow(0 0 5px #00D4FF);
-  animation: cityPulse 2.5s ease-in-out infinite;
-}
-.ig-city-dot.alert {
-  fill: #FF9F1C;
-  filter: drop-shadow(0 0 5px #FF9F1C);
-}
-.ig-city-dot.crit {
-  fill: #FF4444;
-  filter: drop-shadow(0 0 6px #FF4444);
-}
-.ig-city-ring {
-  fill: none;
-  stroke: #00E4FF;
-  stroke-width: 1;
-  opacity: 0;
-  animation: cityRipple 2.5s ease-out infinite;
-}
-@keyframes cityPulse {
-  0%,100% { opacity: 1; r: 3.5; }
-  50%      { opacity: 0.6; r: 4.5; }
-}
-@keyframes cityRipple {
-  0%   { r: 5; opacity: 0.6; }
-  100% { r: 14; opacity: 0; }
-}
-
-/* City text labels */
-.ig-city-label {
-  font-family: 'Inter', sans-serif;
-  font-size: 8.5px;
-  fill: rgba(180,240,255,0.9);
-  font-weight: 500;
-  letter-spacing: 0.03em;
-}
-
-/* India text */
-.ig-india-text {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 22px;
-  font-weight: 700;
-  fill: rgba(0,210,235,0.25);
-  letter-spacing: 0.18em;
-  text-anchor: middle;
-}
-
-/* Andaman islands dots */
-.ig-island {
-  fill: rgba(0,220,255,0.4);
-  stroke: rgba(0,220,255,0.6);
-  stroke-width: 0.8;
-}
+.earth-drag-hint.hidden { opacity: 0; }
+.earth-hint-icon { font-size: 0.85rem; }
 
 /* Status chips */
 .ig-chips {
@@ -460,9 +421,9 @@ body.light-mode {
   --gold:          #3E8A00;
   --glow-neon:     0 0 16px rgba(0,168,48,0.30);
 }
-body.light-mode #bg-canvas { opacity: 0.12; }
+body.light-mode #bg-canvas { opacity: 0.9; }
 body.light-mode #landing {
-  background: linear-gradient(135deg, #E8F5EC 0%, #F5FFF7 50%, #EAF7EE 100%);
+  background: transparent;
 }
 body.light-mode .landing-topbar {
   background: rgba(240,255,244,0.92);
