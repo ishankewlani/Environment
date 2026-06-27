@@ -1,16 +1,19 @@
 # Earth Immune System AI — Backend
 
-> **Phase 1 + Phase 2A demo backend** using FastAPI and sample JSON data.
+> **Phase 1 + Phase 2A + Phase 2B demo backend** using FastAPI and sample JSON data.
 > No real database, no external APIs, no SMS gateway in this phase.
 
 ---
 
 ## Overview
 
-This is the backend for the **Earth Immune System AI** — an environmental intelligence platform that monitors deforestation, floods, heat waves, and other environmental threats across India using satellite data and AI.
+Backend for the **Earth Immune System AI** — an environmental intelligence platform monitoring deforestation, floods, heat waves, cyclones, and other threats across India using satellite data and AI.
 
-- **Phase 1** — Dashboard overview, India map markers, alerts, activity feed
-- **Phase 2A** — Forest Monitoring & AI Impact Prediction module
+| Phase | Module | Status |
+|-------|--------|--------|
+| Phase 1 | Dashboard, Alerts | ✅ Live |
+| Phase 2A | Forest Monitoring & Impact Prediction | ✅ Live |
+| Phase 2B | Disaster Risk Detection & Early Warning | ✅ Live |
 
 ---
 
@@ -18,64 +21,52 @@ This is the backend for the **Earth Immune System AI** — an environmental inte
 
 - **Framework:** FastAPI
 - **Server:** Uvicorn
-- **Data:** Static JSON files (app/data/)
+- **Data:** Static JSON files (`app/data/`)
 - **Validation:** Pydantic v2
 
 ---
 
 ## Setup
 
-### 1. Create a virtual environment
+### 1. Create and activate a virtual environment
 
 ```bash
 cd backend
 python -m venv venv
-```
 
-### 2. Activate the virtual environment
-
-**Mac / Linux:**
-```bash
+# Mac / Linux
 source venv/bin/activate
-```
 
-**Windows:**
-```bash
+# Windows
 venv\Scripts\activate
 ```
 
-### 3. Install requirements
+### 2. Install requirements
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Copy environment variables example
+### 3. Copy environment file
 
 ```bash
 cp .env.example .env
 ```
 
-> No real values are needed for Phase 1 or 2A. All data comes from JSON files.
+> No real values needed — all data comes from JSON files.
 
-### 5. Run the server
+### 4. Run the server
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-Server starts at: **http://localhost:8000**
+Server: **http://localhost:8000**  
+Swagger docs: **http://localhost:8000/docs**
 
 ---
 
-## API Documentation
-
-Swagger UI (interactive docs): **http://localhost:8000/docs**
-ReDoc: **http://localhost:8000/redoc**
-
----
-
-## Available Endpoints
+## All Endpoints
 
 ### Phase 1 — Core
 
@@ -83,43 +74,117 @@ ReDoc: **http://localhost:8000/redoc**
 |--------|----------|-------------|
 | GET | `/` | Root — confirms backend is live |
 | GET | `/health` | Health check |
-| GET | `/api/dashboard/overview` | Dashboard stats (forest area, trees saved, alerts, etc.) |
+| GET | `/api/dashboard/overview` | Stats: forest area, trees saved, alerts, coverage |
 | GET | `/api/dashboard/map` | India map markers and risk heat zones |
-| GET | `/api/dashboard/charts` | Chart data (forest trend, temperature, groundwater) |
-| GET | `/api/dashboard/activity` | Recent activity feed |
+| GET | `/api/dashboard/charts` | Forest trend, temperature, groundwater charts |
+| GET | `/api/dashboard/activity` | Recent system activity feed |
 | GET | `/api/alerts/live` | Live environmental alerts |
-| POST | `/api/alerts/send` | Send / simulate an alert (demo mode) |
+| POST | `/api/alerts/send` | Send / simulate an alert (demo) |
 | GET | `/api/alerts/status` | Alert system status |
 
 ### Phase 2A — Forest Monitoring & Impact Prediction
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/api/forest/status` | Forest module status (satellite feed, AI model, coverage) |
-| GET | `/api/forest/detections` | Live deforestation detection feed (sorted by severity) |
-| GET | `/api/forest/zones` | Forest cover map: layers, hotspots, protected zones, legend |
+| GET | `/api/forest/status` | Forest module status |
+| GET | `/api/forest/detections` | Live deforestation detection feed |
+| GET | `/api/forest/zones` | Cover layers, hotspots, protected zones, legend |
 | GET | `/api/forest/impact-prediction/{detection_id}` | AI impact prediction for a detection |
 | POST | `/api/forest/analyze` | Rule-based impact analysis on custom input |
 | POST | `/api/forest/alert-authorities` | Alert Forest Dept, NDRF, District Authority (demo) |
 
+### Phase 2B — Disaster Risk Detection & Early Warning
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/disaster/status` | Disaster module status + supported risk types |
+| GET | `/api/disaster/risk-zones` | All vulnerable regions sorted by risk score |
+| GET | `/api/disaster/live-map` | Map markers, heat zones, legend for live risk map |
+| GET | `/api/disaster/forecast/{zone_id}` | Full forecast: timeline, SMS preview, recommendations |
+| POST | `/api/disaster/predict` | Rule-based risk score from sensor input |
+| POST | `/api/disaster/send-warning` | Send disaster warning to authorities (demo) |
+| POST | `/api/disaster/generate-report` | Generate status report — PDF ready (demo) |
+
 ---
 
-## Request Body Examples
+## Disaster Risk — Request Body Examples
 
-### POST /api/alerts/send
+### POST /api/disaster/predict
 
 ```json
 {
-  "alert_type": "authority",
-  "region": "Assam Sector 18",
-  "severity": "critical",
-  "message": "Deforestation detected in Sector 18"
+  "state": "Bihar",
+  "risk_type": "flood",
+  "rainfall_mm": 220,
+  "temperature_celsius": 34,
+  "river_level_percent": 91,
+  "soil_saturation_percent": 86,
+  "wind_speed_kmph": 25
 }
 ```
 
-`alert_type` options: `authority` | `farmer` | `dashboard`
+`risk_type` options: `flood` | `heatwave` | `cyclone` | `storm`
+
+**Scoring rules:**
+
+| Risk Type | Formula |
+|-----------|---------|
+| flood | `rainfall×0.30 + river_level×0.45 + soil_saturation×0.25` (normalised) |
+| heatwave | `(temperature − 30) × 5`, clamped 0–100 |
+| cyclone | `wind_speed×0.65 + rainfall×0.35` (normalised) |
+| storm | `wind_speed×0.55 + rainfall×0.45` (normalised) |
+
+**Alert levels:** critical (≥90) · high (≥75) · moderate (≥45) · low (<45)
 
 ---
+
+### POST /api/disaster/send-warning
+
+```json
+{
+  "zone_id": "DR-BIHAR-001",
+  "warning_type": "sms",
+  "message": "Extreme flood warning for Bihar"
+}
+```
+
+`warning_type` options: `sms` | `dashboard` | `both`
+
+---
+
+### POST /api/disaster/generate-report
+
+```json
+{
+  "region": "India",
+  "risk_types": ["flood", "heatwave", "cyclone", "storm"],
+  "format": "pdf"
+}
+```
+
+`format` options: `pdf` | `csv` | `json`
+
+---
+
+### GET /api/disaster/forecast/{zone_id}
+
+Known zone IDs:
+
+| ID | State | Risk Type | Score | Level |
+|----|-------|-----------|-------|-------|
+| `DR-BIHAR-001` | Bihar | flood | 92 | high |
+| `DR-UTTARAKHAND-002` | Uttarakhand | flood | 92 | high |
+| `DR-ASSAM-003` | Assam | flood | 88 | high |
+| `DR-RAJASTHAN-004` | Rajasthan | heatwave | 84 | high |
+| `DR-ODISHA-005` | Odisha | cyclone | 75 | moderate |
+| `DR-GUJARAT-007` | Gujarat | cyclone | 68 | moderate |
+| `DR-KERALA-006` | Kerala | flood | 45 | moderate |
+
+Returns `404` for unknown zone IDs.
+
+---
+
+## Forest Monitoring — Request Body Examples
 
 ### POST /api/forest/analyze
 
@@ -133,27 +198,6 @@ ReDoc: **http://localhost:8000/redoc**
 }
 ```
 
-**Severity rules:**
-
-| Condition | Severity |
-|-----------|----------|
-| trees >= 1000 OR green_cover_loss >= 15% | critical |
-| trees >= 500 OR green_cover_loss >= 8% | high |
-| trees >= 250 OR green_cover_loss >= 4% | medium |
-| otherwise | low |
-
-**Prediction formulas:**
-
-| Metric | Formula |
-|--------|---------|
-| Temperature increase | `min(4.5, trees / 500)` °C |
-| Flood risk increase | `min(12, green_cover_loss × 0.16)` % |
-| Groundwater reduction | `min(35, green_cover_loss × 1.0)` % |
-| Biodiversity loss | `round(trees / 40)` species |
-| Air quality impact | negative AQI delta, scales with severity |
-
----
-
 ### POST /api/forest/alert-authorities
 
 ```json
@@ -163,23 +207,7 @@ ReDoc: **http://localhost:8000/redoc**
 }
 ```
 
----
-
-### GET /api/forest/impact-prediction/{detection_id}
-
-Known detection IDs from the feed:
-
-| ID | Location |
-|----|----------|
-| `FD-ASSAM-18` | Assam Sector 18 (critical — UI showcase values) |
-| `FD-KERALA-WD` | Kerala Wayanad (high) |
-| `FD-MP-Z12` | Madhya Pradesh Zone 12 (medium) |
-| `FD-CG-Z5` | Chhattisgarh Zone 5 (high) |
-| `FD-MANIPUR-ES` | Manipur Eastern Sector (critical) |
-| `FD-ODISHA-S3` | Odisha Simlipal Zone 3 (medium) |
-| `FD-UTTARAKHAND-D4` | Uttarakhand Dehradun Zone 4 (low) |
-
-Returns `404` for unknown IDs.
+Known detection IDs: `FD-ASSAM-18`, `FD-KERALA-WD`, `FD-MP-Z12`, `FD-CG-Z5`, `FD-MANIPUR-ES`, `FD-ODISHA-S3`, `FD-UTTARAKHAND-D4`
 
 ---
 
@@ -188,27 +216,31 @@ Returns `404` for unknown IDs.
 ```
 backend/
 ├── app/
-│   ├── main.py                    # FastAPI app, CORS, routers
-│   ├── config.py                  # App settings from env vars
+│   ├── main.py                      # FastAPI app, CORS, all routers
+│   ├── config.py                    # Settings from env vars
 │   ├── api/
-│   │   ├── dashboard.py           # Phase 1: Dashboard routes
-│   │   ├── alerts.py              # Phase 1: Alerts routes
-│   │   └── forest.py              # Phase 2A: Forest Monitoring routes
+│   │   ├── dashboard.py             # Phase 1: Dashboard routes
+│   │   ├── alerts.py                # Phase 1: Alert routes
+│   │   ├── forest.py                # Phase 2A: Forest Monitoring routes
+│   │   └── disaster.py              # Phase 2B: Disaster Risk routes
 │   ├── services/
-│   │   ├── dashboard_service.py   # Phase 1: Dashboard logic
-│   │   ├── alert_service.py       # Phase 1: Alert logic
-│   │   └── forest_service.py      # Phase 2A: Forest logic
+│   │   ├── dashboard_service.py     # Phase 1: Dashboard logic
+│   │   ├── alert_service.py         # Phase 1: Alert logic
+│   │   ├── forest_service.py        # Phase 2A: Forest logic
+│   │   └── disaster_service.py      # Phase 2B: Disaster logic
 │   ├── schemas/
-│   │   ├── dashboard_schema.py    # Phase 1: Dashboard Pydantic models
-│   │   ├── alert_schema.py        # Phase 1: Alert Pydantic models
-│   │   └── forest_schema.py       # Phase 2A: Forest Pydantic models
+│   │   ├── dashboard_schema.py      # Phase 1: Pydantic models
+│   │   ├── alert_schema.py          # Phase 1: Pydantic models
+│   │   ├── forest_schema.py         # Phase 2A: Pydantic models
+│   │   └── disaster_schema.py       # Phase 2B: Pydantic models
 │   ├── data/
-│   │   ├── dashboard.json         # Phase 1: Dashboard sample data
-│   │   ├── alerts.json            # Phase 1: Alert sample data
-│   │   └── forest_zones.json      # Phase 2A: Forest detections + map data
+│   │   ├── dashboard.json           # Phase 1 sample data
+│   │   ├── alerts.json              # Phase 1 sample data
+│   │   ├── forest_zones.json        # Phase 2A sample data
+│   │   └── disaster_zones.json      # Phase 2B sample data
 │   └── utils/
-│       ├── data_loader.py         # Shared JSON file loader
-│       └── risk_engine.py         # Phase 2A: Rule-based severity + prediction
+│       ├── data_loader.py           # Shared JSON loader
+│       └── risk_engine.py           # Phase 2A: Forest severity + prediction
 ├── requirements.txt
 ├── .env.example
 ├── .gitignore
@@ -217,22 +249,23 @@ backend/
 
 ---
 
-## Current Limitations
+## Limitations (Current Phases)
 
-- No real database — all data loaded from JSON files
-- No real SMS gateway — alert dispatch is simulated in demo mode
-- No real satellite feed — detections are sample/static data
+- No real database — all data from JSON files
+- No real SMS gateway — demo mode only
+- No real satellite feed — static sample data
 - No authentication — open API for local dev
-- No ML model — risk scores use deterministic formulas (risk_engine.py)
+- No ML model — all scoring is deterministic rule-based logic
 
 ---
 
-## Coming in Phase 2B+
+## Roadmap
 
-- Flood Monitoring module
-- Farmer Advisory module
-- PostgreSQL / MongoDB integration
-- Real satellite imagery API (ISRO / NASA FIRMS)
-- SMS gateway integration (Twilio / MSG91)
-- ML deforestation detection model
-- User authentication and roles
+| Phase | Module |
+|-------|--------|
+| Phase 2C | Farmer Advisory & Crop Risk |
+| Phase 3 | PostgreSQL / MongoDB integration |
+| Phase 4 | Real satellite imagery (ISRO / NASA FIRMS) |
+| Phase 5 | SMS gateway (Twilio / MSG91) |
+| Phase 6 | ML deforestation + flood detection models |
+| Phase 7 | User authentication and roles |

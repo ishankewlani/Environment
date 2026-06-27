@@ -1,0 +1,242 @@
+{
+  "zones": [
+    {
+      "id": "DR-BIHAR-001",
+      "state": "Bihar",
+      "district": "Darbhanga",
+      "lat": 26.1542,
+      "lng": 85.8918,
+      "risk_type": "flood",
+      "risk_score": 92,
+      "alert_level": "high",
+      "severity": "high",
+      "affected_population": 2400000,
+      "forecast_window_hours": 48,
+      "predicted_peak_time": "14:00 to 18:00 hrs",
+      "predicted_duration_days": 4,
+      "description": "Kosi and Gandak rivers at 91% capacity. Heavy upstream rainfall in Nepal contributing to rapid rise. Low-lying districts under imminent flood threat.",
+      "recommended_action": "Immediate evacuation of low-lying areas. Pre-position NDRF teams.",
+      "current_condition": "Extreme Flood Warning",
+      "temperature": 34,
+      "confidence": 94,
+      "sms_preview": "EMERGENCY: Extreme Flood Warning for Bihar. Immediate evacuation in low-lying areas. Contact NDRF helpline: 011-24363260.",
+      "dashboard_notification": "High Risk Alert: Severe weather in Bihar. Emergency protocols required.",
+      "timeline": [
+        { "stage": "warning_issued",  "label": "Warning Issued",  "status": "completed" },
+        { "stage": "rainfall_peak",   "label": "Peak Rainfall",   "status": "upcoming"  },
+        { "stage": "flood_peak",      "label": "Flood Peak",      "status": "upcoming"  },
+        { "stage": "recovery",        "label": "Recovery Phase",  "status": "pending"   }
+      ],
+      "recommended_actions": [
+        "Activate district emergency response team",
+        "Move people from low-lying areas",
+        "Prepare relief shelters",
+        "Notify farmers and local authorities"
+      ]
+    },
+    {
+      "id": "DR-UTTARAKHAND-002",
+      "state": "Uttarakhand",
+      "district": "Chamoli",
+      "lat": 30.4004,
+      "lng": 79.3050,
+      "risk_type": "flood",
+      "risk_score": 92,
+      "alert_level": "high",
+      "severity": "high",
+      "affected_population": 480000,
+      "forecast_window_hours": 36,
+      "predicted_peak_time": "08:00 to 12:00 hrs",
+      "predicted_duration_days": 3,
+      "description": "Cloudburst risk elevated in Chamoli and Rudraprayag districts. Alaknanda river level rising rapidly. Landslide probability high on NH-58 corridor.",
+      "recommended_action": "Close mountain highways. Evacuate riverbank settlements. Alert SDRF.",
+      "current_condition": "Cloudburst & Landslide Alert",
+      "temperature": 22,
+      "confidence": 89,
+      "sms_preview": "ALERT: Cloudburst and landslide risk in Uttarakhand. Avoid travel on mountain roads. Move to high ground immediately.",
+      "dashboard_notification": "High Risk Alert: Flood and landslide risk in Uttarakhand. Road closures advised.",
+      "timeline": [
+        { "stage": "warning_issued",  "label": "Warning Issued",   "status": "completed" },
+        { "stage": "cloudburst_peak", "label": "Cloudburst Peak",  "status": "upcoming"  },
+        { "stage": "landslide_risk",  "label": "Landslide Window", "status": "upcoming"  },
+        { "stage": "recovery",        "label": "Recovery Phase",   "status": "pending"   }
+      ],
+      "recommended_actions": [
+        "Close NH-58 and NH-7 to civilian traffic",
+        "Evacuate all riverside settlements in Chamoli",
+        "Pre-position SDRF at Joshimath and Gopeshwar",
+        "Issue tourist advisory to avoid Char Dham route"
+      ]
+    },
+    {
+      "id": "DR-ASSAM-003",
+      "state": "Assam",
+      "district": "Jorhat",
+      "lat": 26.7465,
+      "lng": 94.2026,
+      "risk_type": "flood",
+      "risk_score": 88,
+      "alert_level": "high",
+      "severity": "high",
+      "affected_population": 1800000,
+      "forecast_window_hours": 48,
+      "predicted_peak_time": "18:00 to 22:00 hrs",
+      "predicted_duration_days": 5,
+      "description": "Brahmaputra river breaching embankments in 3 districts. Morigaon and Jorhat severely affected. Over 1.8 million people in flood-prone belts at risk.",
+      "recommended_action": "Open relief camps. Coordinate with State Disaster Management Authority.",
+      "current_condition": "Severe Flood Warning",
+      "temperature": 30,
+      "confidence": 91,
+      "sms_preview": "ALERT: Severe flooding in Assam. Move to relief camps immediately. SDMA helpline: 1070.",
+      "dashboard_notification": "High Risk Alert: Brahmaputra embankment breach risk in Assam. Relief camps activated.",
+      "timeline": [
+        { "stage": "warning_issued",  "label": "Warning Issued",   "status": "completed" },
+        { "stage": "embankment_risk", "label": "Embankment Risk",  "status": "upcoming"  },
+        { "stage": "flood_peak",      "label": "Flood Peak",       "status": "upcoming"  },
+        { "stage": "recovery",        "label": "Recovery Phase",   "status": "pending"   }
+      ],
+      "recommended_actions": [
+        "Open 120 relief camps across affected districts",
+        "Deploy NDRF and boat rescue teams",
+        "Issue evacuation orders for Majuli island",
+        "Coordinate with Indian Army for relief operations"
+      ]
+    },
+    {
+      "id": "DR-RAJASTHAN-004",
+      "state": "Rajasthan",
+      "district": "Barmer",
+      "lat": 25.7521,
+      "lng": 71.3967,
+      "risk_type": "heatwave",
+      "risk_score": 84,
+      "alert_level": "high",
+      "severity": "high",
+      "affected_population": 1100000,
+      "forecast_window_hours": 72,
+      "predicted_peak_time": "12:00 to 16:00 hrs",
+      "predicted_duration_days": 6,
+      "description": "Surface temperatures recorded at 48-51°C. Extreme heat advisory active for 6 western Rajasthan districts. Heat stroke risk critical for outdoor workers and livestock.",
+      "recommended_action": "Issue heat advisory. Open cooling centres. Restrict outdoor labour 10am–5pm.",
+      "current_condition": "Extreme Heatwave Warning",
+      "temperature": 49,
+      "confidence": 96,
+      "sms_preview": "HEAT ALERT: Extreme heatwave in Rajasthan. Avoid going out 10am-5pm. Drink water. Visit nearest cooling centre.",
+      "dashboard_notification": "High Risk Alert: Heatwave in Rajasthan. Surface temp exceeding 49°C. Cooling centres activated.",
+      "timeline": [
+        { "stage": "warning_issued",  "label": "Warning Issued",  "status": "completed" },
+        { "stage": "temp_peak",       "label": "Temperature Peak","status": "upcoming"  },
+        { "stage": "sustained_heat",  "label": "Sustained Heat",  "status": "upcoming"  },
+        { "stage": "relief",          "label": "Relief Expected", "status": "pending"   }
+      ],
+      "recommended_actions": [
+        "Open cooling centres in all 6 affected districts",
+        "Restrict outdoor labour between 10am and 5pm",
+        "Distribute ORS packets and drinking water",
+        "Alert hospitals to prepare for heat stroke cases"
+      ]
+    },
+    {
+      "id": "DR-ODISHA-005",
+      "state": "Odisha",
+      "district": "Puri",
+      "lat": 19.8135,
+      "lng": 85.8312,
+      "risk_type": "cyclone",
+      "risk_score": 75,
+      "alert_level": "moderate",
+      "severity": "moderate",
+      "affected_population": 950000,
+      "forecast_window_hours": 60,
+      "predicted_peak_time": "22:00 to 04:00 hrs",
+      "predicted_duration_days": 2,
+      "description": "Low pressure system in Bay of Bengal intensifying. Likely to make landfall near Puri-Konark coastline as Category 1 cyclone. Wind speeds 80-100 kmph expected.",
+      "recommended_action": "Evacuate coastal villages. Suspend fishing operations. Pre-position rescue teams.",
+      "current_condition": "Cyclone Watch",
+      "temperature": 31,
+      "confidence": 82,
+      "sms_preview": "CYCLONE WATCH: Bay of Bengal storm approaching Odisha coast. Fishermen must return to shore. Coastal residents move inland.",
+      "dashboard_notification": "Moderate Risk Alert: Cyclone watch active for Odisha coast. Landfall possible in 60 hours.",
+      "timeline": [
+        { "stage": "watch_issued",    "label": "Watch Issued",     "status": "completed" },
+        { "stage": "intensification", "label": "Intensification",  "status": "upcoming"  },
+        { "stage": "landfall",        "label": "Landfall",         "status": "upcoming"  },
+        { "stage": "dissipation",     "label": "Dissipation",      "status": "pending"   }
+      ],
+      "recommended_actions": [
+        "Evacuate all villages within 5 km of coastline",
+        "Halt all fishing activity and bring boats ashore",
+        "Reinforce cyclone shelters in Puri and Konark",
+        "Put ODRAF and NDRF on high alert"
+      ]
+    },
+    {
+      "id": "DR-KERALA-006",
+      "state": "Kerala",
+      "district": "Ernakulam",
+      "lat": 9.9312,
+      "lng": 76.2673,
+      "risk_type": "flood",
+      "risk_score": 45,
+      "alert_level": "moderate",
+      "severity": "moderate",
+      "affected_population": 340000,
+      "forecast_window_hours": 24,
+      "predicted_peak_time": "06:00 to 10:00 hrs",
+      "predicted_duration_days": 2,
+      "description": "Heavy monsoon rainfall expected over central Kerala. Periyar river at 72% capacity. Orange alert issued for Ernakulam, Thrissur and Idukki districts.",
+      "recommended_action": "Monitor river levels. Issue orange alert advisory. Prepare evacuation plans.",
+      "current_condition": "Orange Flood Alert",
+      "temperature": 28,
+      "confidence": 78,
+      "sms_preview": "ORANGE ALERT: Heavy rain expected in Kerala. Stay alert. Avoid travel near rivers and low-lying roads.",
+      "dashboard_notification": "Moderate Risk Alert: Orange flood alert in Kerala. Monitor river levels closely.",
+      "timeline": [
+        { "stage": "orange_alert",   "label": "Orange Alert Issued", "status": "completed" },
+        { "stage": "heavy_rain",     "label": "Heavy Rainfall",      "status": "upcoming"  },
+        { "stage": "river_watch",    "label": "River Level Watch",   "status": "upcoming"  },
+        { "stage": "normalisation",  "label": "Normalisation",       "status": "pending"   }
+      ],
+      "recommended_actions": [
+        "Monitor Periyar and Chalakudy river levels every 4 hours",
+        "Prepare pre-emptive evacuation for Aluva riverbank areas",
+        "Issue advisory for landslide-prone areas in Idukki",
+        "Alert district collectors for rapid response"
+      ]
+    },
+    {
+      "id": "DR-GUJARAT-007",
+      "state": "Gujarat",
+      "district": "Kutch",
+      "lat": 23.7337,
+      "lng": 69.8597,
+      "risk_type": "cyclone",
+      "risk_score": 68,
+      "alert_level": "moderate",
+      "severity": "moderate",
+      "affected_population": 720000,
+      "forecast_window_hours": 72,
+      "predicted_peak_time": "04:00 to 08:00 hrs",
+      "predicted_duration_days": 2,
+      "description": "Arabian Sea cyclonic circulation strengthening. Possible landfall near Kutch-Saurashtra coastline. Wind gusts up to 90 kmph. Storm surge of 1.5–2 m expected.",
+      "recommended_action": "Fishermen advisory issued. Coastal community preparedness activated.",
+      "current_condition": "Cyclone Advisory",
+      "temperature": 36,
+      "confidence": 74,
+      "sms_preview": "CYCLONE ADVISORY: Gujarat coast on watch. Fishermen must not venture into sea. Coastal residents stay alert.",
+      "dashboard_notification": "Moderate Risk Alert: Cyclone advisory for Gujarat coast. Fishermen and coastal communities alerted.",
+      "timeline": [
+        { "stage": "advisory_issued", "label": "Advisory Issued",   "status": "completed" },
+        { "stage": "system_tracks",   "label": "System Tracking",   "status": "upcoming"  },
+        { "stage": "landfall_risk",   "label": "Landfall Risk",     "status": "upcoming"  },
+        { "stage": "dissipation",     "label": "Dissipation",       "status": "pending"   }
+      ],
+      "recommended_actions": [
+        "Issue red alert for Kutch and Devbhumi Dwarka fishermen",
+        "Pre-position NDRF teams at Bhuj and Gandhidham",
+        "Inspect and reinforce coastal embankments",
+        "Coordinate with Indian Coast Guard for sea rescue"
+      ]
+    }
+  ]
+}
