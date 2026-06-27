@@ -894,8 +894,6 @@ const Charts = (function () {
     initGroundwaterChart();
     initForestImpactChart();
     initPlantationChart();
-    initDisasterTrend();
-    initFarmerTrend();
   }
 
   return { initAll };
@@ -1979,6 +1977,59 @@ const Plantation = (function () {
       gwBefore: 'Critical', gwAfter: 'Low',     gwDelta: '+40%',     gwBar: '55%',
       ehBefore: '28/100', ehAfter: '54/100',    ehDelta: '+26 pts',  ehBar: '54%',
     },
+    assam: {
+      location: 'Assam — Guwahati District',
+      trees:    '22,180 Teak trees recommended',
+      tempBefore: '36°C', tempAfter: '33.8°C', tempDelta: '−2.2°C', tempBar: '58%',
+      floodBefore:'68%',  floodAfter: '51%',   floodDelta: '−25%',  floodBar: '54%',
+      gwBefore: 'Medium', gwAfter: 'Good',      gwDelta: '+26%',     gwBar: '58%',
+      ehBefore: '42/100', ehAfter: '65/100',    ehDelta: '+23 pts',  ehBar: '63%',
+    },
+    kerala: {
+      location: 'Kerala — Kochi District',
+      trees:    '16,700 Teak trees recommended',
+      tempBefore: '33°C', tempAfter: '30.8°C', tempDelta: '−2.2°C', tempBar: '52%',
+      floodBefore:'48%',  floodAfter: '31%',   floodDelta: '−17%',  floodBar: '40%',
+      gwBefore: 'Medium', gwAfter: 'Good',      gwDelta: '+25%',     gwBar: '55%',
+      ehBefore: '50/100', ehAfter: '70/100',    ehDelta: '+20 pts',  ehBar: '64%',
+    },
+    punjab: {
+      location: 'Punjab — Amritsar District',
+      trees:    '24,300 Shisham trees recommended',
+      tempBefore: '35°C', tempAfter: '31.9°C', tempDelta: '−3.1°C', tempBar: '66%',
+      floodBefore:'52%',  floodAfter: '38%',   floodDelta: '−14%',  floodBar: '45%',
+      gwBefore: 'Medium', gwAfter: 'Good',      gwDelta: '+24%',     gwBar: '53%',
+      ehBefore: '46/100', ehAfter: '69/100',    ehDelta: '+23 pts',  ehBar: '66%',
+    },
+    bihar: {
+      location: 'Bihar — Patna District',
+      trees:    '21,100 Banyan trees recommended',
+      tempBefore: '37°C', tempAfter: '34.4°C', tempDelta: '−2.6°C', tempBar: '61%',
+      floodBefore:'72%',  floodAfter: '55%',   floodDelta: '−23%',  floodBar: '57%',
+      gwBefore: 'Low',    gwAfter: 'Moderate',  gwDelta: '+30%',     gwBar: '51%',
+      ehBefore: '39/100', ehAfter: '62/100',    ehDelta: '+23 pts',  ehBar: '60%',
+    },
+    karnataka: {
+      location: 'Karnataka — Bengaluru District',
+      trees:    '27,600 Neem trees recommended',
+      tempBefore: '34°C', tempAfter: '31.0°C', tempDelta: '−3.0°C', tempBar: '64%',
+      floodBefore:'38%',  floodAfter: '26%',   floodDelta: '−12%',  floodBar: '32%',
+      gwBefore: 'Medium', gwAfter: 'Good',      gwDelta: '+30%',     gwBar: '57%',
+      ehBefore: '53/100', ehAfter: '72/100',    ehDelta: '+19 pts',  ehBar: '65%',
+    },
+  };
+
+  const STATE_DISTRICTS = {
+    rajasthan: ['Jaisalmer', 'Barmer', 'Jodhpur', 'Bikaner', 'Jaipur'],
+    mp: ['Bhopal', 'Indore', 'Ujjain', 'Gwalior', 'Jabalpur'],
+    up: ['Allahabad', 'Lucknow', 'Kanpur', 'Varanasi', 'Agra'],
+    maharashtra: ['Nagpur', 'Mumbai', 'Pune', 'Nashik', 'Aurangabad'],
+    gujarat: ['Ahmedabad', 'Surat', 'Vadodara', 'Rajkot', 'Kutch'],
+    assam: ['Guwahati', 'Dibrugarh', 'Jorhat', 'Silchar', 'Tezpur'],
+    kerala: ['Thiruvananthapuram', 'Kochi', 'Kozhikode', 'Thrissur', 'Kollam'],
+    punjab: ['Amritsar', 'Ludhiana', 'Jalandhar', 'Patiala', 'Chandigarh'],
+    bihar: ['Patna', 'Gaya', 'Muzaffarpur', 'Bhagalpur', 'Darbhanga'],
+    karnataka: ['Bengaluru', 'Mysore', 'Hubballi', 'Mangalore', 'Belgaum'],
   };
 
   // ── Render priority zones ─────────────────────────────────
@@ -2018,61 +2069,140 @@ const Plantation = (function () {
   }
 
   // ── Update simulation result ──────────────────────────────
-  function updateSimulation(stateKey) {
+  function populateDistricts(stateKey = 'rajasthan') {
+    const districtSelect = document.getElementById('plant-district');
+    if (!districtSelect) return;
+
+    const districts = STATE_DISTRICTS[stateKey] || STATE_DISTRICTS.rajasthan;
+    districtSelect.innerHTML = '<option value="">Select District</option>';
+
+    districts.forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = d.toLowerCase().replace(/[^a-z0-9]+/gi, '-');
+      opt.textContent = d;
+      districtSelect.appendChild(opt);
+    });
+  }
+
+  const WATER_SCORE = {
+    Critical: 15,
+    Low: 30,
+    Medium: 55,
+    Moderate: 60,
+    Good: 80,
+  };
+
+  function formatSigned(value) {
+    return `${value > 0 ? '+' : ''}${value}`;
+  }
+
+  function formatMetricDelta(beforeValue, afterValue, suffix = '') {
+    const delta = parseFloat((afterValue - beforeValue).toFixed(1));
+    return `${formatSigned(delta)}${suffix}`;
+  }
+
+  function updateSimulation(stateKey, districtText) {
     const d = STATE_DATA[stateKey] || STATE_DATA.rajasthan;
+    const districtSelect = document.getElementById('plant-district');
+    const district = districtText
+      || districtSelect?.selectedOptions?.[0]?.text
+      || '';
+    const location = district && district !== 'Select District'
+      ? `${d.location.split(' — ')[0]} — ${district}`
+      : d.location;
+
     const loc = document.getElementById('sim-location');
     if (loc) {
-      loc.querySelector('.sim-loc-name').textContent = d.location;
+      loc.querySelector('.sim-loc-name').textContent = location;
       loc.querySelector('.sim-loc-sub').textContent  = `Plant ${d.trees}`;
     }
+    const tempBefore = parseFloat(d.tempBefore);
+    const tempAfter = parseFloat(d.tempAfter);
+    const floodBefore = parseFloat(d.floodBefore);
+    const floodAfter = parseFloat(d.floodAfter);
+    const ehBefore = parseInt(d.ehBefore, 10);
+    const ehAfter = parseInt(d.ehAfter, 10);
+    const gwBeforeLabel = d.gwBefore;
+    const gwAfterLabel = d.gwAfter;
+    const gwBeforeValue = WATER_SCORE[gwBeforeLabel] ?? 0;
+    const gwAfterValue = WATER_SCORE[gwAfterLabel] ?? gwBeforeValue;
 
-    // Update sim metric values
+    const simMetrics = [
+      {
+        before: `${tempBefore.toFixed(1)}°C`,
+        after: `${tempAfter.toFixed(1)}°C`,
+        delta: formatMetricDelta(tempBefore, tempAfter, '°C'),
+        bar: d.tempBar,
+        class: 'neon',
+      },
+      {
+        before: `${floodBefore}%`,
+        after: `${floodAfter}%`,
+        delta: formatMetricDelta(floodBefore, floodAfter, '%'),
+        bar: d.floodBar,
+        class: 'cyan',
+      },
+      {
+        before: gwBeforeLabel,
+        after: gwAfterLabel,
+        delta: `${formatSigned(gwAfterValue - gwBeforeValue)}%`,
+        bar: d.gwBar,
+        class: 'neon',
+      },
+      {
+        before: `${ehBefore}/100`,
+        after: `${ehAfter}/100`,
+        delta: `${formatMetricDelta(ehBefore, ehAfter, ' pts')}`,
+        bar: d.ehBar,
+        class: 'gold',
+      },
+    ];
+
     const rows = document.querySelectorAll('.sim-metric');
-    if (rows.length >= 4) {
-      const update = (row, before, after, delta, barWidth, barClass) => {
-        row.querySelector('.sm-before').textContent = before;
-        row.querySelector('.sm-after').textContent  = after;
-        row.querySelector('.sm-delta').textContent  = delta;
+    // Debug logs to help trace values during development
+    console.log('Simulation values for', stateKey, {
+      tempBefore, tempAfter, floodBefore, floodAfter, ehBefore, ehAfter,
+      gwBeforeLabel, gwAfterLabel, gwBeforeValue, gwAfterValue
+    });
+    if (rows.length >= simMetrics.length) {
+      const update = (row, metric) => {
+        row.querySelector('.sm-before').textContent = metric.before;
+        row.querySelector('.sm-after').textContent = metric.after;
+        row.querySelector('.sm-delta').textContent = metric.delta;
         const fill = row.querySelector('.im-bar-fill');
         if (fill) {
           fill.style.width = '0%';
-          fill.className = `im-bar-fill ${barClass}`;
-          setTimeout(() => { fill.style.width = barWidth; }, 100);
+          fill.className = `im-bar-fill ${metric.class}`;
+          setTimeout(() => { fill.style.width = metric.bar; }, 100);
         }
       };
-
-      update(rows[0], d.tempBefore,  d.tempAfter,  d.tempDelta,  d.tempBar,  'neon');
-      update(rows[1], d.floodBefore, d.floodAfter, d.floodDelta, d.floodBar, 'cyan');
-      update(rows[2], d.gwBefore,    d.gwAfter,    d.gwDelta,    d.gwBar,    'neon');
-      update(rows[3], d.ehBefore,    d.ehAfter,    d.ehDelta,    d.ehBar,    'gold');
+      rows.forEach((row, index) => update(row, simMetrics[index]));
     }
   }
 
   // ── State selector ────────────────────────────────────────
   function setupSelectors() {
     const stateSelect = document.getElementById('plant-state');
+    const districtSelect = document.getElementById('plant-district');
+
+    populateDistricts('rajasthan');
+
     if (stateSelect) {
       stateSelect.addEventListener('change', function () {
-        updateSimulation(this.value);
+        const stateKey = this.value || 'rajasthan';
+        populateDistricts(stateKey);
+        updateSimulation(stateKey);
         showToast(`📍 Analyzing ${this.options[this.selectedIndex].text} — loading AI data...`);
       });
     }
 
-    const btn = document.getElementById('btn-generate-report');
-    if (btn) {
-      btn.addEventListener('click', () => {
-        btn.textContent = '⏳ Generating Report...';
-        btn.disabled = true;
-        setTimeout(() => {
-          btn.textContent = '✅ Report Generated!';
-          btn.style.background = 'linear-gradient(135deg, #00D9FF, #0099CC)';
-          showToast('📄 Plantation report generated! Ready to download.');
-          setTimeout(() => {
-            btn.textContent = '🌱 Generate Plantation Report';
-            btn.style.background = '';
-            btn.disabled = false;
-          }, 3000);
-        }, 1800);
+    if (districtSelect) {
+      districtSelect.addEventListener('change', function () {
+        const stateKey = stateSelect?.value || 'rajasthan';
+        updateSimulation(stateKey);
+        if (this.value) {
+          showToast(`📍 District selected: ${this.options[this.selectedIndex].text}`);
+        }
       });
     }
   }
@@ -2372,15 +2502,52 @@ const Farmer = (function () {
     });
   }
 
+  const FARMER_DISTRICTS = {
+    punjab: ['Amritsar', 'Ludhiana', 'Jalandhar', 'Patiala', 'Chandigarh'],
+    andhra: ['Vijayawada', 'Visakhapatnam', 'Kadapa', 'Tirupati', 'Guntur'],
+    maharashtra: ['Mumbai', 'Pune', 'Nagpur', 'Nashik', 'Aurangabad'],
+    up: ['Lucknow', 'Kanpur', 'Varanasi', 'Agra', 'Allahabad'],
+    mp: ['Bhopal', 'Indore', 'Gwalior', 'Jabalpur', 'Ujjain'],
+    bihar: ['Patna', 'Gaya', 'Muzaffarpur', 'Bhagalpur', 'Darbhanga'],
+    rajasthan: ['Jaipur', 'Jodhpur', 'Udaipur', 'Bikaner', 'Jaisalmer'],
+    karnataka: ['Bengaluru', 'Mysore', 'Mangalore', 'Hubballi', 'Belgaum'],
+  };
+
+  function populateFarmerDistricts(stateKey = 'punjab') {
+    const districtSelect = document.getElementById('farmer-district');
+    if (!districtSelect) return;
+
+    const districts = FARMER_DISTRICTS[stateKey] || FARMER_DISTRICTS.punjab;
+    districtSelect.innerHTML = '<option value="">Select District</option>';
+
+    districts.forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = d.toLowerCase().replace(/[^a-z0-9]+/gi, '-');
+      opt.textContent = d;
+      districtSelect.appendChild(opt);
+    });
+  }
+
   // ── State selector ────────────────────────────────────────
   function setupStateSelector() {
     const stateSelect = document.getElementById('farmer-state');
+    const districtSelect = document.getElementById('farmer-district');
+
+    populateFarmerDistricts(activeState);
+
     if (stateSelect) {
       stateSelect.addEventListener('change', function () {
-        activeState = this.value;
-        if (activeState) {
-          updateBanner(activeState);
-          showToast(`📍 Advisory loaded for ${this.options[this.selectedIndex].text}`);
+        activeState = this.value || 'punjab';
+        populateFarmerDistricts(activeState);
+        updateBanner(activeState);
+        showToast(`📍 Advisory loaded for ${this.options[this.selectedIndex].text}`);
+      });
+    }
+
+    if (districtSelect) {
+      districtSelect.addEventListener('change', function () {
+        if (this.value) {
+          showToast(`📍 District selected: ${this.options[this.selectedIndex].text}`);
         }
       });
     }
@@ -2487,18 +2654,12 @@ const Farmer = (function () {
       .from('.hero-title',        { y: 40, opacity: 0, duration: 0.7 }, '-=0.3')
       .from('.hero-subtitle',     { y: 25, opacity: 0, duration: 0.6 }, '-=0.4')
       .from('.hero-stats',        { y: 20, opacity: 0, duration: 0.5 }, '-=0.3')
-      .from('.hero-cta',          { y: 20, opacity: 0, duration: 0.5 }, '-=0.2')
-      .from('.india-glow-wrap', { x: 80, opacity: 0, duration: 1.0, ease: 'power2.out' }, '-=0.7');
+      .from('.hero-cta',          { y: 20, opacity: 0, duration: 0.5 }, '-=0.2');
 
     // Feature cards scroll reveal
     gsap.from('.fp-card', {
       scrollTrigger: { trigger: '.features-preview', start: 'top 85%' },
       y: 30, opacity: 0, duration: 0.5, stagger: 0.1, ease: 'power2.out',
-    });
-
-    // Scroll cue
-    gsap.to('.scroll-cue', {
-      opacity: 0.4, duration: 1.5, repeat: -1, yoyo: true, ease: 'sine.inOut',
     });
   }
 
@@ -2729,24 +2890,6 @@ const Farmer = (function () {
     Dashboard.renderHeroStats();
   }
 
-  function initEarthHover() {
-    const el = document.querySelector('.india-glow-wrap');
-    if (!el) return;
-    let ticking = false;
-    document.addEventListener('mousemove', (e) => {
-      if (ticking) return;
-      ticking = true;
-      requestAnimationFrame(() => {
-        const cx = window.innerWidth / 2;
-        const cy = window.innerHeight / 2;
-        const dx = (e.clientX - cx) / cx;
-        const dy = (e.clientY - cy) / cy;
-        el.style.transform = `translateY(-50%) rotateX(${dy * -3}deg) rotateY(${dx * 3}deg)`;
-        ticking = false;
-      });
-    });
-  }
-
   // ── Animated progress bars (initial render) ───────────────
   function initProgressBars() {
     const observer = new IntersectionObserver(entries => {
@@ -2856,7 +2999,6 @@ const Farmer = (function () {
   function boot() {
     initLandingAnimations();
     initHeroCounters();
-    initEarthHover();
     setupLaunchButtons();
     setupNavigation();
     setupKeyboard();
