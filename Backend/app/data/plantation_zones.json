@@ -1,0 +1,312 @@
+{
+  "zones": [
+    {
+      "id": "PL-RAJ-001",
+      "state": "Rajasthan",
+      "district": "Ajmer",
+      "city_or_area": "Ajmer City & Surroundings",
+      "lat": 26.4499,
+      "lng": 74.6399,
+      "priority_level": "high",
+      "heat_index": 44,
+      "green_cover_percent": 9,
+      "rainfall_mm": 520,
+      "soil_type": "sandy loam",
+      "groundwater_status": "low",
+      "recommended_trees_count": 18500,
+      "area_km2": 4.5,
+      "main_reason": "High temperature, critically low green cover, groundwater depletion",
+      "color_hint": "#f4a261",
+      "current_condition": {
+        "temperature_celsius": 44,
+        "green_cover_percent": 9,
+        "rainfall_mm": 520,
+        "soil_type": "sandy loam",
+        "groundwater_status": "low"
+      },
+      "recommended_species": [
+        { "name": "Khejri",  "reason": "Best suited for dry Rajasthan climate and sandy soil" },
+        { "name": "Neem",   "reason": "Heat tolerant and improves air quality" },
+        { "name": "Banyan", "reason": "Provides high shade and long-term ecological benefit" }
+      ],
+      "environmental_simulation": {
+        "temperature_reduction_celsius": 2.1,
+        "flood_risk_reduction_percent": 8,
+        "groundwater_recharge_improvement_percent": 14,
+        "air_quality_improvement_percent": 19,
+        "environmental_health_score_improvement": 31,
+        "carbon_absorption_tons_per_year": 407
+      },
+      "implementation_plan": [
+        "Start plantation before monsoon",
+        "Use native drought-resistant species",
+        "Create water harvesting pits near plantation zones",
+        "Monitor survival rate every 30 days"
+      ]
+    },
+    {
+      "id": "PL-DELHI-002",
+      "state": "Delhi",
+      "district": "South Delhi",
+      "city_or_area": "Delhi NCR Urban Zone",
+      "lat": 28.6139,
+      "lng": 77.2090,
+      "priority_level": "critical",
+      "heat_index": 47,
+      "green_cover_percent": 6,
+      "rainfall_mm": 680,
+      "soil_type": "clay loam",
+      "groundwater_status": "critical",
+      "recommended_trees_count": 32000,
+      "area_km2": 7.2,
+      "main_reason": "Urban heat island effect, critically low green cover, severe AQI problem",
+      "color_hint": "#e63946",
+      "current_condition": {
+        "temperature_celsius": 47,
+        "green_cover_percent": 6,
+        "rainfall_mm": 680,
+        "soil_type": "clay loam",
+        "groundwater_status": "critical"
+      },
+      "recommended_species": [
+        { "name": "Peepal",  "reason": "24-hour oxygen producer, ideal for urban heat reduction" },
+        { "name": "Neem",    "reason": "Excellent air purifier and heat tolerant" },
+        { "name": "Arjun",   "reason": "Suited for Delhi NCR climate and improves air quality" }
+      ],
+      "environmental_simulation": {
+        "temperature_reduction_celsius": 3.2,
+        "flood_risk_reduction_percent": 12,
+        "groundwater_recharge_improvement_percent": 18,
+        "air_quality_improvement_percent": 28,
+        "environmental_health_score_improvement": 44,
+        "carbon_absorption_tons_per_year": 704
+      },
+      "implementation_plan": [
+        "Prioritise roadside and park plantation in Phase 1",
+        "Use root barrier systems near underground utilities",
+        "Select pollution-tolerant species for roadsides",
+        "Coordinate with municipal corporations for urban plantation drives"
+      ]
+    },
+    {
+      "id": "PL-MAH-003",
+      "state": "Maharashtra",
+      "district": "Vidarbha Region",
+      "city_or_area": "Vidarbha Plateau",
+      "lat": 20.7002,
+      "lng": 78.6000,
+      "priority_level": "high",
+      "heat_index": 42,
+      "green_cover_percent": 14,
+      "rainfall_mm": 870,
+      "soil_type": "black cotton soil",
+      "groundwater_status": "moderate",
+      "recommended_trees_count": 22000,
+      "area_km2": 5.8,
+      "main_reason": "Heat stress, groundwater depletion, agricultural drought risk",
+      "color_hint": "#f4a261",
+      "current_condition": {
+        "temperature_celsius": 42,
+        "green_cover_percent": 14,
+        "rainfall_mm": 870,
+        "soil_type": "black cotton soil",
+        "groundwater_status": "moderate"
+      },
+      "recommended_species": [
+        { "name": "Teak",   "reason": "Excellent for black cotton soil and carbon sequestration" },
+        { "name": "Jamun",  "reason": "Improves groundwater recharge in Vidarbha conditions" },
+        { "name": "Neem",   "reason": "Pest control for farms and heat reduction" }
+      ],
+      "environmental_simulation": {
+        "temperature_reduction_celsius": 1.9,
+        "flood_risk_reduction_percent": 14,
+        "groundwater_recharge_improvement_percent": 21,
+        "air_quality_improvement_percent": 17,
+        "environmental_health_score_improvement": 36,
+        "carbon_absorption_tons_per_year": 484
+      },
+      "implementation_plan": [
+        "Integrate farm bunds plantation with water harvesting",
+        "Focus on agroforestry model for farmer income supplementation",
+        "Plant Teak and Shisham on degraded forest land",
+        "Use rainfall season for zero-cost plantation drives"
+      ]
+    },
+    {
+      "id": "PL-BIHAR-004",
+      "state": "Bihar",
+      "district": "Patna",
+      "city_or_area": "Patna River Belt",
+      "lat": 25.5941,
+      "lng": 85.1376,
+      "priority_level": "high",
+      "heat_index": 38,
+      "green_cover_percent": 12,
+      "rainfall_mm": 1050,
+      "soil_type": "alluvial",
+      "groundwater_status": "moderate",
+      "recommended_trees_count": 19800,
+      "area_km2": 5.2,
+      "main_reason": "Flood buffer plantation priority, riverbank erosion control",
+      "color_hint": "#f4a261",
+      "current_condition": {
+        "temperature_celsius": 38,
+        "green_cover_percent": 12,
+        "rainfall_mm": 1050,
+        "soil_type": "alluvial",
+        "groundwater_status": "moderate"
+      },
+      "recommended_species": [
+        { "name": "Arjun",   "reason": "Deep roots stabilise riverbanks and control erosion" },
+        { "name": "Bamboo",  "reason": "Rapid growth creates flood buffer and soil binder" },
+        { "name": "Jamun",   "reason": "Thrives in high-rainfall alluvial zones" }
+      ],
+      "environmental_simulation": {
+        "temperature_reduction_celsius": 1.6,
+        "flood_risk_reduction_percent": 22,
+        "groundwater_recharge_improvement_percent": 19,
+        "air_quality_improvement_percent": 14,
+        "environmental_health_score_improvement": 38,
+        "carbon_absorption_tons_per_year": 436
+      },
+      "implementation_plan": [
+        "Focus plantation on Ganga and Sone riverbanks first",
+        "Use Bamboo belts as primary flood buffers",
+        "Plant Arjun trees along embankment slopes",
+        "Involve local panchayats in plantation maintenance"
+      ]
+    },
+    {
+      "id": "PL-ASSAM-005",
+      "state": "Assam",
+      "district": "Kamrup Metro",
+      "city_or_area": "Guwahati Urban & Fringe",
+      "lat": 26.1445,
+      "lng": 91.7362,
+      "priority_level": "high",
+      "heat_index": 36,
+      "green_cover_percent": 18,
+      "rainfall_mm": 1620,
+      "soil_type": "red laterite",
+      "groundwater_status": "moderate",
+      "recommended_trees_count": 16500,
+      "area_km2": 4.8,
+      "main_reason": "Urban sprawl reducing green cover, flood buffer needed for Brahmaputra",
+      "color_hint": "#f4a261",
+      "current_condition": {
+        "temperature_celsius": 36,
+        "green_cover_percent": 18,
+        "rainfall_mm": 1620,
+        "soil_type": "red laterite",
+        "groundwater_status": "moderate"
+      },
+      "recommended_species": [
+        { "name": "Bamboo", "reason": "Fast-growing flood buffer for Brahmaputra basin" },
+        { "name": "Mango",  "reason": "High canopy coverage and livelihood for farmers" },
+        { "name": "Teak",   "reason": "Long-term timber and carbon stock for Northeast" }
+      ],
+      "environmental_simulation": {
+        "temperature_reduction_celsius": 1.4,
+        "flood_risk_reduction_percent": 18,
+        "groundwater_recharge_improvement_percent": 16,
+        "air_quality_improvement_percent": 13,
+        "environmental_health_score_improvement": 29,
+        "carbon_absorption_tons_per_year": 363
+      },
+      "implementation_plan": [
+        "Plant Bamboo belts along Brahmaputra embankments",
+        "Integrate tree plantation with urban park development",
+        "Use MNREGA workers for large-scale rural plantation",
+        "Focus on hill slope plantation to prevent landslides"
+      ]
+    },
+    {
+      "id": "PL-GUJ-006",
+      "state": "Gujarat",
+      "district": "Kutch",
+      "city_or_area": "Kutch Dry Zone",
+      "lat": 23.7337,
+      "lng": 69.8597,
+      "priority_level": "critical",
+      "heat_index": 46,
+      "green_cover_percent": 5,
+      "rainfall_mm": 310,
+      "soil_type": "saline sandy",
+      "groundwater_status": "low",
+      "recommended_trees_count": 28000,
+      "area_km2": 6.4,
+      "main_reason": "Critically low green cover, extreme heat, saline soil degradation",
+      "color_hint": "#e63946",
+      "current_condition": {
+        "temperature_celsius": 46,
+        "green_cover_percent": 5,
+        "rainfall_mm": 310,
+        "soil_type": "saline sandy",
+        "groundwater_status": "low"
+      },
+      "recommended_species": [
+        { "name": "Khejri",  "reason": "Exceptionally drought and saline soil tolerant" },
+        { "name": "Neem",    "reason": "Salt-tolerant, grows in Kutch conditions" },
+        { "name": "Bamboo",  "reason": "Stabilises sandy soil and provides ground cover quickly" }
+      ],
+      "environmental_simulation": {
+        "temperature_reduction_celsius": 2.8,
+        "flood_risk_reduction_percent": 6,
+        "groundwater_recharge_improvement_percent": 12,
+        "air_quality_improvement_percent": 22,
+        "environmental_health_score_improvement": 40,
+        "carbon_absorption_tons_per_year": 616
+      },
+      "implementation_plan": [
+        "Use drip-irrigated nurseries for initial seedling phase",
+        "Select only halophyte-compatible species",
+        "Coordinate with Gujarat Forest Dept for Miyawaki dense plantation",
+        "Create wind-break plantation rows to stop soil erosion"
+      ]
+    },
+    {
+      "id": "PL-TEL-007",
+      "state": "Telangana",
+      "district": "Hyderabad",
+      "city_or_area": "Hyderabad Urban Periphery",
+      "lat": 17.3850,
+      "lng": 78.4867,
+      "priority_level": "medium",
+      "heat_index": 40,
+      "green_cover_percent": 16,
+      "rainfall_mm": 780,
+      "soil_type": "red soil",
+      "groundwater_status": "moderate",
+      "recommended_trees_count": 14200,
+      "area_km2": 4.9,
+      "main_reason": "Urban expansion reducing green cover, heat island growing",
+      "color_hint": "#e9c46a",
+      "current_condition": {
+        "temperature_celsius": 40,
+        "green_cover_percent": 16,
+        "rainfall_mm": 780,
+        "soil_type": "red soil",
+        "groundwater_status": "moderate"
+      },
+      "recommended_species": [
+        { "name": "Peepal",   "reason": "Thrives in Hyderabad climate, reduces urban heat" },
+        { "name": "Banyan",   "reason": "Wide canopy ideal for urban shade and biodiversity" },
+        { "name": "Shisham",  "reason": "Hardwood suited for Deccan red soil conditions" }
+      ],
+      "environmental_simulation": {
+        "temperature_reduction_celsius": 1.7,
+        "flood_risk_reduction_percent": 10,
+        "groundwater_recharge_improvement_percent": 15,
+        "air_quality_improvement_percent": 21,
+        "environmental_health_score_improvement": 33,
+        "carbon_absorption_tons_per_year": 312
+      },
+      "implementation_plan": [
+        "Target plantation along Outer Ring Road green corridors",
+        "Engage tech companies for corporate CSR plantation drives",
+        "Use Miyawaki method for dense urban micro-forests",
+        "Plant along lakes and water bodies for biodiversity gain"
+      ]
+    }
+  ]
+}

@@ -344,3 +344,81 @@ Returns `404` for unknown advisory IDs.
 ### GET /api/farmer/risk-status/{state}
 
 Supported states with pre-built index: `Bihar`, `Punjab`, `Rajasthan`, `Assam`, `Maharashtra`, `Odisha`, `Gujarat`. Other states are computed dynamically from advisories. Returns `404` if no advisories exist for the state.
+
+---
+
+## Phase 2D — Smart Tree Plantation Planner
+
+### Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/plantation/status` | Module status, supported inputs |
+| GET | `/api/plantation/priority-zones` | All priority zones sorted by urgency + heat index |
+| GET | `/api/plantation/species` | Tree species database (10 species with soil/climate/scores) |
+| GET | `/api/plantation/recommendation/{zone_id}` | Full recommendation: species, simulation, implementation plan |
+| POST | `/api/plantation/analyze-location` | Rule-based advisory for any custom location |
+| POST | `/api/plantation/simulate-impact` | Environmental impact simulation for a known zone |
+| GET | `/api/plantation/heatmap` | Heatmap-ready data for India plantation priority map |
+
+### Priority Zone IDs
+
+| ID | State | Area | Priority | Reason |
+|----|-------|------|----------|--------|
+| `PL-DELHI-002` | Delhi | NCR Urban Zone | critical | Urban heat island, AQI, green cover 6% |
+| `PL-GUJ-006` | Gujarat | Kutch Dry Zone | critical | Extreme heat, saline soil, green cover 5% |
+| `PL-RAJ-001` | Rajasthan | Ajmer | high | High heat, low green cover, groundwater low |
+| `PL-MAH-003` | Maharashtra | Vidarbha | high | Heat stress, groundwater depletion |
+| `PL-BIHAR-004` | Bihar | Patna | high | Flood buffer, riverbank erosion control |
+| `PL-ASSAM-005` | Assam | Guwahati | high | Brahmaputra flood buffer, urban sprawl |
+| `PL-TEL-007` | Telangana | Hyderabad | medium | Urban expansion, heat island growing |
+
+Returns `404` for unknown zone IDs.
+
+### POST /api/plantation/analyze-location
+
+```json
+{
+  "state": "Rajasthan",
+  "district": "Ajmer",
+  "lat": 26.4499,
+  "lng": 74.6399,
+  "temperature_celsius": 44,
+  "green_cover_percent": 9,
+  "rainfall_mm": 520,
+  "soil_type": "sandy loam",
+  "area_km2": 4.5,
+  "groundwater_status": "low"
+}
+```
+
+**Priority classification rules:**
+
+| Condition | Priority |
+|-----------|----------|
+| temp ≥ 43°C AND green_cover ≤ 10% | critical |
+| temp ≥ 40°C AND green_cover ≤ 15% | high |
+| temp ≥ 35°C AND green_cover ≤ 25% | medium |
+| otherwise | low |
+
+**Tree density by priority:** critical ~4,200/km² · high ~3,800/km² · medium ~2,800/km² · low ~1,500/km²
+
+`groundwater_status` options: `low` | `moderate` | `high` | `critical`
+
+### POST /api/plantation/simulate-impact
+
+```json
+{
+  "zone_id": "PL-RAJ-001",
+  "trees_to_plant": 18500,
+  "selected_species": ["Khejri", "Neem", "Banyan"]
+}
+```
+
+Returns predicted: temperature_reduction · flood_risk_reduction · groundwater_recharge_improvement · air_quality_improvement · environmental_health_score_improvement · carbon_absorption_tons_per_year.
+
+### Tree Species Available
+
+Neem · Peepal · Banyan · Arjun · Jamun · Khejri · Teak · Bamboo · Mango · Shisham
+
+Each species includes: suitable_regions, soil_types, rainfall_range_mm, climate_type, benefits, growth_rate, water_requirement, carbon_absorption_score, flood_control_score, heat_reduction_score.
