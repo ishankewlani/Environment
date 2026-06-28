@@ -269,3 +269,78 @@ backend/
 | Phase 5 | SMS gateway (Twilio / MSG91) |
 | Phase 6 | ML deforestation + flood detection models |
 | Phase 7 | User authentication and roles |
+
+---
+
+## Phase 2C — Farmer Protection & Smart Advisory System
+
+### Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/farmer/status` | Module status, SMS mode, supported advisory types |
+| GET | `/api/farmer/advisories` | All advisories sorted by risk level |
+| GET | `/api/farmer/advisory/{advisory_id}` | Full detail: checklist, Hinglish SMS, linked disaster zone |
+| POST | `/api/farmer/generate-advisory` | Rule-based advisory from state/crop/risk_score input |
+| POST | `/api/farmer/send-sms-preview` | Demo SMS preview (no real SMS sent) |
+| GET | `/api/farmer/risk-status/{state}` | State-level farmer risk summary |
+| POST | `/api/farmer/checklist/update` | Mark checklist task complete/pending (demo) |
+
+### Advisory IDs
+
+| ID | State | Crop | Risk Type | Level |
+|----|-------|------|-----------|-------|
+| `FA-BIHAR-001` | Bihar | Paddy | flood | high |
+| `FA-PUNJAB-002` | Punjab | Wheat | flood | moderate |
+| `FA-RAJASTHAN-003` | Rajasthan | Bajra | heatwave | high |
+| `FA-ASSAM-004` | Assam | Tea and Paddy | flood | high |
+| `FA-MAHARASHTRA-005` | Maharashtra | Soybean | flood | moderate |
+| `FA-ODISHA-006` | Odisha | Paddy | storm | moderate |
+| `FA-GUJARAT-007` | Gujarat | Cotton | storm | moderate |
+
+Returns `404` for unknown advisory IDs.
+
+### POST /api/farmer/generate-advisory
+
+```json
+{
+  "state": "Bihar",
+  "district": "Patna",
+  "village": "Bakhtiyarpur",
+  "crop": "Paddy",
+  "risk_type": "flood",
+  "risk_score": 92,
+  "alert_window_hours": 48
+}
+```
+
+`risk_type` options: `flood` | `heatwave` | `storm` | `crop_protection` | `irrigation`
+
+**Risk level rules:** critical (≥90) · high (≥75) · moderate (≥45) · low (<45)
+
+**Prevention score:** Higher score = better chance of preventing crop loss. More lead time (alert_window_hours) increases the score.
+
+### POST /api/farmer/send-sms-preview
+
+```json
+{
+  "advisory_id": "FA-BIHAR-001",
+  "language": "simple_hinglish"
+}
+```
+
+`language` options: `english` | `simple_hinglish` | `hindi`
+
+### POST /api/farmer/checklist/update
+
+```json
+{
+  "advisory_id": "FA-BIHAR-001",
+  "task": "Move equipment to higher ground",
+  "completed": true
+}
+```
+
+### GET /api/farmer/risk-status/{state}
+
+Supported states with pre-built index: `Bihar`, `Punjab`, `Rajasthan`, `Assam`, `Maharashtra`, `Odisha`, `Gujarat`. Other states are computed dynamically from advisories. Returns `404` if no advisories exist for the state.

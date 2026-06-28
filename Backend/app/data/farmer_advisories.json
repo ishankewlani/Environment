@@ -1,0 +1,309 @@
+{
+  "advisories": [
+    {
+      "id": "FA-BIHAR-001",
+      "state": "Bihar",
+      "district": "Patna",
+      "village": "Bakhtiyarpur",
+      "crop": "Paddy",
+      "risk_type": "flood",
+      "risk_level": "high",
+      "alert_window_hours": 48,
+      "farmers_affected": 1240,
+      "crop_loss_risk_percent": 62,
+      "prevention_score": 84,
+      "confidence": 91,
+      "nearby_risk_zone": "DR-BIHAR-001",
+      "linked_disaster_type": "flood",
+      "sms_preview": "Flood risk detected in your area within the next 48 hours. Please move equipment and protect crops where possible.",
+      "simple_advisory": "Agle 48 ghante me flood ka risk hai. Kripya kheti ka saman safe jagah par rakh dein aur drainage saaf rakhein.",
+      "advisory_message": "High flood risk detected in Patna district. Kosi river levels rising rapidly. Paddy crops in low-lying fields are at 62% crop loss risk. Farmers should take immediate preventive steps and monitor field drainage.",
+      "recommended_actions": [
+        "Move farm equipment to higher ground",
+        "Clear drainage channels",
+        "Avoid extra irrigation",
+        "Protect stored crops with waterproof covering",
+        "Keep livestock away from low-lying fields"
+      ],
+      "checklist": [
+        { "task": "Move equipment to higher ground",         "priority": "high",   "completed": false },
+        { "task": "Clear field drainage channels",           "priority": "high",   "completed": false },
+        { "task": "Cover stored grain with waterproof sheet","priority": "high",   "completed": false },
+        { "task": "Move livestock to safe area",             "priority": "medium", "completed": false },
+        { "task": "Stop additional irrigation",              "priority": "medium", "completed": false },
+        { "task": "Contact district agriculture officer",    "priority": "low",    "completed": false }
+      ],
+      "created_at": "2025-06-26T06:00:00Z"
+    },
+    {
+      "id": "FA-PUNJAB-002",
+      "state": "Punjab",
+      "district": "Ludhiana",
+      "village": "Sahnewal",
+      "crop": "Wheat",
+      "risk_type": "flood",
+      "risk_level": "moderate",
+      "alert_window_hours": 36,
+      "farmers_affected": 870,
+      "crop_loss_risk_percent": 38,
+      "prevention_score": 78,
+      "confidence": 82,
+      "nearby_risk_zone": null,
+      "linked_disaster_type": "flood",
+      "sms_preview": "Heavy rain expected in Ludhiana in 36 hours. Check field drainage and avoid pesticide spraying.",
+      "simple_advisory": "Agle 36 ghante mein bhari barish aa sakti hai. Kheton ki drainage check karein aur beej ko surakshit rakhein.",
+      "advisory_message": "Moderate flood risk in Ludhiana district. Heavy monsoon rainfall forecast may damage standing wheat and delay harvest. Drainage systems should be cleared and farm operations paused.",
+      "recommended_actions": [
+        "Clear and inspect field drainage",
+        "Postpone pesticide spraying until after rain",
+        "Harvest any mature wheat sections early",
+        "Secure farm machinery inside sheds",
+        "Avoid ploughing or tilling waterlogged fields"
+      ],
+      "checklist": [
+        { "task": "Inspect and clear field drainage",          "priority": "high",   "completed": false },
+        { "task": "Move farm machinery into sheds",            "priority": "high",   "completed": false },
+        { "task": "Postpone pesticide and fertiliser spray",   "priority": "medium", "completed": false },
+        { "task": "Harvest mature wheat sections early",       "priority": "medium", "completed": false },
+        { "task": "Monitor weather updates every 6 hours",     "priority": "low",    "completed": false }
+      ],
+      "created_at": "2025-06-26T07:30:00Z"
+    },
+    {
+      "id": "FA-RAJASTHAN-003",
+      "state": "Rajasthan",
+      "district": "Barmer",
+      "village": "Sindhari",
+      "crop": "Bajra",
+      "risk_type": "heatwave",
+      "risk_level": "high",
+      "alert_window_hours": 72,
+      "farmers_affected": 620,
+      "crop_loss_risk_percent": 55,
+      "prevention_score": 72,
+      "confidence": 94,
+      "nearby_risk_zone": "DR-RAJASTHAN-004",
+      "linked_disaster_type": "heatwave",
+      "sms_preview": "Extreme heat warning in Barmer. Avoid working in fields between 10am-4pm. Provide shade and water to livestock.",
+      "simple_advisory": "Bahut tez garmi aa rahi hai. Dopahar 10 baje se 4 baje ke beech khet mein kaam na karein. Pashuon ko paani aur chhaon dein.",
+      "advisory_message": "Extreme heatwave conditions in Barmer, Rajasthan. Surface temperatures exceeding 48°C. Bajra crop is heat-stress tolerant but prolonged exposure risks yield loss. Livestock protection is critical.",
+      "recommended_actions": [
+        "Avoid field work between 10am and 4pm",
+        "Provide shade structures for livestock",
+        "Increase irrigation frequency to 2x daily",
+        "Apply mulching to reduce soil moisture loss",
+        "Monitor crop for heat stress symptoms"
+      ],
+      "checklist": [
+        { "task": "Set up shade for livestock",                "priority": "high",   "completed": false },
+        { "task": "Increase irrigation to twice daily",        "priority": "high",   "completed": false },
+        { "task": "Apply mulch around crop base",              "priority": "medium", "completed": false },
+        { "task": "Restrict outdoor work 10am–4pm",            "priority": "medium", "completed": false },
+        { "task": "Check crop leaves for heat stress signs",   "priority": "low",    "completed": false }
+      ],
+      "created_at": "2025-06-26T05:00:00Z"
+    },
+    {
+      "id": "FA-ASSAM-004",
+      "state": "Assam",
+      "district": "Jorhat",
+      "village": "Titabar",
+      "crop": "Tea and Paddy",
+      "risk_type": "flood",
+      "risk_level": "high",
+      "alert_window_hours": 48,
+      "farmers_affected": 980,
+      "crop_loss_risk_percent": 58,
+      "prevention_score": 80,
+      "confidence": 88,
+      "nearby_risk_zone": "DR-ASSAM-003",
+      "linked_disaster_type": "flood",
+      "sms_preview": "Flood warning in Jorhat. Brahmaputra embankments under stress. Move tea garden equipment and paddy seed stock to safety.",
+      "simple_advisory": "Jorhat mein baadh ka khatraa hai. Tea garden ka saman aur dhan ka beej surakshit jagah par rakh dein.",
+      "advisory_message": "High flood risk in Jorhat district linked to Brahmaputra river embankment stress. Tea gardens in low-lying areas and paddy fields near river banks are at elevated risk of inundation.",
+      "recommended_actions": [
+        "Move tea garden machinery and stock to higher elevation",
+        "Protect paddy seedling nurseries from flooding",
+        "Clear tea garden drainage trenches",
+        "Document crop area for insurance claims",
+        "Coordinate with estate manager for evacuation plan"
+      ],
+      "checklist": [
+        { "task": "Move tea machinery to higher ground",       "priority": "high",   "completed": false },
+        { "task": "Protect paddy seedling nurseries",          "priority": "high",   "completed": false },
+        { "task": "Clear garden drainage trenches",            "priority": "high",   "completed": false },
+        { "task": "Document crop area for insurance",          "priority": "medium", "completed": false },
+        { "task": "Alert estate workers to flood protocol",    "priority": "medium", "completed": false }
+      ],
+      "created_at": "2025-06-26T08:00:00Z"
+    },
+    {
+      "id": "FA-MAHARASHTRA-005",
+      "state": "Maharashtra",
+      "district": "Latur",
+      "village": "Udgir",
+      "crop": "Soybean",
+      "risk_type": "flood",
+      "risk_level": "moderate",
+      "alert_window_hours": 24,
+      "farmers_affected": 540,
+      "crop_loss_risk_percent": 42,
+      "prevention_score": 70,
+      "confidence": 79,
+      "nearby_risk_zone": null,
+      "linked_disaster_type": "flood",
+      "sms_preview": "Heavy rainfall expected in Latur. Soybean fields need drainage attention. Avoid excess irrigation.",
+      "simple_advisory": "Latur mein bhari barish aane wali hai. Soybean khet ki naali saaf rakhein. Zyada sinchai na karein.",
+      "advisory_message": "Moderate flood risk in Latur from heavy monsoon rainfall. Soybean crops are particularly sensitive to waterlogging. Field drainage must be maintained to prevent root rot and yield loss.",
+      "recommended_actions": [
+        "Improve inter-row drainage in soybean fields",
+        "Stop irrigation immediately",
+        "Apply raised bed cultivation if possible",
+        "Monitor for fungal disease symptoms after rain",
+        "Contact KVK for post-flood crop recovery advisory"
+      ],
+      "checklist": [
+        { "task": "Clear inter-row drainage in soybean fields","priority": "high",   "completed": false },
+        { "task": "Stop all additional irrigation",            "priority": "high",   "completed": false },
+        { "task": "Inspect for root rot after rains",          "priority": "medium", "completed": false },
+        { "task": "Arrange fungicide spray on standby",        "priority": "medium", "completed": false },
+        { "task": "Contact KVK for recovery guidance",         "priority": "low",    "completed": false }
+      ],
+      "created_at": "2025-06-26T09:00:00Z"
+    },
+    {
+      "id": "FA-ODISHA-006",
+      "state": "Odisha",
+      "district": "Puri",
+      "village": "Brahmagiri",
+      "crop": "Paddy",
+      "risk_type": "storm",
+      "risk_level": "moderate",
+      "alert_window_hours": 60,
+      "farmers_affected": 760,
+      "crop_loss_risk_percent": 48,
+      "prevention_score": 74,
+      "confidence": 80,
+      "nearby_risk_zone": "DR-ODISHA-005",
+      "linked_disaster_type": "cyclone",
+      "sms_preview": "Cyclone watch active for Puri coast. Paddy farmers: secure crops and move to safety zone within 60 hours.",
+      "simple_advisory": "Puri mein toofan ka khatra hai. 60 ghante ke andar apni paddy fasal ko surakshit karein aur safe jagah chalein jaayein.",
+      "advisory_message": "Cyclone watch active along Odisha coast near Puri. Standing paddy crops at risk from strong winds and storm surge flooding. Farmers in coastal villages must act within 60-hour window.",
+      "recommended_actions": [
+        "Harvest any mature paddy sections immediately",
+        "Secure farm tools and equipment indoors",
+        "Move livestock to cyclone shelter",
+        "Evacuate to designated safety shelter",
+        "Do not attempt to save crops at the cost of personal safety"
+      ],
+      "checklist": [
+        { "task": "Harvest mature paddy sections early",       "priority": "high",   "completed": false },
+        { "task": "Secure all farm tools and equipment",       "priority": "high",   "completed": false },
+        { "task": "Move livestock to cyclone shelter",         "priority": "high",   "completed": false },
+        { "task": "Pack essentials and prepare to evacuate",   "priority": "high",   "completed": false },
+        { "task": "Contact district agriculture helpline",     "priority": "medium", "completed": false }
+      ],
+      "created_at": "2025-06-26T07:00:00Z"
+    },
+    {
+      "id": "FA-GUJARAT-007",
+      "state": "Gujarat",
+      "district": "Kutch",
+      "village": "Anjar",
+      "crop": "Cotton",
+      "risk_type": "storm",
+      "risk_level": "moderate",
+      "alert_window_hours": 72,
+      "farmers_affected": 430,
+      "crop_loss_risk_percent": 35,
+      "prevention_score": 76,
+      "confidence": 75,
+      "nearby_risk_zone": "DR-GUJARAT-007",
+      "linked_disaster_type": "cyclone",
+      "sms_preview": "Cyclone advisory for Kutch. Cotton farmers: secure drip lines, protect young plants. Stay updated.",
+      "simple_advisory": "Kutch mein aandhi aa sakti hai. Cotton fasal ki drip line bandh karein, chhote paudhon ko dhakein.",
+      "advisory_message": "Cyclone advisory for Kutch coast, Gujarat. Cotton in early growth stage is vulnerable to strong winds and excess rainfall. Drip irrigation systems should be secured and wind breaks considered.",
+      "recommended_actions": [
+        "Shut down and secure drip irrigation lines",
+        "Install temporary wind protection for young plants",
+        "Avoid pesticide spraying until advisory lifted",
+        "Move tractor and farm vehicles to safer location",
+        "Monitor local DDMA advisory for evacuation orders"
+      ],
+      "checklist": [
+        { "task": "Shut and secure drip irrigation lines",     "priority": "high",   "completed": false },
+        { "task": "Protect young cotton plants from wind",     "priority": "high",   "completed": false },
+        { "task": "Move farm vehicles to shelter",             "priority": "medium", "completed": false },
+        { "task": "Pause all chemical spray operations",       "priority": "medium", "completed": false },
+        { "task": "Register crop details for insurance",       "priority": "low",    "completed": false }
+      ],
+      "created_at": "2025-06-26T06:30:00Z"
+    }
+  ],
+
+  "state_risk_index": {
+    "Bihar": {
+      "overall_risk": "high",
+      "active_advisories": 3,
+      "farmers_affected": 1240,
+      "major_risk": "flood",
+      "top_crop_at_risk": "Paddy",
+      "next_48_hours": "High flood risk in low-lying regions",
+      "recommended_action": "Send flood advisory SMS and activate local support teams"
+    },
+    "Punjab": {
+      "overall_risk": "moderate",
+      "active_advisories": 1,
+      "farmers_affected": 870,
+      "major_risk": "flood",
+      "top_crop_at_risk": "Wheat",
+      "next_48_hours": "Moderate flood and heavy rain risk",
+      "recommended_action": "Issue drainage advisory and postpone field operations"
+    },
+    "Rajasthan": {
+      "overall_risk": "high",
+      "active_advisories": 2,
+      "farmers_affected": 620,
+      "major_risk": "heatwave",
+      "top_crop_at_risk": "Bajra",
+      "next_48_hours": "Extreme heatwave conditions continuing",
+      "recommended_action": "Issue heat advisory and distribute ORS packets to farming communities"
+    },
+    "Assam": {
+      "overall_risk": "high",
+      "active_advisories": 2,
+      "farmers_affected": 980,
+      "major_risk": "flood",
+      "top_crop_at_risk": "Tea and Paddy",
+      "next_48_hours": "Brahmaputra embankment risk — severe flooding possible",
+      "recommended_action": "Alert tea estate managers and paddy farmers in riverine zones"
+    },
+    "Maharashtra": {
+      "overall_risk": "moderate",
+      "active_advisories": 1,
+      "farmers_affected": 540,
+      "major_risk": "flood",
+      "top_crop_at_risk": "Soybean",
+      "next_48_hours": "Heavy monsoon rainfall expected",
+      "recommended_action": "Issue drainage advisory for soybean farms in Marathwada"
+    },
+    "Odisha": {
+      "overall_risk": "moderate",
+      "active_advisories": 2,
+      "farmers_affected": 760,
+      "major_risk": "storm",
+      "top_crop_at_risk": "Paddy",
+      "next_48_hours": "Cyclone watch — coastal paddy farmers must take action",
+      "recommended_action": "Issue cyclone advisory and coordinate with ODRAF for coastal farmer evacuation"
+    },
+    "Gujarat": {
+      "overall_risk": "moderate",
+      "active_advisories": 1,
+      "farmers_affected": 430,
+      "major_risk": "storm",
+      "top_crop_at_risk": "Cotton",
+      "next_48_hours": "Cyclone advisory — drip line protection needed",
+      "recommended_action": "Alert cotton farmers in Kutch to secure irrigation systems"
+    }
+  }
+}

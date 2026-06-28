@@ -1,5 +1,5 @@
 # Earth Immune System AI — FastAPI Backend
-# Phase 1 + Phase 2A (Forest) + Phase 2B (Disaster Risk)
+# Phase 1 + Phase 2A (Forest) + Phase 2B (Disaster Risk) + Phase 2C (Farmer Advisory)
 # Run: uvicorn app.main:app --reload
 
 from fastapi import FastAPI
@@ -10,6 +10,7 @@ from app.api.dashboard import router as dashboard_router
 from app.api.alerts    import router as alerts_router
 from app.api.forest    import router as forest_router    # Phase 2A
 from app.api.disaster  import router as disaster_router  # Phase 2B
+from app.api.farmer    import router as farmer_router    # Phase 2C
 
 # ── App init ─────────────────────────────────────────────────────────────────
 app = FastAPI(
@@ -19,7 +20,8 @@ app = FastAPI(
         "AI-powered environmental monitoring backend for India — "
         "Phase 1 (Dashboard & Alerts) + "
         "Phase 2A (Forest Monitoring) + "
-        "Phase 2B (Disaster Risk & Early Warning)"
+        "Phase 2B (Disaster Risk & Early Warning) + "
+        "Phase 2C (Farmer Protection & Smart Advisory)"
     ),
     docs_url="/docs",
     redoc_url="/redoc",
@@ -39,6 +41,7 @@ app.include_router(dashboard_router, prefix="/api/dashboard", tags=["Dashboard"]
 app.include_router(alerts_router,    prefix="/api/alerts",    tags=["Alerts"])
 app.include_router(forest_router,    prefix="/api/forest",    tags=["Forest Monitoring"])   # Phase 2A
 app.include_router(disaster_router,  prefix="/api/disaster",  tags=["Disaster Risk"])       # Phase 2B
+app.include_router(farmer_router,    prefix="/api/farmer",    tags=["Farmer Advisory"])     # Phase 2C
 
 
 # ── Root ──────────────────────────────────────────────────────────────────────
