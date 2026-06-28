@@ -482,8 +482,22 @@ body.light-mode .crop-item.active { background: rgba(0,168,48,0.08); border-colo
 body.light-mode .warn-item      { background: rgba(0,0,0,0.03); }
 body.light-mode .warn-msg       { color: #082010; }
 body.light-mode .check-item     { color: #2A5E36; border-bottom-color: rgba(0,0,0,0.06); }
-body.light-mode .premium-select { background: rgba(255,255,255,0.9); border-color: rgba(0,160,50,0.2); color: #082010; }
-body.light-mode .premium-select option { background: #F0FFF4; }
+body.light-mode .premium-select {
+  background: #ffffff !important;
+  border-color: rgba(0,160,50,0.3) !important;
+  color: #082010 !important;
+}
+body.light-mode .premium-select option {
+  background: #ffffff !important;
+  color: #082010 !important;
+  font-size: 0.85rem;
+}
+body.light-mode .premium-select:focus {
+  background: #ffffff !important;
+  color: #082010 !important;
+  outline: none;
+  border-color: #00A830 !important;
+}
 body.light-mode .search-input   { background: rgba(255,255,255,0.9); border-color: rgba(0,160,50,0.2); color: #082010; }
 body.light-mode .search-input::placeholder { color: #6B9678; }
 body.light-mode .sidebar-live   { background: rgba(0,168,48,0.06); border-color: rgba(0,168,48,0.15); }
@@ -1732,7 +1746,7 @@ body.light-mode .toast {
    ════════════════════════════════════════════ */
 .farmer-grid {
   display: grid;
-  grid-template-columns: 240px 1fr 300px;
+  grid-template-columns: 260px 1fr 300px;
   gap: 1rem;
   min-height: calc(100vh - var(--topnav-h) - 4rem);
   align-items: stretch;
@@ -2141,6 +2155,21 @@ body.light-mode .toast {
 .sim-metric:hover {
   background: rgba(0, 255, 136, 0.06) !important;
   border-color: rgba(0, 255, 136, 0.3) !important;
+}
+
+.farmer-alert-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex: 1;
+  overflow-y: auto;
+  max-height: calc(100vh - 160px);
+  padding-right: 0.25rem;
+}
+.farmer-alert-panel::-webkit-scrollbar { width: 3px; }
+.farmer-alert-panel::-webkit-scrollbar-thumb {
+  background: rgba(0,232,64,0.2);
+  border-radius: 2px;
 }
 
 /* ── RESPONSIVE IMPROVEMENTS ────────────────────────── */

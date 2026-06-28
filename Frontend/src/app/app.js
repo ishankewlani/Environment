@@ -1657,8 +1657,8 @@ const Maps = (function () {
       try { initForest();     } catch(e) { console.warn('Forest map:', e); }
       try { initPlantation(); } catch(e) { console.warn('Plantation map:', e); }
       try { initDisaster();   } catch(e) { console.warn('Disaster map:', e); }
-      try { initFarmer();     } catch(e) { console.warn('Farmer map:', e); }
-    }, 200);
+      // farmer map removed — advisory panel used instead
+      }, 200);
   }
 
   // ── Invalidate size on page switch ───────────────────────
