@@ -422,3 +422,50 @@ Returns predicted: temperature_reduction · flood_risk_reduction · groundwater_
 Neem · Peepal · Banyan · Arjun · Jamun · Khejri · Teak · Bamboo · Mango · Shisham
 
 Each species includes: suitable_regions, soil_types, rainfall_range_mm, climate_type, benefits, growth_rate, water_requirement, carbon_absorption_score, flood_control_score, heat_reduction_score.
+
+---
+
+## Final Module — AI/Data Pipeline Status
+
+These endpoints explain the project's AI architecture, current prototype mode, and real-data upgrade roadmap. Useful for evaluators and judges reviewing the system design.
+
+### Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/ai/status` | AI engine status, active models, prototype mode, ML readiness flag |
+| GET | `/api/ai/model-explanation` | Per-model: inputs, outputs, current method, future ML upgrade |
+| GET | `/api/data/sources` | Current demo data files + planned real-world data sources |
+| GET | `/api/data/pipeline-status` | Stage-by-stage pipeline: current vs planned status |
+| GET | `/api/project/final-status` | Overall submission readiness + completed modules + limitations |
+
+### Key values returned
+
+**`/api/ai/status`**
+- `mode`: `"prototype"` — rule-based simulation, no trained ML models yet
+- `real_ml_ready`: `true` — codebase is structured for real model swap-in
+- `active_engines`: Forest Impact Predictor, Disaster Risk Scoring Engine, Farmer Advisory Recommender, Plantation Species Matching Engine
+
+**`/api/project/final-status`**
+- `status`: `"submission_ready"`
+- `ready_for_demo`: `true`
+- All 6 modules listed as completed
+
+---
+
+## Complete Endpoint Summary
+
+| Prefix | Module | Endpoints |
+|--------|--------|-----------|
+| `/api/dashboard` | Dashboard | 4 GET |
+| `/api/alerts` | Alerts | 2 GET + 1 POST |
+| `/api/forest` | Forest Monitoring | 3 GET + 2 POST |
+| `/api/disaster` | Disaster Risk | 3 GET + 2 POST |
+| `/api/farmer` | Farmer Advisory | 4 GET + 2 POST |
+| `/api/plantation` | Tree Plantation Planner | 4 GET + 2 POST |
+| `/api/ai` + `/api/data` + `/api/project` | AI/Data Pipeline | 5 GET |
+| `/` + `/health` | Root & Health | 2 GET |
+
+**Total: 35 endpoints**
+
+Swagger UI: **http://localhost:8000/docs**
