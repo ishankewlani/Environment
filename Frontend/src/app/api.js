@@ -15,7 +15,13 @@
    ════════════════════════════════════════════════════════════════ */
 
 // Backend API Integration - Phase 3A
-const API_BASE_URL = "http://localhost:8000";
+const LOCAL_API_URL = "http://localhost:8000";
+const PRODUCTION_API_URL = "https://earth-immune-backend.onrender.com";
+
+const API_BASE_URL =
+  window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+    ? LOCAL_API_URL
+    : PRODUCTION_API_URL;
 
 /* Fix Leaflet heatmap redraw error on hidden zero-size map containers */
 if (window.L && L.HeatLayer && L.HeatLayer.prototype && !L.HeatLayer.prototype._earthAISafePatch) {
