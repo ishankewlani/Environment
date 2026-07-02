@@ -782,85 +782,80 @@
             </div>
 
             <!-- Center Map -->
-            <!-- Emergency Alert Panel (replaces map) -->
-<div class="farmer-alert-panel">
+            
+<!-- Big Centered Emergency Alert -->
+<div style="padding:0.5rem 0;">
+  <div id="warning-banner" style="
+    width:100%;
+    background:rgba(255,100,0,0.1);
+    border:2px solid #FF7B00;
+    border-radius:20px;
+    padding:2rem 1.75rem;
+    text-align:center;
+    box-shadow:0 0 60px rgba(255,100,0,0.2), 0 0 120px rgba(255,77,77,0.1);
+    animation:emergencyPulse 2.5s ease-in-out infinite;
+  ">
+    <!-- Icon -->
+    <div style="font-size:4rem;margin-bottom:1.25rem;animation:iconBounce 1.5s ease-in-out infinite;">🚨</div>
 
-  <!-- Main Warning Banner -->
-  <div class="warning-banner" id="warning-banner" style="margin-bottom:1rem;">
-    <div class="wb-level">⚠ WARNING</div>
-    <div class="wb-body">
-      <div class="wb-title">CURRENT FLOOD WARNING: <span class="wb-level-text">MODERATE RISK</span></div>
-      <div class="wb-sub">Heavy rainfall predicted, check field drainage.</div>
-    </div>
-  </div>
+    <!-- Level Badge -->
+    <div style="
+      display:inline-block;
+      background:#FF7B00;
+      color:#ffffff;
+      font-family:'Space Grotesk',sans-serif;
+      font-size:0.85rem;
+      font-weight:800;
+      padding:0.4rem 1.25rem;
+      border-radius:999px;
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+      margin-bottom:1.5rem;
+    ">⚠ EMERGENCY WARNING</div>
 
-  <!-- Alert Details Cards -->
-  <div class="glass-card" style="margin-bottom:0.85rem;">
-    <div class="card-header"><span class="card-title">🚨 Active Emergency Alerts</span></div>
-    <div id="farmer-warnings" class="warnings-list"></div>
-  </div>
+    <!-- Main Title -->
+    <div class="wb-title" id="farmer-alert-title" style="
+      font-family:'Space Grotesk',sans-serif;
+      font-size:clamp(1.4rem,3vw,2.2rem);
+      font-weight:800;
+      color:#ffffff;
+      line-height:1.2;
+      margin-bottom:1rem;
+    ">CURRENT FLOOD WARNING: <span class="wb-level-text" style="color:#FF7B00;">MODERATE RISK</span></div>
 
-  <div class="glass-card" style="margin-bottom:0.85rem;">
-    <div class="card-header"><span class="card-title">📍 Affected Regions</span></div>
-    <div style="display:flex;flex-wrap:wrap;gap:0.5rem;padding:0.25rem 0;">
-      <span style="background:rgba(255,77,77,0.12);border:1px solid rgba(255,77,77,0.3);color:#FF4444;padding:0.3rem 0.75rem;border-radius:6px;font-size:0.78rem;font-family:var(--font-mono);">● Bihar</span>
-      <span style="background:rgba(255,159,28,0.12);border:1px solid rgba(255,159,28,0.3);color:#FF9F1C;padding:0.3rem 0.75rem;border-radius:6px;font-size:0.78rem;font-family:var(--font-mono);">● Punjab</span>
-      <span style="background:rgba(255,159,28,0.12);border:1px solid rgba(255,159,28,0.3);color:#FF9F1C;padding:0.3rem 0.75rem;border-radius:6px;font-size:0.78rem;font-family:var(--font-mono);">● Odisha</span>
-      <span style="background:rgba(255,209,102,0.12);border:1px solid rgba(255,209,102,0.3);color:#FFD166;padding:0.3rem 0.75rem;border-radius:6px;font-size:0.78rem;font-family:var(--font-mono);">● Maharashtra</span>
-      <span style="background:rgba(255,209,102,0.12);border:1px solid rgba(255,209,102,0.3);color:#FFD166;padding:0.3rem 0.75rem;border-radius:6px;font-size:0.78rem;font-family:var(--font-mono);">● Assam</span>
-      <span style="background:rgba(0,232,64,0.08);border:1px solid rgba(0,232,64,0.2);color:var(--neon);padding:0.3rem 0.75rem;border-radius:6px;font-size:0.78rem;font-family:var(--font-mono);">● Kerala</span>
-    </div>
-  </div>
+    <!-- Sub message -->
+    <div class="wb-sub" id="farmer-alert-sub" style="
+      font-size:1.05rem;
+      color:var(--text-secondary);
+      margin-bottom:2rem;
+      line-height:1.7;
+      max-width:520px;
+      margin-left:auto;
+      margin-right:auto;
+    ">Heavy rainfall predicted in the next 48 hours. Check field drainage immediately and move livestock to higher ground.</div>
 
-  <div class="glass-card" style="margin-bottom:0.85rem;">
-    <div class="card-header"><span class="card-title">⏱ Event Timeline</span></div>
-    <div class="timeline-meta">Expected peak rainfall · Duration: 3 days</div>
-    <div class="timeline-icons">
-      <div class="tl-icon active">🌊</div>
-      <div class="tl-icon warn">🔥</div>
-      <div class="tl-icon">🌀</div>
-      <div class="tl-icon">🏠</div>
-      <div class="tl-icon warn">⚠️</div>
-      <div class="tl-icon">🌧</div>
-      <div class="tl-icon warn">⚡</div>
-      <div class="tl-icon">🛡</div>
-    </div>
-    <div class="timeline-bar">
-      <div class="tl-track">
-        <div class="tl-progress" style="width:40%"></div>
+    <!-- Divider -->
+    <div style="width:60px;height:2px;background:linear-gradient(90deg,transparent,#FF7B00,transparent);margin:0 auto 2rem;"></div>
+
+    <!-- Info row -->
+    <div style="display:flex;justify-content:center;gap:2.5rem;flex-wrap:wrap;">
+      <div style="text-align:center;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:1.6rem;font-weight:700;color:#FF4444;">48 hrs</div>
+        <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:0.25rem;">Time to Impact</div>
+      </div>
+      <div style="width:1px;background:rgba(255,123,0,0.25);"></div>
+      <div style="text-align:center;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:1.6rem;font-weight:700;color:#FF9F1C;">3 Days</div>
+        <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:0.25rem;">Expected Duration</div>
+      </div>
+      <div style="width:1px;background:rgba(255,123,0,0.25);"></div>
+      <div style="text-align:center;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:1.6rem;font-weight:700;color:#FFD166;">82/100</div>
+        <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:0.25rem;">Risk Score</div>
       </div>
     </div>
   </div>
-
-  <div class="glass-card">
-    <div class="card-header"><span class="card-title">📊 Risk Level Indicator</span></div>
-    <div style="display:flex;flex-direction:column;gap:0.6rem;padding:0.25rem 0;">
-      <div>
-        <div style="display:flex;justify-content:space-between;margin-bottom:0.3rem;">
-          <span style="font-size:0.78rem;color:var(--text-secondary);">🌊 Flood Risk</span>
-          <span style="font-size:0.78rem;font-family:var(--font-mono);color:#FF4444;">HIGH — 82/100</span>
-        </div>
-        <div class="im-bar"><div class="im-bar-fill red" style="width:82%"></div></div>
-      </div>
-      <div>
-        <div style="display:flex;justify-content:space-between;margin-bottom:0.3rem;">
-          <span style="font-size:0.78rem;color:var(--text-secondary);">🌡 Heat Stress</span>
-          <span style="font-size:0.78rem;font-family:var(--font-mono);color:#FF9F1C;">MEDIUM — 55/100</span>
-        </div>
-        <div class="im-bar"><div class="im-bar-fill orange" style="width:55%"></div></div>
-      </div>
-      <div>
-        <div style="display:flex;justify-content:space-between;margin-bottom:0.3rem;">
-          <span style="font-size:0.78rem;color:var(--text-secondary);">🌪 Wind Risk</span>
-          <span style="font-size:0.78rem;font-family:var(--font-mono);color:#FFD166;">LOW — 28/100</span>
-        </div>
-        <div class="im-bar"><div class="im-bar-fill gold" style="width:28%"></div></div>
-      </div>
-    </div>
-  </div>
-
 </div>
-
             <!-- Right -->
             <div class="farmer-right">
               <!-- SMS Alert -->
@@ -897,32 +892,7 @@
                 </div>
               </div>
 
-              <!-- Risk Warnings -->
-              <div class="glass-card warnings-card">
-                <div class="card-header"><span class="card-title">⚠️ Active Warnings</span></div>
-                <div class="warnings-list" id="farmer-warnings"></div>
-              </div>
 
-              <!-- Timeline -->
-              <div class="glass-card timeline-card">
-                <div class="card-header"><span class="card-title">⏱ Event Timeline</span></div>
-                <div class="timeline-meta">Expected peak rainfall · Duration: 3 days</div>
-                <div class="timeline-icons">
-                  <div class="tl-icon active">🌊</div>
-                  <div class="tl-icon warn">🔥</div>
-                  <div class="tl-icon">🌀</div>
-                  <div class="tl-icon">🏠</div>
-                  <div class="tl-icon warn">⚠️</div>
-                  <div class="tl-icon">🌧</div>
-                  <div class="tl-icon warn">⚡</div>
-                  <div class="tl-icon">🛡</div>
-                </div>
-                <div class="timeline-bar">
-                  <div class="tl-track">
-                    <div class="tl-progress" style="width:40%"></div>
-                  </div>
-                </div>
-              </div>
 
               <button class="btn-generate" id="btn-crop-advisory">
                 🌾 Request Crop Advisory
