@@ -262,56 +262,64 @@
         <!-- ══════════════ PAGE: DASHBOARD ══════════════ -->
         <div class="page active" id="page-dashboard">
           <!-- Stats Row -->
-          <div class="stats-row">
-            <div class="stat-card">
-              <div class="stat-icon">🌲</div>
-              <div class="stat-body">
-                <div class="stat-num neon" data-count="2400000" data-suffix=" km²">0</div>
-                <div class="stat-label">Forest Monitored</div>
-                <div class="stat-trend up">↑ +2.3% this month</div>
-              </div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon">🌱</div>
-              <div class="stat-body">
-                <div class="stat-num gold" data-count="8200000" data-suffix="">0</div>
-                <div class="stat-label">Trees Saved</div>
-                <div class="stat-trend up">↑ +14.2K today</div>
-              </div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon">⚡</div>
-              <div class="stat-body">
-                <div class="stat-num red" data-count="147" data-suffix="">0</div>
-                <div class="stat-label">Active Alerts</div>
-                <div class="stat-trend alert">⚠ 12 critical</div>
-              </div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon">🌾</div>
-              <div class="stat-body">
-                <div class="stat-num cyan" data-count="1300000" data-suffix="">0</div>
-                <div class="stat-label">Farmers Protected</div>
-                <div class="stat-trend up">↑ +890 today</div>
-              </div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon">🍃</div>
-              <div class="stat-body">
-                <div class="stat-num neon" data-count="340000" data-suffix=" MT">0</div>
-                <div class="stat-label">Carbon Reduction</div>
-                <div class="stat-trend up">↑ Target on track</div>
-              </div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon">💧</div>
-              <div class="stat-body">
-                <div class="stat-num cyan" data-count="28" data-suffix="%">0</div>
-                <div class="stat-label">Groundwater Recovery</div>
-                <div class="stat-trend up">↑ +3% vs last year</div>
-              </div>
-            </div>
-          </div>
+          <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:0.75rem;margin-bottom:1.25rem;">
+
+  <div style="background:#0D2B14;border:1.5px solid #00E840;border-radius:12px;padding:1rem;display:flex;align-items:center;gap:0.75rem;box-shadow:0 0 16px rgba(0,232,64,0.2);">
+    <span style="font-size:1.5rem;">🌲</span>
+    <div>
+      <span class="stat-num neon" data-count="2400000" data-suffix=" km²" style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:#00FF88;display:block;">0</span>
+      <span style="font-size:0.7rem;color:#8FB89A;display:block;margin-top:2px;">Forest Monitored</span>
+      <span style="font-size:0.68rem;color:#00FF88;font-family:'JetBrains Mono',monospace;display:block;">↑ +2.3% this month</span>
+    </div>
+  </div>
+
+  <div style="background:#0D2B14;border:1.5px solid #00E840;border-radius:12px;padding:1rem;display:flex;align-items:center;gap:0.75rem;box-shadow:0 0 16px rgba(0,232,64,0.2);">
+    <span style="font-size:1.5rem;">🌱</span>
+    <div>
+      <span class="stat-num gold" data-count="8200000" data-suffix="" style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:#FFD166;display:block;">0</span>
+      <span style="font-size:0.7rem;color:#8FB89A;display:block;margin-top:2px;">Trees Saved</span>
+      <span style="font-size:0.68rem;color:#00FF88;font-family:'JetBrains Mono',monospace;display:block;">↑ +14.2K today</span>
+    </div>
+  </div>
+
+  <div style="background:#0D2B14;border:1.5px solid #00E840;border-radius:12px;padding:1rem;display:flex;align-items:center;gap:0.75rem;box-shadow:0 0 16px rgba(0,232,64,0.2);">
+    <span style="font-size:1.5rem;">⚡</span>
+    <div>
+      <span class="stat-num red" data-count="147" data-suffix="" style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:#FF4D4D;display:block;">0</span>
+      <span style="font-size:0.7rem;color:#8FB89A;display:block;margin-top:2px;">Active Alerts</span>
+      <span style="font-size:0.68rem;color:#FF9F1C;font-family:'JetBrains Mono',monospace;display:block;">⚠ 12 critical</span>
+    </div>
+  </div>
+
+  <div style="background:#0D2B14;border:1.5px solid #00E840;border-radius:12px;padding:1rem;display:flex;align-items:center;gap:0.75rem;box-shadow:0 0 16px rgba(0,232,64,0.2);">
+    <span style="font-size:1.5rem;">🌾</span>
+    <div>
+      <span class="stat-num cyan" data-count="1300000" data-suffix="" style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:#00D9FF;display:block;">0</span>
+      <span style="font-size:0.7rem;color:#8FB89A;display:block;margin-top:2px;">Farmers Protected</span>
+      <span style="font-size:0.68rem;color:#00FF88;font-family:'JetBrains Mono',monospace;display:block;">↑ +890 today</span>
+    </div>
+  </div>
+
+  <div style="background:#0D2B14;border:1.5px solid #00E840;border-radius:12px;padding:1rem;display:flex;align-items:center;gap:0.75rem;box-shadow:0 0 16px rgba(0,232,64,0.2);">
+    <span style="font-size:1.5rem;">🍃</span>
+    <div>
+      <span class="stat-num neon" data-count="340000" data-suffix=" MT" style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:#00FF88;display:block;">0</span>
+      <span style="font-size:0.7rem;color:#8FB89A;display:block;margin-top:2px;">Carbon Reduction</span>
+      <span style="font-size:0.68rem;color:#00FF88;font-family:'JetBrains Mono',monospace;display:block;">↑ Target on track</span>
+    </div>
+  </div>
+
+  <div style="background:#0D2B14;border:1.5px solid #00E840;border-radius:12px;padding:1rem;display:flex;align-items:center;gap:0.75rem;box-shadow:0 0 16px rgba(0,232,64,0.2);">
+    <span style="font-size:1.5rem;">💧</span>
+    <div>
+      <span class="stat-num cyan" data-count="28" data-suffix="%" style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:#00D9FF;display:block;">0</span>
+      <span style="font-size:0.7rem;color:#8FB89A;display:block;margin-top:2px;">Groundwater Recovery</span>
+      <span style="font-size:0.68rem;color:#00FF88;font-family:'JetBrains Mono',monospace;display:block;">↑ +3% vs last year</span>
+    </div>
+  </div>
+
+</div>
+            
 
           <!-- Command Center Grid -->
           <div class="dashboard-grid">

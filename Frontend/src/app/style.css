@@ -1239,6 +1239,18 @@ body.light-mode .toast {
   animation: liveBlink 2s ease-in-out infinite;
 }
 
+body.light-mode [style*="background:#0D2B14"] {
+  background: #ffffff !important;
+  border-color: #00A830 !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+}
+body.light-mode [style*="color:#00FF88"] { color: #007A28 !important; }
+body.light-mode [style*="color:#FFD166"] { color: #8B6000 !important; }
+body.light-mode [style*="color:#FF4D4D"] { color: #CC0000 !important; }
+body.light-mode [style*="color:#00D9FF"] { color: #005F80 !important; }
+body.light-mode [style*="color:#8FB89A"] { color: #2A5E36 !important; }
+body.light-mode [style*="color:#FF9F1C"] { color: #CC5500 !important; }
+
 /* Activity Feed */
 .activity-list {
   display: flex;
