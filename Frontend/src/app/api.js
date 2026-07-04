@@ -16,12 +16,16 @@
 
 // Backend API Integration - Phase 3A
 const LOCAL_API_URL = "http://localhost:8000";
-const PRODUCTION_API_URL = "https://earth-immune-backend.onrender.com";
+const PRODUCTION_API_URL = "https://YOUR-RENDER-BACKEND-URL.onrender.com";
 
 const API_BASE_URL =
-  window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1" ||
+  window.location.hostname === ""
     ? LOCAL_API_URL
     : PRODUCTION_API_URL;
+
+console.log("[EarthAI] API Base URL:", API_BASE_URL);
 
 /* Fix Leaflet heatmap redraw error on hidden zero-size map containers */
 if (window.L && L.HeatLayer && L.HeatLayer.prototype && !L.HeatLayer.prototype._earthAISafePatch) {
