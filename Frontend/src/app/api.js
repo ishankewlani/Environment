@@ -16,7 +16,7 @@
 
 // Backend API Integration - Phase 3A
 const LOCAL_API_URL = "http://localhost:8000";
-const PRODUCTION_API_URL = "https://YOUR-RENDER-BACKEND-URL.onrender.com";
+const PRODUCTION_API_URL = "https://earth-immune-backend.onrender.com";
 
 const API_BASE_URL =
   window.location.hostname === "localhost" ||
