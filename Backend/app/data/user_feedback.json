@@ -14,6 +14,21 @@
       "preferred_language": "Hinglish",
       "improvement_needed": "More accurate local data",
       "suggestion": "nothng"
+    },
+    {
+      "feedback_id": "RF-255062ED",
+      "submitted_at": "2026-07-12T14:55:58.108260+00:00",
+      "name": "Harsh soni",
+      "role": "Teacher",
+      "location": "Ajmer Rajasthan",
+      "faced_environment_risk": "No",
+      "current_alert_source": "TV/News",
+      "alerts_are_timely": "Sometimes",
+      "rakshak_usefulness": "Useful",
+      "most_useful_feature": "Forest monitoring",
+      "preferred_language": "English",
+      "improvement_needed": "WhatsApp alerts",
+      "suggestion": "yes"
     }
   ]
 }
