@@ -1,0 +1,19 @@
+{
+  "responses": [
+    {
+      "feedback_id": "RF-7A927AA1",
+      "submitted_at": "2026-07-12T14:43:35.821711+00:00",
+      "name": "Harsh soni",
+      "role": "Student",
+      "location": "Ajmer Rajasthan",
+      "faced_environment_risk": "Not sure",
+      "current_alert_source": "Government alert",
+      "alerts_are_timely": "Sometimes",
+      "rakshak_usefulness": "Very useful",
+      "most_useful_feature": "Verified data report",
+      "preferred_language": "Hinglish",
+      "improvement_needed": "More accurate local data",
+      "suggestion": "nothng"
+    }
+  ]
+}

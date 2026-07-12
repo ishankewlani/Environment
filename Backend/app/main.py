@@ -13,7 +13,8 @@ from app.api.disaster    import router as disaster_router     # Phase 2B
 from app.api.farmer      import router as farmer_router       # Phase 2C
 from app.api.plantation  import router as plantation_router   # Phase 2D
 from app.api.ai_pipeline import router as ai_pipeline_router  # Final
-from app.api.real_data import router as real_data_router
+from app.api.real_data   import router as real_data_router
+from app.api.feedback    import router as feedback_router
 
 # ── App init ─────────────────────────────────────────────────────────────────
 app = FastAPI(
@@ -50,6 +51,7 @@ app.include_router(farmer_router,     prefix="/api/farmer",     tags=["Farmer Ad
 app.include_router(plantation_router, prefix="/api/plantation", tags=["Tree Plantation Planner"])  # 2D
 app.include_router(ai_pipeline_router, prefix="/api",           tags=["AI/Data Pipeline"])        # Final
 app.include_router(real_data_router, prefix="/api",             tags=["Real Data & Verification"])
+app.include_router(feedback_router, prefix="/api/feedback",     tags=["User Validation Feedback"])
 
 
 # ── Root ──────────────────────────────────────────────────────────────────────

@@ -1558,3 +1558,322 @@ if (document.readyState === "loading") {
 } else {
   setTimeout(initPilotValidationReportUI, 2200);
 }
+
+/* ════════════════════════════════════════════════════════════════
+   PHASE 3F — USER VALIDATION FEEDBACK FORM
+   Collects user feedback for Build for Good validation
+   ════════════════════════════════════════════════════════════════ */
+
+function injectFeedbackStyles() {
+  if (document.getElementById("rakshak-feedback-styles")) return;
+
+  const style = document.createElement("style");
+  style.id = "rakshak-feedback-styles";
+  style.textContent = `
+    #rakshak-feedback-btn {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 9999;
+      padding: 0.8rem 1rem;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      background: linear-gradient(135deg, #00ff88, #00cc6e);
+      color: #07120a;
+      font-weight: 800;
+      box-shadow: 0 12px 32px rgba(0,255,136,0.22);
+    }
+
+    #rakshak-feedback-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px);
+      padding: 1rem;
+    }
+
+    #rakshak-feedback-box {
+      width: min(720px, 96vw);
+      max-height: 90vh;
+      overflow-y: auto;
+      background: rgba(7, 18, 10, 0.96);
+      border: 1px solid rgba(0,255,136,0.25);
+      border-radius: 22px;
+      padding: 1.2rem;
+      color: var(--text-primary, #fff);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.45);
+    }
+
+    .rf-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+
+    .rf-field {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .rf-field label {
+      font-size: 0.72rem;
+      color: var(--text-secondary, #aaa);
+    }
+
+    .rf-field input,
+    .rf-field select,
+    .rf-field textarea {
+      width: 100%;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.06);
+      color: var(--text-primary, #fff);
+      padding: 0.7rem;
+      outline: none;
+    }
+
+    .rf-field option {
+      color: #111;
+    }
+
+    .rf-full {
+      grid-column: 1 / -1;
+    }
+
+    .rf-actions {
+      display: flex;
+      gap: 0.7rem;
+      justify-content: flex-end;
+      margin-top: 1rem;
+    }
+
+    .rf-actions button {
+      border: none;
+      border-radius: 12px;
+      padding: 0.72rem 1rem;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    #rf-submit {
+      background: linear-gradient(135deg, #00ff88, #00cc6e);
+      color: #07120a;
+    }
+
+    #rf-close {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+
+    @media (max-width: 720px) {
+      .rf-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+function createFeedbackModal() {
+  if (document.getElementById("rakshak-feedback-modal")) return;
+
+  injectFeedbackStyles();
+
+  const btn = document.createElement("button");
+  btn.id = "rakshak-feedback-btn";
+  btn.textContent = "💬 Give Feedback";
+  document.body.appendChild(btn);
+
+  const modal = document.createElement("div");
+  modal.id = "rakshak-feedback-modal";
+  modal.innerHTML = `
+    <div id="rakshak-feedback-box">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:1rem;">
+        <div>
+          <div style="font-size:0.75rem;color:var(--text-muted,#999);letter-spacing:0.08em;text-transform:uppercase;">
+            Build for Good Validation
+          </div>
+          <h2 style="margin:0.25rem 0 0;">Rakshak User Feedback</h2>
+        </div>
+        <button id="rf-x" style="background:none;border:none;color:#fff;font-size:1.4rem;cursor:pointer;">×</button>
+      </div>
+
+      <form id="rakshak-feedback-form">
+        <div class="rf-grid">
+          <div class="rf-field">
+            <label>Name</label>
+            <input name="name" placeholder="Your name" />
+          </div>
+
+          <div class="rf-field">
+            <label>Role</label>
+            <select name="role" required>
+              <option value="">Select</option>
+              <option>Farmer</option>
+              <option>Student</option>
+              <option>Teacher</option>
+              <option>NGO worker</option>
+              <option>Local resident</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div class="rf-field">
+            <label>City / Village / State</label>
+            <input name="location" placeholder="Ajmer, Rajasthan" required />
+          </div>
+
+          <div class="rf-field">
+            <label>Have you faced environmental risk?</label>
+            <select name="faced_environment_risk" required>
+              <option value="">Select</option>
+              <option>Yes</option>
+              <option>No</option>
+              <option>Not sure</option>
+            </select>
+          </div>
+
+          <div class="rf-field">
+            <label>Current alert source</label>
+            <select name="current_alert_source" required>
+              <option value="">Select</option>
+              <option>TV/News</option>
+              <option>WhatsApp</option>
+              <option>SMS</option>
+              <option>Government alert</option>
+              <option>Local people</option>
+              <option>No proper alert system</option>
+            </select>
+          </div>
+
+          <div class="rf-field">
+            <label>Do alerts come early enough?</label>
+            <select name="alerts_are_timely" required>
+              <option value="">Select</option>
+              <option>Yes</option>
+              <option>Sometimes</option>
+              <option>No</option>
+            </select>
+          </div>
+
+          <div class="rf-field">
+            <label>Would Rakshak be useful?</label>
+            <select name="rakshak_usefulness" required>
+              <option value="">Select</option>
+              <option>Very useful</option>
+              <option>Useful</option>
+              <option>Maybe</option>
+              <option>Not useful</option>
+            </select>
+          </div>
+
+          <div class="rf-field">
+            <label>Most useful feature</label>
+            <select name="most_useful_feature" required>
+              <option value="">Select</option>
+              <option>Farmer advisory SMS</option>
+              <option>Flood/heatwave warning</option>
+              <option>Forest monitoring</option>
+              <option>Tree plantation recommendation</option>
+              <option>Verified data report</option>
+            </select>
+          </div>
+
+          <div class="rf-field">
+            <label>Preferred language</label>
+            <select name="preferred_language" required>
+              <option value="">Select</option>
+              <option>Hindi</option>
+              <option>English</option>
+              <option>Hinglish</option>
+              <option>Local language</option>
+            </select>
+          </div>
+
+          <div class="rf-field">
+            <label>What should improve?</label>
+            <select name="improvement_needed" required>
+              <option value="">Select</option>
+              <option>More accurate local data</option>
+              <option>Simpler language</option>
+              <option>Voice alerts</option>
+              <option>WhatsApp alerts</option>
+              <option>More crop-specific advice</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div class="rf-field rf-full">
+            <label>Suggestion</label>
+            <textarea name="suggestion" rows="3" placeholder="Any feedback or suggestion"></textarea>
+          </div>
+        </div>
+
+        <div class="rf-actions">
+          <button type="button" id="rf-close">Cancel</button>
+          <button type="submit" id="rf-submit">Submit Feedback</button>
+        </div>
+      </form>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  function openModal() {
+    modal.style.display = "flex";
+  }
+
+  function closeModal() {
+    modal.style.display = "none";
+  }
+
+  btn.addEventListener("click", openModal);
+  modal.querySelector("#rf-x").addEventListener("click", closeModal);
+  modal.querySelector("#rf-close").addEventListener("click", closeModal);
+
+  modal.querySelector("#rakshak-feedback-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const submitBtn = modal.querySelector("#rf-submit");
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Submitting...";
+
+    const formData = new FormData(e.target);
+    const payload = Object.fromEntries(formData.entries());
+
+    const result = await postToAPI("/api/feedback/submit", payload, {
+      success: true,
+      message: "Feedback saved in demo mode",
+      feedback_id: "RF-DEMO",
+    });
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Submit Feedback";
+
+    if (result.success) {
+      e.target.reset();
+      closeModal();
+      if (typeof showToast === "function") {
+        showToast(`✅ Feedback submitted. Ref: ${result.feedback_id}`);
+      } else {
+        alert(`Feedback submitted. Ref: ${result.feedback_id}`);
+      }
+    } else {
+      alert("Feedback submission failed. Please try again.");
+    }
+  });
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(createFeedbackModal, 2500);
+  });
+} else {
+  setTimeout(createFeedbackModal, 2500);
+}
