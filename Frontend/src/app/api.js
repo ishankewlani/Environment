@@ -1401,3 +1401,160 @@ if (document.readyState === "loading") {
 } else {
   setTimeout(initRealVerificationPageWatcher, 1800);
 }
+
+/* ════════════════════════════════════════════════════════════════
+   PHASE 3E — PILOT VALIDATION REPORT UI
+   Shows /api/verification/pilot-report/{city} in frontend
+   ════════════════════════════════════════════════════════════════ */
+
+function createPilotReportPanel(report) {
+  const existing = document.getElementById("pilot-validation-report-panel");
+  if (existing) existing.remove();
+
+  const statusBox = document.querySelector(".sys-status");
+  if (!statusBox) return;
+
+  const authenticity = report.authenticity || {};
+  const risk = report.risk_assessment || {};
+  const advisory = report.advisory || {};
+  const weather = report.live_weather || {};
+  const location = report.location || {};
+
+  const verified = authenticity.verified === true;
+  const mode = authenticity.data_mode || "fallback";
+
+  const panel = document.createElement("div");
+  panel.id = "pilot-validation-report-panel";
+  panel.style.marginTop = "0.8rem";
+  panel.style.padding = "0.9rem";
+  panel.style.borderRadius = "14px";
+  panel.style.border = verified
+    ? "1px solid rgba(0,255,136,0.35)"
+    : "1px solid rgba(255,209,102,0.35)";
+  panel.style.background = verified
+    ? "rgba(0,255,136,0.075)"
+    : "rgba(255,209,102,0.075)";
+  panel.style.fontFamily = "var(--font-mono, monospace)";
+
+  panel.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;">
+      <strong style="font-size:0.76rem;color:var(--text-primary);letter-spacing:0.04em;">
+        PILOT VALIDATION REPORT
+      </strong>
+      <span style="font-size:0.68rem;color:${verified ? "var(--neon,#00ff88)" : "var(--gold,#ffd166)"};">
+        ${verified ? "LIVE VERIFIED" : "FALLBACK"}
+      </span>
+    </div>
+
+    <div style="font-size:0.68rem;color:var(--text-secondary);line-height:1.7;margin-top:0.55rem;">
+      Location: ${location.city || "Ajmer"}, ${location.country || "IN"}<br/>
+      Source: ${authenticity.source || "OpenWeather"}<br/>
+      Mode: ${String(mode).toUpperCase()} · Confidence: ${authenticity.confidence || "medium"}<br/>
+      Risk: ${String(risk.overall_risk || "unknown").toUpperCase()} · Score ${risk.risk_score ?? "--"}/100<br/>
+      Temp: ${weather.temperature_celsius ?? "--"}°C · Humidity: ${weather.humidity_percent ?? "--"}% · Rain: ${weather.rainfall_1h_mm ?? "--"}mm
+    </div>
+
+    <div style="font-size:0.68rem;color:var(--text-secondary);line-height:1.6;margin-top:0.6rem;">
+      <strong style="color:var(--text-primary);">Advisory:</strong>
+      ${advisory.farmer_advisory || "Pilot report generated successfully."}
+    </div>
+
+    <button id="btn-view-pilot-report" style="
+      margin-top:0.7rem;
+      width:100%;
+      padding:0.55rem 0.7rem;
+      border:none;
+      border-radius:10px;
+      cursor:pointer;
+      background:linear-gradient(135deg,#00ff88,#00cc6e);
+      color:#07120a;
+      font-weight:700;
+      font-size:0.72rem;
+    ">
+      View Full Pilot Report
+    </button>
+  `;
+
+  statusBox.appendChild(panel);
+
+  const btn = panel.querySelector("#btn-view-pilot-report");
+  if (btn) {
+    btn.addEventListener("click", () => {
+      const summary = `
+Pilot Validation Report — ${location.city || "Ajmer"}
+
+Status: ${report.status}
+Verified: ${verified}
+Source: ${authenticity.source}
+Data Mode: ${mode}
+Risk: ${risk.overall_risk}
+Risk Score: ${risk.risk_score}/100
+
+Advisory:
+${advisory.farmer_advisory}
+
+Current Limitations:
+${(report.current_limitations || []).map((x, i) => `${i + 1}. ${x}`).join("\n")}
+
+Next Upgrade Steps:
+${(report.next_upgrade_steps || []).map((x, i) => `${i + 1}. ${x}`).join("\n")}
+      `.trim();
+
+      alert(summary);
+    });
+  }
+}
+
+async function initPilotValidationReportUI() {
+  try {
+    const report = await fetchFromAPI("/api/verification/pilot-report/Ajmer", {
+      project: "Rakshak – Earth Immune System AI",
+      report_type: "Pilot Validation Report",
+      location: {
+        city: "Ajmer",
+        country: "IN",
+      },
+      authenticity: {
+        data_mode: "fallback",
+        verified: false,
+        source: "OpenWeather",
+        fetched_at: new Date().toISOString(),
+        confidence: "low",
+      },
+      live_weather: {
+        temperature_celsius: 38,
+        humidity_percent: 46,
+        rainfall_1h_mm: 0,
+      },
+      risk_assessment: {
+        overall_risk: "moderate",
+        risk_score: 55,
+        detected_risks: [],
+      },
+      advisory: {
+        farmer_advisory:
+          "Fallback pilot report active. Continue monitoring weather and local advisories.",
+      },
+      current_limitations: [
+        "Fallback data is being shown because live report could not be fetched.",
+      ],
+      next_upgrade_steps: [
+        "Check backend deployment and OpenWeather API key.",
+      ],
+      status: "fallback_report",
+    });
+
+    createPilotReportPanel(report);
+    console.log("[EarthAI] Pilot Validation Report:", report);
+  } catch (error) {
+    console.warn("[EarthAI] Pilot report UI failed:", error);
+  }
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(initPilotValidationReportUI, 2200);
+  });
+} else {
+  setTimeout(initPilotValidationReportUI, 2200);
+}
