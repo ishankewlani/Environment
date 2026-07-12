@@ -1037,3 +1037,129 @@ if (document.readyState === "loading") {
   initDashboardAPI();
   initAllPageAPI();
 }
+
+/* ════════════════════════════════════════════════════════════════
+   PHASE 3C — REAL DATA + VERIFICATION UI
+   Shows live OpenWeather verification status inside frontend
+   ════════════════════════════════════════════════════════════════ */
+
+function createVerificationPanel(riskData) {
+  const existing = document.getElementById("real-verification-panel");
+  if (existing) existing.remove();
+
+  const statusBox = document.querySelector(".sys-status");
+  if (!statusBox) return;
+
+  const verified = riskData.verified === true;
+  const dataMode = riskData.data_mode || "fallback";
+  const risk = riskData.overall_risk || "unknown";
+  const score = riskData.risk_score ?? "--";
+  const source = riskData.verification?.source || "OpenWeather";
+  const fetchedAt = riskData.verification?.fetched_at
+    ? new Date(riskData.verification.fetched_at).toLocaleTimeString()
+    : "recently";
+
+  const weather = riskData.weather_used || {};
+  const temp = weather.temperature_celsius ?? "--";
+  const humidity = weather.humidity_percent ?? "--";
+  const rain = weather.rainfall_1h_mm ?? "--";
+
+  const panel = document.createElement("div");
+  panel.id = "real-verification-panel";
+  panel.style.marginTop = "0.8rem";
+  panel.style.padding = "0.85rem";
+  panel.style.border = verified
+    ? "1px solid rgba(0,255,136,0.35)"
+    : "1px solid rgba(255,209,102,0.35)";
+  panel.style.borderRadius = "14px";
+  panel.style.background = verified
+    ? "rgba(0,255,136,0.08)"
+    : "rgba(255,209,102,0.08)";
+  panel.style.fontFamily = "var(--font-mono, monospace)";
+
+  panel.innerHTML = `
+    <div style="display:flex;align-items:center;gap:0.45rem;margin-bottom:0.5rem;">
+      <span style="font-size:0.75rem;">${verified ? "✅" : "⚠️"}</span>
+      <strong style="font-size:0.76rem;color:var(--text-primary);letter-spacing:0.04em;">
+        VERIFIED DATA LAYER
+      </strong>
+    </div>
+
+    <div style="font-size:0.68rem;color:var(--text-secondary);line-height:1.7;">
+      Source: <span style="color:${verified ? "var(--neon,#00ff88)" : "var(--gold,#ffd166)"}">${source}</span><br/>
+      Mode: <span style="text-transform:uppercase;">${dataMode}</span><br/>
+      City: ${riskData.city || "Ajmer"}<br/>
+      Risk: <span style="text-transform:uppercase;">${risk}</span> · Score ${score}/100<br/>
+      Temp: ${temp}°C · Humidity: ${humidity}% · Rain: ${rain}mm<br/>
+      Updated: ${fetchedAt}
+    </div>
+  `;
+
+  statusBox.appendChild(panel);
+}
+
+function createVerificationToast(riskData) {
+  if (typeof showToast !== "function") return;
+
+  const verified = riskData.verified === true;
+  const mode = riskData.data_mode || "fallback";
+  const risk = riskData.overall_risk || "unknown";
+  const score = riskData.risk_score ?? "--";
+
+  showToast(
+    `${verified ? "✅ Live verified data" : "⚠️ Fallback verification"} active · ${mode.toUpperCase()} · Risk: ${risk} (${score}/100)`
+  );
+}
+
+async function initRealDataVerificationUI() {
+  try {
+    const riskData = await fetchFromAPI("/api/real/risk-check/Ajmer", {
+      city: "Ajmer",
+      country: "IN",
+      data_mode: "fallback",
+      verified: false,
+      overall_risk: "moderate",
+      risk_score: 55,
+      detected_risks: [
+        {
+          type: "heatwave",
+          level: "moderate",
+          reason: "Fallback weather risk check active",
+        },
+      ],
+      farmer_advisory:
+        "Fallback mode active. Continue monitoring weather updates and avoid field work during extreme heat.",
+      weather_used: {
+        temperature_celsius: 38,
+        humidity_percent: 46,
+        rainfall_1h_mm: 0,
+      },
+      verification: {
+        source: "OpenWeather",
+        fetched_at: new Date().toISOString(),
+        confidence: "low",
+      },
+    });
+
+    createVerificationPanel(riskData);
+
+    // Show only once per page load
+    if (!window.__earthAIVerificationToastShown) {
+      window.__earthAIVerificationToastShown = true;
+      setTimeout(() => createVerificationToast(riskData), 1200);
+    }
+
+    console.log("[EarthAI] Real Data Verification:", riskData);
+  } catch (error) {
+    console.warn("[EarthAI] Real verification UI failed:", error);
+  }
+}
+
+/* Run real-data verification after dashboard/sidebar is ready */
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(initRealDataVerificationUI, 1500);
+  });
+} else {
+  setTimeout(initRealDataVerificationUI, 1500);
+}
