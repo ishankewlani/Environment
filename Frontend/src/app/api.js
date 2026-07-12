@@ -1163,3 +1163,241 @@ if (document.readyState === "loading") {
 } else {
   setTimeout(initRealDataVerificationUI, 1500);
 }
+
+/* ════════════════════════════════════════════════════════════════
+   PHASE 3D — REAL WEATHER RISK IN DISASTER + FARMER PAGES
+   Uses /api/real/risk-check/{city}
+   ════════════════════════════════════════════════════════════════ */
+
+function createRealRiskMiniCard(targetPageId, riskData, title) {
+  const page = document.getElementById(targetPageId);
+  if (!page) return;
+
+  const existingId = `${targetPageId}-real-risk-card`;
+  const existing = document.getElementById(existingId);
+  if (existing) existing.remove();
+
+  const verified = riskData.verified === true;
+  const mode = riskData.data_mode || "fallback";
+  const score = riskData.risk_score ?? "--";
+  const risk = riskData.overall_risk || "unknown";
+  const source = riskData.verification?.source || "OpenWeather";
+  const confidence = riskData.verification?.confidence || "medium";
+  const weather = riskData.weather_used || {};
+
+  const temp = weather.temperature_celsius ?? "--";
+  const humidity = weather.humidity_percent ?? "--";
+  const rain = weather.rainfall_1h_mm ?? "--";
+
+  const card = document.createElement("div");
+  card.id = existingId;
+  card.style.margin = "1rem 0";
+  card.style.padding = "1rem";
+  card.style.borderRadius = "16px";
+  card.style.border = verified
+    ? "1px solid rgba(0,255,136,0.35)"
+    : "1px solid rgba(255,209,102,0.35)";
+  card.style.background = verified
+    ? "rgba(0,255,136,0.07)"
+    : "rgba(255,209,102,0.07)";
+  card.style.boxShadow = "0 0 24px rgba(0,0,0,0.18)";
+  card.style.fontFamily = "var(--font-mono, monospace)";
+
+  card.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap;">
+      <div>
+        <div style="font-size:0.72rem;letter-spacing:0.08em;color:var(--text-muted);text-transform:uppercase;">
+          ${verified ? "✅ Live Verified Source" : "⚠️ Fallback Verification"}
+        </div>
+        <div style="font-size:1rem;font-weight:700;color:var(--text-primary);margin-top:0.25rem;">
+          ${title}
+        </div>
+      </div>
+
+      <div style="font-size:0.72rem;color:var(--text-secondary);line-height:1.6;text-align:right;">
+        Source: <span style="color:${verified ? "var(--neon,#00ff88)" : "var(--gold,#ffd166)"}">${source}</span><br/>
+        Mode: ${String(mode).toUpperCase()} · Confidence: ${confidence}<br/>
+        Risk: ${String(risk).toUpperCase()} · Score: ${score}/100
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.65rem;margin-top:0.9rem;">
+      <div style="padding:0.65rem;border-radius:12px;background:rgba(255,255,255,0.04);">
+        <div style="font-size:0.65rem;color:var(--text-muted);">Temperature</div>
+        <div style="font-size:1rem;color:var(--text-primary);font-weight:700;">${temp}°C</div>
+      </div>
+      <div style="padding:0.65rem;border-radius:12px;background:rgba(255,255,255,0.04);">
+        <div style="font-size:0.65rem;color:var(--text-muted);">Humidity</div>
+        <div style="font-size:1rem;color:var(--text-primary);font-weight:700;">${humidity}%</div>
+      </div>
+      <div style="padding:0.65rem;border-radius:12px;background:rgba(255,255,255,0.04);">
+        <div style="font-size:0.65rem;color:var(--text-muted);">Rainfall 1h</div>
+        <div style="font-size:1rem;color:var(--text-primary);font-weight:700;">${rain}mm</div>
+      </div>
+    </div>
+
+    <div style="margin-top:0.85rem;font-size:0.75rem;line-height:1.6;color:var(--text-secondary);">
+      <strong style="color:var(--text-primary);">Live Advisory:</strong>
+      ${riskData.farmer_advisory || "Live weather verification active."}
+    </div>
+  `;
+
+  const pageHeader = page.querySelector(".page-header");
+  if (pageHeader && pageHeader.parentNode) {
+    pageHeader.insertAdjacentElement("afterend", card);
+  } else {
+    page.prepend(card);
+  }
+}
+
+async function initRealDisasterVerification() {
+  const data = await fetchFromAPI("/api/real/risk-check/Bihar", {
+    city: "Bihar",
+    country: "IN",
+    data_mode: "fallback",
+    verified: false,
+    overall_risk: "moderate",
+    risk_score: 61,
+    detected_risks: [
+      {
+        type: "flood",
+        level: "moderate",
+        reason: "Fallback rainfall and humidity risk active",
+      },
+    ],
+    farmer_advisory:
+      "Fallback flood risk active. Clear drainage and move equipment to higher ground.",
+    weather_used: {
+      temperature_celsius: 31,
+      humidity_percent: 84,
+      rainfall_1h_mm: 14,
+    },
+    verification: {
+      source: "OpenWeather",
+      fetched_at: new Date().toISOString(),
+      confidence: "low",
+    },
+  });
+
+  createRealRiskMiniCard(
+    "page-disaster",
+    data,
+    `Real Weather Risk Check — ${data.city || "Bihar"}`
+  );
+
+  const smsText = document.getElementById("sms-text");
+  if (smsText && data.farmer_advisory) {
+    smsText.textContent = `[Verified Weather Layer] ${data.farmer_advisory}`;
+  }
+
+  console.log("[EarthAI] Disaster Real Verification:", data);
+}
+
+async function initRealFarmerVerification() {
+  const data = await fetchFromAPI("/api/real/risk-check/Ajmer", {
+    city: "Ajmer",
+    country: "IN",
+    data_mode: "fallback",
+    verified: false,
+    overall_risk: "moderate",
+    risk_score: 55,
+    detected_risks: [
+      {
+        type: "heatwave",
+        level: "moderate",
+        reason: "Fallback heat risk active",
+      },
+    ],
+    farmer_advisory:
+      "Fallback heat advisory active. Avoid field work during afternoon and increase irrigation where possible.",
+    weather_used: {
+      temperature_celsius: 38,
+      humidity_percent: 46,
+      rainfall_1h_mm: 0,
+    },
+    verification: {
+      source: "OpenWeather",
+      fetched_at: new Date().toISOString(),
+      confidence: "low",
+    },
+  });
+
+  createRealRiskMiniCard(
+    "page-farmer",
+    data,
+    `Real Farmer Weather Advisory — ${data.city || "Ajmer"}`
+  );
+
+  const farmerSms = document.getElementById("farmer-sms");
+  if (farmerSms && data.farmer_advisory) {
+    farmerSms.textContent = `[Verified Weather Advisory] ${data.farmer_advisory}`;
+  }
+
+  const banner = document.getElementById("warning-banner");
+  if (banner) {
+    const sub = banner.querySelector(".wb-sub");
+    if (sub && data.farmer_advisory) {
+      sub.textContent = data.farmer_advisory;
+    }
+  }
+
+  console.log("[EarthAI] Farmer Real Verification:", data);
+}
+
+/* Page watcher for real verification overlays */
+const _realVerificationPageInited = {
+  disaster: false,
+  farmer: false,
+};
+
+function initRealVerificationPageWatcher() {
+  const pagesContainer = document.getElementById("pages-container");
+  if (!pagesContainer) return;
+
+  function checkRealPages() {
+    const disasterPage = document.getElementById("page-disaster");
+    if (
+      disasterPage &&
+      disasterPage.classList.contains("active") &&
+      !_realVerificationPageInited.disaster
+    ) {
+      _realVerificationPageInited.disaster = true;
+      setTimeout(() => {
+        initRealDisasterVerification().catch((e) =>
+          console.warn("[EarthAI] Disaster real verification failed:", e)
+        );
+      }, 900);
+    }
+
+    const farmerPage = document.getElementById("page-farmer");
+    if (
+      farmerPage &&
+      farmerPage.classList.contains("active") &&
+      !_realVerificationPageInited.farmer
+    ) {
+      _realVerificationPageInited.farmer = true;
+      setTimeout(() => {
+        initRealFarmerVerification().catch((e) =>
+          console.warn("[EarthAI] Farmer real verification failed:", e)
+        );
+      }, 900);
+    }
+  }
+
+  const observer = new MutationObserver(checkRealPages);
+  observer.observe(pagesContainer, {
+    subtree: true,
+    attributes: true,
+    attributeFilter: ["class", "style"],
+  });
+
+  checkRealPages();
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(initRealVerificationPageWatcher, 1800);
+  });
+} else {
+  setTimeout(initRealVerificationPageWatcher, 1800);
+}
