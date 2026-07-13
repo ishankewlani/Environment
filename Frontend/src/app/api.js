@@ -1877,3 +1877,172 @@ if (document.readyState === "loading") {
 } else {
   setTimeout(createFeedbackModal, 2500);
 }
+
+/* ════════════════════════════════════════════════════════════════
+   PHASE 3G — USER VALIDATION SUMMARY UI
+   Shows /api/feedback/summary on dashboard sidebar
+   ════════════════════════════════════════════════════════════════ */
+
+function getTopKey(obj) {
+  if (!obj || typeof obj !== "object") return "No data yet";
+
+  const entries = Object.entries(obj);
+  if (!entries.length) return "No data yet";
+
+  entries.sort((a, b) => b[1] - a[1]);
+  return `${entries[0][0]} (${entries[0][1]})`;
+}
+
+function createValidationSummaryPanel(summary) {
+  const existing = document.getElementById("validation-summary-panel");
+  if (existing) existing.remove();
+
+  const statusBox = document.querySelector(".sys-status");
+  if (!statusBox) return;
+
+  const total = summary.total_responses ?? 0;
+  const status = summary.validation_status || "waiting_for_responses";
+
+  const topUsefulness = getTopKey(summary.usefulness_breakdown);
+  const topFeature = getTopKey(summary.most_useful_feature_breakdown);
+  const topLanguage = getTopKey(summary.preferred_language_breakdown);
+  const timelyAlerts = getTopKey(summary.timely_alerts_breakdown);
+
+  const panel = document.createElement("div");
+  panel.id = "validation-summary-panel";
+  panel.style.marginTop = "0.8rem";
+  panel.style.padding = "0.9rem";
+  panel.style.borderRadius = "14px";
+  panel.style.border = "1px solid rgba(0,217,255,0.35)";
+  panel.style.background = "rgba(0,217,255,0.075)";
+  panel.style.fontFamily = "var(--font-mono, monospace)";
+
+  panel.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:0.5rem;">
+      <strong style="font-size:0.76rem;color:var(--text-primary);letter-spacing:0.04em;">
+        USER VALIDATION
+      </strong>
+      <span style="font-size:0.68rem;color:var(--cyan,#00d9ff);">
+        ${String(status).replaceAll("_", " ").toUpperCase()}
+      </span>
+    </div>
+
+    <div style="font-size:0.68rem;color:var(--text-secondary);line-height:1.7;margin-top:0.55rem;">
+      Total Responses: <span style="color:var(--text-primary);font-weight:700;">${total}</span><br/>
+      Usefulness: ${topUsefulness}<br/>
+      Top Feature: ${topFeature}<br/>
+      Language: ${topLanguage}<br/>
+      Alert Timing: ${timelyAlerts}
+    </div>
+
+    <button id="btn-view-validation-summary" style="
+      margin-top:0.7rem;
+      width:100%;
+      padding:0.55rem 0.7rem;
+      border:none;
+      border-radius:10px;
+      cursor:pointer;
+      background:linear-gradient(135deg,#00d9ff,#0099cc);
+      color:#061014;
+      font-weight:700;
+      font-size:0.72rem;
+    ">
+      View Validation Summary
+    </button>
+    <button id="btn-download-feedback-csv" style="
+      margin-top:0.5rem;
+      width:100%;
+      padding:0.55rem 0.7rem;
+      border:none;
+      border-radius:10px;
+      cursor:pointer;
+      background:rgba(255,255,255,0.1);
+      color:#fff;
+      font-weight:700;
+      font-size:0.72rem;
+    ">
+      Download Feedback CSV
+    </button>
+  `;
+
+  statusBox.appendChild(panel);
+
+  const btn = panel.querySelector("#btn-view-validation-summary");
+  if (btn) {
+    btn.addEventListener("click", () => {
+      const quotes = (summary.sample_user_quotes || [])
+        .filter(Boolean)
+        .map((q, i) => `${i + 1}. ${q}`)
+        .join("\n");
+
+      const text = `
+Rakshak User Validation Summary
+
+Total Responses: ${total}
+Validation Status: ${status}
+
+Usefulness:
+${JSON.stringify(summary.usefulness_breakdown || {}, null, 2)}
+
+Most Useful Feature:
+${JSON.stringify(summary.most_useful_feature_breakdown || {}, null, 2)}
+
+Preferred Language:
+${JSON.stringify(summary.preferred_language_breakdown || {}, null, 2)}
+
+Timely Alerts:
+${JSON.stringify(summary.timely_alerts_breakdown || {}, null, 2)}
+
+Common Improvements:
+${JSON.stringify(summary.common_improvements || {}, null, 2)}
+
+User Quotes:
+${quotes || "No quotes yet"}
+
+Conclusion:
+${summary.conclusion || "Validation is in progress."}
+      `.trim();
+
+      alert(text);
+    });
+  }
+
+  const csvBtn = panel.querySelector("#btn-download-feedback-csv");
+  if (csvBtn) {
+    csvBtn.addEventListener("click", () => {
+      window.open(`${API_BASE_URL}/api/feedback/export.csv`, "_blank");
+    });
+  }
+}
+
+async function initValidationSummaryUI() {
+  try {
+    const summary = await fetchFromAPI("/api/feedback/summary", {
+      project: "Rakshak – Earth Immune System AI",
+      summary_type: "User Validation Summary",
+      total_responses: 0,
+      usefulness_breakdown: {},
+      most_useful_feature_breakdown: {},
+      preferred_language_breakdown: {},
+      timely_alerts_breakdown: {},
+      common_improvements: {},
+      sample_user_quotes: [],
+      validation_status: "waiting_for_responses",
+      conclusion: "No user feedback submitted yet.",
+    });
+
+    createValidationSummaryPanel(summary);
+    console.log("[EarthAI] User Validation Summary:", summary);
+  } catch (error) {
+    console.warn("[EarthAI] Validation summary UI failed:", error);
+  }
+}
+
+/* Load validation summary after feedback module is ready */
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(initValidationSummaryUI, 3200);
+  });
+} else {
+  setTimeout(initValidationSummaryUI, 3200);
+}

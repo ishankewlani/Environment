@@ -6,6 +6,8 @@ from pathlib import Path
 from typing import Any, Dict, List
 from uuid import uuid4
 
+import csv
+from io import StringIO
 from app.schemas.feedback_schema import FeedbackCreate
 
 
@@ -129,3 +131,61 @@ def get_feedback_summary() -> Dict[str, Any]:
             else "No user feedback submitted yet."
         ),
     }
+def get_validation_report() -> Dict[str, Any]:
+    responses: List[Dict[str, Any]] = _load().get("responses", [])
+    summary = get_feedback_summary()
+
+    return {
+        "project": "Rakshak – Earth Immune System AI",
+        "report_type": "Build for Good User Validation Report",
+        "generated_at": _now_iso(),
+        "total_people_validated": len(responses),
+        "validation_summary": summary,
+        "key_findings": [
+            "Users need early and simple environmental risk warnings.",
+            "Farmer advisory and disaster warning are the most practical use cases.",
+            "Hindi/Hinglish/local language alerts are important for accessibility.",
+            "WhatsApp/SMS alerts are important future improvements.",
+        ],
+        "evidence_collected": {
+            "feedback_responses": len(responses),
+            "sample_quotes": summary.get("sample_user_quotes", []),
+        },
+        "next_actions": [
+            "Validate with more farmers and rural users.",
+            "Improve local-language advisory messages.",
+            "Connect alerts with WhatsApp/SMS in the next phase.",
+            "Add satellite/NDVI verification for forest monitoring.",
+        ],
+        "status": "validation_started" if responses else "waiting_for_user_feedback",
+    }
+
+
+def export_feedback_csv() -> str:
+    responses: List[Dict[str, Any]] = _load().get("responses", [])
+
+    output = StringIO()
+
+    fieldnames = [
+        "feedback_id",
+        "submitted_at",
+        "name",
+        "role",
+        "location",
+        "faced_environment_risk",
+        "current_alert_source",
+        "alerts_are_timely",
+        "rakshak_usefulness",
+        "most_useful_feature",
+        "preferred_language",
+        "improvement_needed",
+        "suggestion",
+    ]
+
+    writer = csv.DictWriter(output, fieldnames=fieldnames)
+    writer.writeheader()
+
+    for item in responses:
+        writer.writerow({key: item.get(key, "") for key in fieldnames})
+
+    return output.getvalue()
