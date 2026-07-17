@@ -143,7 +143,7 @@ const FALLBACK = {
       temperature_increase_celsius: 2.4,
       flood_risk_increase_percent: 2.9,
       groundwater_reduction_percent: 18.0,
-      air_quality_impact_aqi: -2594,
+      air_quality_impact_aqi: 18,
       biodiversity_loss_species: 31,
     },
     recommendations: [

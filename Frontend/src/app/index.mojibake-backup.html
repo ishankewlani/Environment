@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Earth Immune System AI â€” India Environmental Intelligence</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <!-- Main CSS -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Three.js Background Canvas -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+       LANDING PAGE
+  â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+  <section id="landing">
+    <!-- Particle overlay -->
+    <div class="landing-overlay"></div>
+
+    <!-- Top bar -->
+    <div class="landing-topbar">
+      <div class="logo-mark">
+        <span class="logo-icon">ðŸŒ</span>
+        <span class="logo-text">Earth<span class="logo-accent">AI</span></span>
+      </div>
+      <div class="landing-nav-links">
+        
+        <button class="btn-outline-sm" id="btn-launch-top">Launch Dashboard</button>
+        <button class="light-mode-btn" id="lm-toggle-landing" title="Toggle light mode">â˜€ï¸</button>
+      </div>
+    </div>
+
+    <!-- Hero Content -->
+    <div class="hero-content">
+      <!-- Status badge -->
+      <div class="hero-badge">
+        <span class="pulse-dot"></span>
+        <span>Live Â· Monitoring 2.4M kmÂ² of Indian Forest</span>
+      </div>
+
+      <h1 class="hero-title">
+        Earth Immune<br />
+        <span class="hero-title-accent">System AI</span>
+      </h1>
+
+      <p class="hero-subtitle">
+        India's AI-Powered Environmental Intelligence Platform.<br />
+        Real-time forest monitoring, disaster prediction &amp; farmer protection.
+      </p>
+
+      <!-- Stats row -->
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="hero-stat-num" data-target="2400000" data-suffix=" kmÂ²">0</span>
+          <span class="hero-stat-label">Forest Area Monitored</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-num" data-target="8200000" data-suffix="">0</span>
+          <span class="hero-stat-label">Trees Saved</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-num" data-target="1300000" data-suffix="">0</span>
+          <span class="hero-stat-label">Farmers Protected</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <span class="hero-stat-num" data-target="147" data-suffix="">0</span>
+          <span class="hero-stat-label">Active Alerts</span>
+        </div>
+      </div>
+
+      <!-- CTA Buttons -->
+      <div class="hero-cta">
+        <button class="btn-primary" id="btn-launch">
+          <span class="btn-icon">âš¡</span>
+          Launch Dashboard
+        </button>
+        
+      </div>
+    </div>
+
+    <!-- â”€â”€â”€ INTERACTIVE 3D EARTH (hero right side) â”€â”€â”€ -->
+    <div class="earth-hero-wrap" id="earth-hero-wrap">
+      <canvas id="earth-canvas"></canvas>
+      <div class="earth-drag-hint" id="earth-drag-hint">
+        <span class="earth-hint-icon">ðŸ–±</span>
+        <span>Drag to rotate</span>
+      </div>
+      <!-- Status chips -->
+      <div class="ig-chips">
+        <div class="ig-chip"><span class="ig-chip-dot"></span>LIVE SATELLITE FEED</div>
+        <div class="ig-chip"><span class="ig-chip-dot red"></span>12 CRITICAL</div>
+        <div class="ig-chip"><span class="ig-chip-dot ora"></span>98.7% COVERAGE</div>
+      </div>
+    </div>
+
+    <!-- Features scroll reveal -->
+    <div class="features-preview" id="features-section">
+      <div class="fp-label">Platform Capabilities</div>
+      <h2 class="fp-section-title">One Platform.<br /><span>Four Superpowers.</span></h2>
+      <div class="fp-grid">
+        <div class="fp-card">
+          <div class="fp-icon">ðŸŒ²</div>
+          <div class="fp-title">Forest Monitor</div>
+          <div class="fp-desc">Satellite-based illegal deforestation detection with real-time AI alerts and impact prediction</div>
+          <div class="fp-arrow">â†’ Explore</div>
+        </div>
+        <div class="fp-card">
+          <div class="fp-icon">ðŸŒ±</div>
+          <div class="fp-title">Tree Planner</div>
+          <div class="fp-desc">AI-driven plantation recommendations by state, soil type &amp; climate with full simulation</div>
+          <div class="fp-arrow">â†’ Explore</div>
+        </div>
+        <div class="fp-card">
+          <div class="fp-icon">âš ï¸</div>
+          <div class="fp-title">Disaster Risk</div>
+          <div class="fp-desc">Early warning system for floods, cyclones &amp; heatwaves with SMS alerts to authorities</div>
+          <div class="fp-arrow">â†’ Explore</div>
+        </div>
+        <div class="fp-card">
+          <div class="fp-icon">ðŸŒ¾</div>
+          <div class="fp-title">Farmer Advisory</div>
+          <div class="fp-desc">Crop-specific guidance &amp; advance SMS warnings before floods and environmental events</div>
+          <div class="fp-arrow">â†’ Explore</div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+       APP CONTAINER
+  â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+  <div id="app" class="app-hidden">
+
+    <!-- â”€â”€â”€ SIDEBAR â”€â”€â”€ -->
+    <aside id="sidebar">
+      <div class="sidebar-logo">
+        <span class="logo-icon">ðŸŒ</span>
+        <div>
+          <div class="sidebar-logo-text">Earth Immune</div>
+          <div class="sidebar-logo-sub">System AI</div>
+        </div>
+      </div>
+
+      <div class="sidebar-live">
+        <span class="live-dot"></span>
+        <span>LIVE Â· 4.2M Data Points</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" data-page="dashboard">
+          <span class="nav-item-icon">â¬¡</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" class="nav-item" data-page="forest">
+          <span class="nav-item-icon">ðŸŒ²</span>
+          <span>Forest Monitor</span>
+        </a>
+        <a href="#" class="nav-item" data-page="plantation">
+          <span class="nav-item-icon">ðŸŒ±</span>
+          <span>Tree Planner</span>
+        </a>
+        <a href="#" class="nav-item" data-page="disaster">
+          <span class="nav-item-icon">âš ï¸</span>
+          <span>Disaster Risk</span>
+        </a>
+        <a href="#" class="nav-item" data-page="farmer">
+          <span class="nav-item-icon">ðŸŒ¾</span>
+          <span>Farmer Advisory</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-stats">
+        <div class="ss-item">
+          <span class="ss-val neon">2.4M kmÂ²</span>
+          <span class="ss-label">Forests Monitored</span>
+        </div>
+        <div class="ss-item">
+          <span class="ss-val gold">147</span>
+          <span class="ss-label">Active Alerts</span>
+        </div>
+        <div class="ss-item">
+          <span class="ss-val neon">8.2M</span>
+          <span class="ss-label">Trees Saved</span>
+        </div>
+        <div class="ss-item">
+          <span class="ss-val cyan">1.3M</span>
+          <span class="ss-label">Farmers Protected</span>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="sys-status">
+          <span class="ss-row"><span class="pulse-dot sm"></span>Satellite Feed Â· Active</span>
+          <span class="ss-row"><span class="pulse-dot sm cyan"></span>AI Model Â· Running</span>
+          <span class="ss-row"><span class="status-time">â± Last scan: 30s ago</span></span>
+        </div>
+        <!-- Back button moved to top-nav for persistent visibility -->
+      </div>
+    </aside>
+
+    <!-- â”€â”€â”€ MAIN AREA â”€â”€â”€ -->
+    <div id="main-area">
+
+      <!-- TOP NAVIGATION -->
+      <header id="top-nav">
+        <div class="top-nav-left">
+          <button class="sidebar-toggle" id="sidebar-toggle">â˜°</button>
+          <div class="breadcrumb" id="breadcrumb">Dashboard</div>
+        </div>
+        <div class="top-nav-center">
+          <div class="tab-pills" id="top-tabs">
+            <button class="tab-pill active" data-page="dashboard">Dashboard</button>
+            <button class="tab-pill" data-page="forest">Forest Monitor</button>
+            <button class="tab-pill" data-page="plantation">Tree Planner</button>
+            <button class="tab-pill" data-page="farmer">Farmer Advisory</button>
+          </div>
+        </div>
+        <div class="top-nav-right">
+          <div class="alert-badge">
+            <span>âš ï¸</span>
+            <span class="badge-count">12</span>
+          </div>
+          <div class="coverage-chip">
+            <span class="pulse-dot sm"></span>
+            <span>98.7% Coverage</span>
+          </div>
+          <div class="live-chip">â— LIVE</div>
+          <button class="btn-back-landing" id="btn-back" title="Back to Home"> <- Back to Home</button>
+          <button class="light-mode-btn" id="lm-toggle-app" title="Toggle light mode">â˜€ï¸</button>
+        </div>
+      </header>
+
+      <!-- â”€â”€â”€ PAGES â”€â”€â”€ -->
+      <div id="pages-container">
+
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â• PAGE: DASHBOARD â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+        <div class="page active" id="page-dashboard">
+          <!-- Stats Row -->
+          <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:0.75rem;margin-bottom:1.25rem;">
+
+  <div style="background:#0D2B14;border:1.5px solid #00E840;border-radius:12px;padding:1rem;display:flex;align-items:center;gap:0.75rem;box-shadow:0 0 16px rgba(0,232,64,0.2);">
+    <span style="font-size:1.5rem;">ðŸŒ²</span>
+    <div>
+      <span class="stat-num neon" data-count="2400000" data-suffix=" kmÂ²" style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:#00FF88;display:block;">0</span>
+      <span style="font-size:0.7rem;color:#8FB89A;display:block;margin-top:2px;">Forest Monitored</span>
+      <span style="font-size:0.68rem;color:#00FF88;font-family:'JetBrains Mono',monospace;display:block;">â†‘ +2.3% this month</span>
+    </div>
+  </div>
+
+  <div style="background:#0D2B14;border:1.5px solid #00E840;border-radius:12px;padding:1rem;display:flex;align-items:center;gap:0.75rem;box-shadow:0 0 16px rgba(0,232,64,0.2);">
+    <span style="font-size:1.5rem;">ðŸŒ±</span>
+    <div>
+      <span class="stat-num gold" data-count="8200000" data-suffix="" style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:#FFD166;display:block;">0</span>
+      <span style="font-size:0.7rem;color:#8FB89A;display:block;margin-top:2px;">Trees Saved</span>
+      <span style="font-size:0.68rem;color:#00FF88;font-family:'JetBrains Mono',monospace;display:block;">â†‘ +14.2K today</span>
+    </div>
+  </div>
+
+  <div style="background:#0D2B14;border:1.5px solid #00E840;border-radius:12px;padding:1rem;display:flex;align-items:center;gap:0.75rem;box-shadow:0 0 16px rgba(0,232,64,0.2);">
+    <span style="font-size:1.5rem;">âš¡</span>
+    <div>
+      <span class="stat-num red" data-count="147" data-suffix="" style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:#FF4D4D;display:block;">0</span>
+      <span style="font-size:0.7rem;color:#8FB89A;display:block;margin-top:2px;">Active Alerts</span>
+      <span style="font-size:0.68rem;color:#FF9F1C;font-family:'JetBrains Mono',monospace;display:block;">âš  12 critical</span>
+    </div>
+  </div>
+
+  <div style="background:#0D2B14;border:1.5px solid #00E840;border-radius:12px;padding:1rem;display:flex;align-items:center;gap:0.75rem;box-shadow:0 0 16px rgba(0,232,64,0.2);">
+    <span style="font-size:1.5rem;">ðŸŒ¾</span>
+    <div>
+      <span class="stat-num cyan" data-count="1300000" data-suffix="" style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:#00D9FF;display:block;">0</span>
+      <span style="font-size:0.7rem;color:#8FB89A;display:block;margin-top:2px;">Farmers Protected</span>
+      <span style="font-size:0.68rem;color:#00FF88;font-family:'JetBrains Mono',monospace;display:block;">â†‘ +890 today</span>
+    </div>
+  </div>
+
+  <div style="background:#0D2B14;border:1.5px solid #00E840;border-radius:12px;padding:1rem;display:flex;align-items:center;gap:0.75rem;box-shadow:0 0 16px rgba(0,232,64,0.2);">
+    <span style="font-size:1.5rem;">ðŸƒ</span>
+    <div>
+      <span class="stat-num neon" data-count="340000" data-suffix=" MT" style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:#00FF88;display:block;">0</span>
+      <span style="font-size:0.7rem;color:#8FB89A;display:block;margin-top:2px;">Carbon Reduction</span>
+      <span style="font-size:0.68rem;color:#00FF88;font-family:'JetBrains Mono',monospace;display:block;">â†‘ Target on track</span>
+    </div>
+  </div>
+
+  <div style="background:#0D2B14;border:1.5px solid #00E840;border-radius:12px;padding:1rem;display:flex;align-items:center;gap:0.75rem;box-shadow:0 0 16px rgba(0,232,64,0.2);">
+    <span style="font-size:1.5rem;">ðŸ’§</span>
+    <div>
+      <span class="stat-num cyan" data-count="28" data-suffix="%" style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;color:#00D9FF;display:block;">0</span>
+      <span style="font-size:0.7rem;color:#8FB89A;display:block;margin-top:2px;">Groundwater Recovery</span>
+      <span style="font-size:0.68rem;color:#00FF88;font-family:'JetBrains Mono',monospace;display:block;">â†‘ +3% vs last year</span>
+    </div>
+  </div>
+
+</div>
+            
+
+          <!-- Command Center Grid -->
+          <div class="dashboard-grid">
+            <!-- Main Map -->
+            <div class="glass-card map-card">
+              <div class="card-header">
+                <span class="card-title">ðŸ—º India Live Environmental Map</span>
+                <div class="card-controls">
+                  <button class="ctrl-btn active" data-layer="all">All</button>
+                  <button class="ctrl-btn" data-layer="forest">Forest</button>
+                  <button class="ctrl-btn" data-layer="flood">Flood</button>
+                  <button class="ctrl-btn" data-layer="temp">Heat</button>
+                </div>
+              </div>
+              <div id="dashboard-map" class="map-container"></div>
+              <div class="map-legend">
+                <span class="legend-item"><span class="ld-dot" style="background:#FF4D4D"></span>High Temp Zone</span>
+                <span class="legend-item"><span class="ld-dot" style="background:#FF9F1C"></span>Flood Risk</span>
+                <span class="legend-item"><span class="ld-dot" style="background:#FF4D4D"></span>Deforestation</span>
+                <span class="legend-item"><span class="ld-dot" style="background:#00FF88"></span>Protected Forest</span>
+              </div>
+            </div>
+
+            <!-- Right Panel -->
+            <div class="right-panel">
+              <!-- Live Alerts -->
+              <div class="glass-card alerts-card">
+                <div class="card-header">
+                  <span class="card-title">ðŸš¨ Live Alerts</span>
+                  <span class="alert-count-badge">147</span>
+                </div>
+                <div class="alerts-list" id="dashboard-alerts"></div>
+              </div>
+
+              <!-- Activity Feed -->
+              <div class="glass-card activity-card">
+                <div class="card-header">
+                  <span class="card-title">ðŸ“¡ Activity Feed</span>
+                </div>
+                <div class="activity-list" id="activity-feed"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Charts Row -->
+          <div class="charts-row">
+            <div class="glass-card chart-card">
+              <div class="card-header"><span class="card-title">ðŸŒ² Forest Coverage Trend</span></div>
+              <canvas id="chart-forest-trend"></canvas>
+            </div>
+            <div class="glass-card chart-card">
+              <div class="card-header"><span class="card-title">ðŸŒ¡ Temperature vs Deforestation</span></div>
+              <canvas id="chart-deforestation"></canvas>
+            </div>
+            <div class="glass-card chart-card">
+              <div class="card-header"><span class="card-title">ðŸ’§ Groundwater Trend</span></div>
+              <canvas id="chart-groundwater"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â• PAGE: FOREST MONITOR â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+        <div class="page" id="page-forest">
+          <div class="page-header">
+            <h2 class="page-title">ðŸŒ² Forest Monitoring &amp; Impact Prediction</h2>
+            <div class="page-header-actions">
+              <button class="btn-alert-auth">ðŸš¨ Alert Authorities Now</button>
+            </div>
+          </div>
+
+          <div class="forest-grid">
+            <!-- Map Panel -->
+            <div class="glass-card forest-map-card">
+              <div class="card-header">
+                <span class="card-title">ðŸ—º Forest Cover Map â€” India</span>
+                <div class="forest-layer-btns">
+                  <button class="layer-btn active" data-flayer="coverage">Coverage</button>
+                  <button class="layer-btn" data-flayer="deforestation">Deforestation</button>
+                  <button class="layer-btn" data-flayer="alerts">Alert Zones</button>
+                </div>
+              </div>
+              <div id="forest-map" class="map-container"></div>
+              <div class="forest-map-legend">
+                <span class="legend-item"><span class="ld-dot" style="background:#00FF88"></span>Dense Forest</span>
+                <span class="legend-item"><span class="ld-dot" style="background:#FFD166"></span>Sparse Forest</span>
+                <span class="legend-item"><span class="ld-dot" style="background:#FF9F1C"></span>Degraded</span>
+                <span class="legend-item"><span class="ld-dot" style="background:#FF4D4D"></span>Deforested</span>
+              </div>
+            </div>
+
+            <!-- Detection Feed -->
+            <div class="glass-card detection-card">
+              <div class="card-header">
+                <span class="card-title">ðŸ“¡ Detection Feed</span>
+                <span class="live-badge">LIVE</span>
+              </div>
+              <div class="detection-feed" id="detection-feed"></div>
+            </div>
+
+            <!-- AI Impact Prediction -->
+            <div class="glass-card impact-card">
+              <div class="card-header">
+                <span class="card-title">ðŸ¤– AI Impact Prediction</span>
+              </div>
+              <div class="scenario-box" id="scenario-box">
+                <div class="scenario-title" id="scenario-title">Scenario: 1,248 trees removed from Assam 7B</div>
+                <div class="scenario-sub">Predicted environmental threat level: 59 months</div>
+              </div>
+              <div class="impact-metrics" id="impact-metrics">
+                <div class="impact-metric">
+                  <div class="im-header">
+                    <span class="im-icon">ðŸŒ¡</span>
+                    <span class="im-label">Temperature Increase</span>
+                    <span class="im-badge high">HIGH</span>
+                  </div>
+                  <div class="im-value red">+2.4Â°C</div>
+                  <div class="im-bar"><div class="im-bar-fill red" style="width:72%"></div></div>
+                </div>
+                <div class="impact-metric">
+                  <div class="im-header">
+                    <span class="im-icon">ðŸŒŠ</span>
+                    <span class="im-label">Flood Risk Increase</span>
+                    <span class="im-badge critical">10BN</span>
+                  </div>
+                  <div class="im-value orange">+2.9%</div>
+                  <div class="im-bar"><div class="im-bar-fill orange" style="width:58%"></div></div>
+                </div>
+                <div class="impact-metric">
+                  <div class="im-header">
+                    <span class="im-icon">ðŸ’§</span>
+                    <span class="im-label">Groundwater Reduction</span>
+                    <span class="im-badge cyan">CRITICAL</span>
+                  </div>
+                  <div class="im-value cyan">âˆ’18%</div>
+                  <div class="im-bar"><div class="im-bar-fill cyan" style="width:45%"></div></div>
+                </div>
+                <div class="impact-metric">
+                  <div class="im-header">
+                    <span class="im-icon">ðŸ’¨</span>
+                    <span class="im-label">Air Quality Impact</span>
+                    <span class="im-badge high">POOR</span>
+                  </div>
+                  <div class="im-value red">âˆ’2,594</div>
+                  <div class="im-bar"><div class="im-bar-fill red" style="width:63%"></div></div>
+                </div>
+                <div class="impact-metric">
+                  <div class="im-header">
+                    <span class="im-icon">ðŸ¦‹</span>
+                    <span class="im-label">Biodiversity Loss</span>
+                    <span class="im-badge gold">MGN</span>
+                  </div>
+                  <div class="im-value gold">âˆ’24 species</div>
+                  <div class="im-bar"><div class="im-bar-fill gold" style="width:80%"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â• PAGE: TREE PLANNER â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+        <div class="page" id="page-plantation">
+          <div class="page-header">
+            <h2 class="page-title">ðŸŒ± Smart Tree Plantation Planner</h2>
+          </div>
+
+          <div class="plantation-grid">
+            <!-- Left Panel -->
+            <div class="plantation-left">
+              <div class="glass-card">
+                <div class="card-header"><span class="card-title">ðŸ“ Select Location</span></div>
+                <div class="select-group">
+                  <label class="field-label">State</label>
+                  <select class="premium-select" id="plant-state">
+                    <option value="">Select State</option>
+                    <option value="rajasthan">Rajasthan</option>
+                    <option value="mp">Madhya Pradesh</option>
+                    <option value="up">Uttar Pradesh</option>
+                    <option value="maharashtra">Maharashtra</option>
+                    <option value="gujarat">Gujarat</option>
+                    <option value="assam">Assam</option>
+                    <option value="kerala">Kerala</option>
+                    <option value="punjab">Punjab</option>
+                    <option value="bihar">Bihar</option>
+                    <option value="karnataka">Karnataka</option>
+                  </select>
+                </div>
+                <div class="select-group">
+                  <label class="field-label">District</label>
+                  <select class="premium-select" id="plant-district">
+                    <option value="">Select District</option>
+                    <option>Jaisalmer</option>
+                    <option>Barmer</option>
+                    <option>Jodhpur</option>
+                    <option>Bikaner</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="glass-card">
+                <div class="card-header"><span class="card-title">ðŸ”´ Priority Zones</span></div>
+                <div class="priority-zones" id="priority-zones"></div>
+              </div>
+
+              <div class="glass-card">
+                <div class="card-header"><span class="card-title">ðŸŒ¿ Recommended Species</span></div>
+                <div class="species-list" id="species-list"></div>
+              </div>
+            </div>
+
+            <!-- Center Map -->
+            <div class="glass-card plantation-map-card">
+              <div class="card-header">
+                <span class="card-title">ðŸ—º India Plantation Priority Heat Map</span>
+              </div>
+              <div id="plantation-map" class="map-container"></div>
+              <div class="heatmap-legend">
+                <span class="hl-label">Plantation Priority</span>
+                <div class="hl-bar">
+                  <div class="hl-grad"></div>
+                  <div class="hl-labels">
+                    <span>Low</span><span>Medium</span><span>High</span><span>Critical</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Simulation -->
+            <div class="glass-card simulation-card">
+              <div class="card-header">
+                <span class="card-title">ðŸ”¬ Plantation Simulation</span>
+              </div>
+              <div id="simulation-result">
+                <div class="sim-location" id="sim-location">
+                  <span class="sim-loc-icon">ðŸ“</span>
+                  <div>
+                    <div class="sim-loc-name">Rajasthan â€” Jaisalmer</div>
+                    <div class="sim-loc-sub">Plant 59,923 Neem trees recommended</div>
+                  </div>
+                </div>
+
+                <div class="sim-metrics">
+                  <div class="sim-metric">
+                    <div class="sm-label"><span>ðŸŒ¡</span> Temperature Reduction</div>
+                    <div class="sm-values">
+                      <span class="sm-before">48Â°C</span>
+                      <span class="sm-arrow">â†’</span>
+                      <span class="sm-after green">41.2Â°C</span>
+                      <span class="sm-delta neon">âˆ’3.8Â°C</span>
+                    </div>
+                    <div class="im-bar"><div class="im-bar-fill neon" style="width:75%"></div></div>
+                  </div>
+                  <div class="sim-metric">
+                    <div class="sm-label"><span>ðŸŒŠ</span> Flood Risk Reduction</div>
+                    <div class="sm-values">
+                      <span class="sm-before">76%</span>
+                      <span class="sm-arrow">â†’</span>
+                      <span class="sm-after green">52%</span>
+                      <span class="sm-delta neon">âˆ’28%</span>
+                    </div>
+                    <div class="im-bar"><div class="im-bar-fill cyan" style="width:55%"></div></div>
+                  </div>
+                  <div class="sim-metric">
+                    <div class="sm-label"><span>ðŸ’§</span> Groundwater Recharge</div>
+                    <div class="sm-values">
+                      <span class="sm-before">Low</span>
+                      <span class="sm-arrow">â†’</span>
+                      <span class="sm-after green">Moderate</span>
+                      <span class="sm-delta neon">+35%</span>
+                    </div>
+                    <div class="im-bar"><div class="im-bar-fill neon" style="width:60%"></div></div>
+                  </div>
+                  <div class="sim-metric">
+                    <div class="sm-label"><span>ðŸŒ¿</span> Environmental Health Score</div>
+                    <div class="sm-values">
+                      <span class="sm-before">32/100</span>
+                      <span class="sm-arrow">â†’</span>
+                      <span class="sm-after green">61/100</span>
+                      <span class="sm-delta neon">+20 pts</span>
+                    </div>
+                    <div class="im-bar"><div class="im-bar-fill gold" style="width:61%"></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â• PAGE: DISASTER RISK â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+        <div class="page" id="page-disaster">
+          <div class="page-header">
+            <h2 class="page-title">âš ï¸ Disaster Risk Detection &amp; Early Warning System</h2>
+          </div>
+
+          <div class="disaster-grid">
+            <!-- Left -->
+            <div class="disaster-left">
+              <div class="glass-card">
+                <div class="card-header"><span class="card-title">ðŸ“ Select Location</span></div>
+                <input type="text" class="search-input" placeholder="ðŸ” Search location..." id="disaster-search" />
+              </div>
+
+              <div class="glass-card">
+                <div class="card-header"><span class="card-title">âš ï¸ Vulnerable Regions</span></div>
+                <div class="risk-regions" id="risk-regions"></div>
+              </div>
+
+            </div>
+
+            <!-- Center Map -->
+            <div class="glass-card disaster-map-card">
+              <div class="card-header">
+                <span class="card-title">ðŸ—º Live Risk Map</span>
+                <div class="risk-layer-toggle">
+                  <button class="layer-btn active" data-risk="all">All Risks</button>
+                  <button class="layer-btn" data-risk="flood">Flood</button>
+                  <button class="layer-btn" data-risk="heat">Heatwave</button>
+                  <button class="layer-btn" data-risk="cyclone">Cyclone</button>
+                </div>
+              </div>
+              <div id="disaster-map" class="map-container"></div>
+            </div>
+
+            <!-- Right -->
+            <div class="disaster-right">
+              <!-- Forecast -->
+              <div class="glass-card">
+                <div class="card-header"><span class="card-title">ðŸŒ¤ Alert Composer &amp; Forecast</span></div>
+                <div class="forecast-row">
+                  <div class="forecast-item">
+                    <div class="fc-icon">â˜ï¸</div>
+                    <div class="fc-temp">47Â°</div>
+                    <div class="fc-label">Current</div>
+                    <div class="fc-loc">Rajasthan</div>
+                  </div>
+                  <div class="forecast-item">
+                    <div class="fc-icon">â›ˆï¸</div>
+                    <div class="fc-temp">+23Â°</div>
+                    <div class="fc-label">Today</div>
+                    <div class="fc-loc">Gover</div>
+                  </div>
+                  <div class="forecast-item">
+                    <div class="fc-icon">ðŸŒ¤ï¸</div>
+                    <div class="fc-temp">+23Â°</div>
+                    <div class="fc-label">Forecast</div>
+                    <div class="fc-loc">Uttarakhand</div>
+                  </div>
+                  <div class="forecast-item">
+                    <div class="fc-icon">ðŸŒ§ï¸</div>
+                    <div class="fc-temp">+23Â°</div>
+                    <div class="fc-label">Forecast</div>
+                    <div class="fc-loc">Dover</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SMS Alert -->
+              <div class="glass-card sms-card">
+                <div class="card-header"><span class="card-title">ðŸ“± SMS Alert Preview</span></div>
+                <div class="sms-preview">
+                  <div class="sms-bubble">
+                    <div class="sms-sender">NDRF ALERT</div>
+                    <div class="sms-text" id="sms-text">EMERGENCY: Extreme Flood Warning for Bihar. Immediate evacuation in low-lying areas. Contact NDRF helpline: 011-24363260. â€” NDRF.</div>
+                    <div class="sms-time">Just now</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Dashboard Notification -->
+              <div class="glass-card notif-card">
+                <div class="card-header"><span class="card-title">ðŸ”” Dashboard Notification</span></div>
+                <div class="notif-body">
+                  High Risk Alert: Severe Weather in Odisha. Activation of emergency protocols required. Coastal evacuation ordered by district authorities.
+                </div>
+              </div>
+
+              <!-- Timeline -->
+              <div class="glass-card timeline-card">
+                <div class="card-header">
+                  <span class="card-title">â± Timeline</span>
+                </div>
+                <div class="timeline-meta">Peak predicted 14:00 to 18:00 hrs Â· Duration: 4 days</div>
+                <div class="timeline-icons">
+                  <div class="tl-icon active">ðŸŒŠ</div>
+                  <div class="tl-icon warn">ðŸ”¥</div>
+                  <div class="tl-icon">ðŸŒ€</div>
+                  <div class="tl-icon">ðŸ </div>
+                  <div class="tl-icon warn">âš ï¸</div>
+                  <div class="tl-icon">ðŸŒ§</div>
+                  <div class="tl-icon warn">âš¡</div>
+                  <div class="tl-icon">ðŸ›¡</div>
+                </div>
+                <div class="timeline-bar">
+                  <div class="tl-track">
+                    <div class="tl-progress"></div>
+                  </div>
+                </div>
+              </div>
+
+              <button class="btn-generate" id="btn-disaster-report">
+                ðŸ“Š Generate Status Report
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â• PAGE: FARMER ADVISORY â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
+        <div class="page" id="page-farmer">
+          <div class="page-header">
+            <h2 class="page-title">ðŸŒ¾ Farmer Advisory System</h2>
+          </div>
+
+          <div class="farmer-grid">
+            <!-- Left -->
+            <div class="farmer-left">
+              <div class="glass-card">
+                <div class="card-header"><span class="card-title">ðŸ“ Select Region</span></div>
+                <select class="premium-select" id="farmer-state">
+                  <option value="">Select State</option>
+                  <option value="punjab">Punjab</option>
+                  <option value="andhra">Andhra Pradesh</option>
+                  <option value="maharashtra">Maharashtra</option>
+                  <option value="up">Uttar Pradesh</option>
+                  <option value="mp">Madhya Pradesh</option>
+                  <option value="bihar">Bihar</option>
+                  <option value="rajasthan">Rajasthan</option>
+                  <option value="karnataka">Karnataka</option>
+                </select>
+                <select class="premium-select" id="farmer-district" style="margin-top:0.75rem">
+                  <option value="">Select District</option>
+                </select>
+              </div>
+
+              <!-- Crop Selector -->
+              <div class="glass-card">
+                <div class="card-header"><span class="card-title">ðŸŒ¾ Crop Type</span></div>
+                <div class="crop-selector" id="crop-selector">
+                  <div class="crop-item active" data-crop="rice">
+                    <span class="crop-icon">ðŸŒ¾</span>
+                    <span>Rice</span>
+                  </div>
+                  <div class="crop-item" data-crop="wheat">
+                    <span class="crop-icon">ðŸŒ¿</span>
+                    <span>Wheat</span>
+                  </div>
+                  <div class="crop-item" data-crop="cotton">
+                    <span class="crop-icon">â˜ï¸</span>
+                    <span>Cotton</span>
+                  </div>
+                  <div class="crop-item" data-crop="vegetables">
+                    <span class="crop-icon">ðŸ¥¦</span>
+                    <span>Vegetables</span>
+                  </div>
+                  <div class="crop-item" data-crop="millets">
+                    <span class="crop-icon">ðŸŒ±</span>
+                    <span>Millets</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Center Map -->
+            
+<!-- Big Centered Emergency Alert -->
+<div style="padding:0.5rem 0;">
+  <div id="warning-banner" style="
+    width:100%;
+    background:rgba(255,100,0,0.1);
+    border:2px solid #FF7B00;
+    border-radius:20px;
+    padding:2rem 1.75rem;
+    text-align:center;
+    box-shadow:0 0 60px rgba(255,100,0,0.2), 0 0 120px rgba(255,77,77,0.1);
+    animation:emergencyPulse 2.5s ease-in-out infinite;
+  ">
+    <!-- Icon -->
+    <div style="font-size:4rem;margin-bottom:1.25rem;animation:iconBounce 1.5s ease-in-out infinite;">ðŸš¨</div>
+
+    <!-- Level Badge -->
+    <div style="
+      display:inline-block;
+      background:#FF7B00;
+      color:#ffffff;
+      font-family:'Space Grotesk',sans-serif;
+      font-size:0.85rem;
+      font-weight:800;
+      padding:0.4rem 1.25rem;
+      border-radius:999px;
+      letter-spacing:0.12em;
+      text-transform:uppercase;
+      margin-bottom:1.5rem;
+    ">âš  EMERGENCY WARNING</div>
+
+    <!-- Main Title -->
+    <div class="wb-title" id="farmer-alert-title" style="
+      font-family:'Space Grotesk',sans-serif;
+      font-size:clamp(1.4rem,3vw,2.2rem);
+      font-weight:800;
+      color:#ffffff;
+      line-height:1.2;
+      margin-bottom:1rem;
+    ">CURRENT FLOOD WARNING: <span class="wb-level-text" style="color:#FF7B00;">MODERATE RISK</span></div>
+
+    <!-- Sub message -->
+    <div class="wb-sub" id="farmer-alert-sub" style="
+      font-size:1.05rem;
+      color:var(--text-secondary);
+      margin-bottom:2rem;
+      line-height:1.7;
+      max-width:520px;
+      margin-left:auto;
+      margin-right:auto;
+    ">Heavy rainfall predicted in the next 48 hours. Check field drainage immediately and move livestock to higher ground.</div>
+
+    <!-- Divider -->
+    <div style="width:60px;height:2px;background:linear-gradient(90deg,transparent,#FF7B00,transparent);margin:0 auto 2rem;"></div>
+
+    <!-- Info row -->
+    <div style="display:flex;justify-content:center;gap:2.5rem;flex-wrap:wrap;">
+      <div style="text-align:center;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:1.6rem;font-weight:700;color:#FF4444;">48 hrs</div>
+        <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:0.25rem;">Time to Impact</div>
+      </div>
+      <div style="width:1px;background:rgba(255,123,0,0.25);"></div>
+      <div style="text-align:center;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:1.6rem;font-weight:700;color:#FF9F1C;">3 Days</div>
+        <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:0.25rem;">Expected Duration</div>
+      </div>
+      <div style="width:1px;background:rgba(255,123,0,0.25);"></div>
+      <div style="text-align:center;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:1.6rem;font-weight:700;color:#FFD166;">82/100</div>
+        <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.08em;margin-top:0.25rem;">Risk Score</div>
+      </div>
+    </div>
+  </div>
+</div>
+            <!-- Right -->
+            <div class="farmer-right">
+              <!-- SMS Alert -->
+              <div class="glass-card sms-card">
+                <div class="card-header"><span class="card-title">ðŸ“± SMS Alert Preview</span></div>
+                <div class="sms-preview">
+                  <div class="sms-bubble">
+                    <div class="sms-sender">AGRI ALERT</div>
+                    <div class="sms-text" id="farmer-sms">[SYSTEM ALERT]: Flood warning for Punjab. Expected 2 PM. Protect livestock &amp; equipment. Check drainage. From [Gov. Dept]</div>
+                    <div class="sms-time">2 min ago</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Preventive Checklist -->
+              <div class="glass-card checklist-card">
+                <div class="card-header"><span class="card-title">âœ… Preventive Action Checklist</span></div>
+                <div class="checklist" id="farmer-checklist">
+                  <label class="check-item">
+                    <input type="checkbox" /> Clear field drainage channels
+                  </label>
+                  <label class="check-item">
+                    <input type="checkbox" /> Move livestock to higher ground
+                  </label>
+                  <label class="check-item">
+                    <input type="checkbox" checked /> Secure farm machinery
+                  </label>
+                  <label class="check-item">
+                    <input type="checkbox" /> Protect stored crops
+                  </label>
+                  <label class="check-item">
+                    <input type="checkbox" /> Contact local authorities if needed
+                  </label>
+                </div>
+              </div>
+
+
+
+              <button class="btn-generate" id="btn-crop-advisory">
+                ðŸŒ¾ Request Crop Advisory
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /pages-container -->
+    </div><!-- /main-area -->
+  </div><!-- /app -->
+
+  <!-- â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+       SCRIPTS â€” ORDER MATTERS
+  â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ -->
+  <!-- Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <!-- Leaflet -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Leaflet.heat -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.heat/0.2.0/leaflet-heat.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+  <!-- Single combined app bundle -->
+  <script src="app.js"></script>
+  <!-- Backend API Integration - Phase 3A -->
+  <script src="api.js"></script>
+  <script src="real-data.js"></script>
+</body>
+</html>
+

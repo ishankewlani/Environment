@@ -1,17 +1,40 @@
 from __future__ import annotations
 
+import csv
 import json
 from datetime import datetime, timezone
+from io import StringIO
 from pathlib import Path
 from typing import Any, Dict, List
 from uuid import uuid4
 
-import csv
-from io import StringIO
 from app.schemas.feedback_schema import FeedbackCreate
+from app.services.supabase_service import (
+    SupabaseError,
+    insert_row,
+    is_supabase_configured,
+    select_rows,
+)
 
 
 DATA_FILE = Path(__file__).resolve().parent.parent / "data" / "user_feedback.json"
+
+
+FEEDBACK_FIELDS = [
+    "feedback_id",
+    "submitted_at",
+    "name",
+    "role",
+    "location",
+    "faced_environment_risk",
+    "current_alert_source",
+    "alerts_are_timely",
+    "rakshak_usefulness",
+    "most_useful_feature",
+    "preferred_language",
+    "improvement_needed",
+    "suggestion",
+]
 
 
 def _now_iso() -> str:
@@ -27,22 +50,38 @@ def _ensure_file() -> None:
         )
 
 
-def _load() -> Dict[str, Any]:
+def _load_local() -> Dict[str, Any]:
     _ensure_file()
     try:
-        return json.loads(DATA_FILE.read_text(encoding="utf-8"))
+        value = json.loads(DATA_FILE.read_text(encoding="utf-8"))
+        return value if isinstance(value, dict) else {"responses": []}
     except Exception:
         return {"responses": []}
 
 
-def _save(data: Dict[str, Any]) -> None:
+def _save_local(data: Dict[str, Any]) -> None:
+    _ensure_file()
     DATA_FILE.write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+
+def _read_responses() -> List[Dict[str, Any]]:
+    if is_supabase_configured():
+        # Do not silently mix cloud and local responses. When Supabase is
+        # configured, it is the single source of truth.
+        return select_rows(
+            "feedback_responses",
+            select=",".join(FEEDBACK_FIELDS),
+            order="submitted_at.desc",
+            limit=10000,
+        )
+    return list(_load_local().get("responses", []))
 
 
 def get_feedback_questions() -> Dict[str, Any]:
     return {
         "project": "Rakshak – Earth Immune System AI",
         "purpose": "User validation for environmental early-warning and farmer advisory system",
+        "storage_mode": "supabase" if is_supabase_configured() else "local_json",
         "questions": [
             "Your name",
             "Your role",
@@ -60,10 +99,7 @@ def get_feedback_questions() -> Dict[str, Any]:
 
 
 def submit_feedback(payload: FeedbackCreate) -> Dict[str, Any]:
-    data = _load()
-
     feedback_id = f"RF-{uuid4().hex[:8].upper()}"
-
     item = {
         "feedback_id": feedback_id,
         "submitted_at": _now_iso(),
@@ -80,39 +116,77 @@ def submit_feedback(payload: FeedbackCreate) -> Dict[str, Any]:
         "suggestion": payload.suggestion or "",
     }
 
-    data.setdefault("responses", []).append(item)
-    _save(data)
+    if is_supabase_configured():
+        try:
+            saved = insert_row("feedback_responses", item)
+        except SupabaseError as exc:
+            return {
+                "success": False,
+                "message": f"Feedback database unavailable: {exc}",
+                "feedback_id": feedback_id,
+            }
+        if not saved:
+            return {
+                "success": False,
+                "message": "Feedback database did not confirm the save.",
+                "feedback_id": feedback_id,
+            }
+        return {
+            "success": True,
+            "message": "Feedback stored permanently in Supabase",
+            "feedback_id": feedback_id,
+        }
 
+    data = _load_local()
+    data.setdefault("responses", []).append(item)
+    _save_local(data)
     return {
         "success": True,
-        "message": "Feedback submitted successfully",
+        "message": "Feedback saved locally because Supabase is not configured",
         "feedback_id": feedback_id,
     }
 
 
 def get_all_feedback() -> Dict[str, Any]:
-    data = _load()
-    return {
-        "total": len(data.get("responses", [])),
-        "responses": data.get("responses", []),
-    }
+    try:
+        responses = _read_responses()
+        return {
+            "success": True,
+            "storage_mode": "supabase" if is_supabase_configured() else "local_json",
+            "total": len(responses),
+            "responses": responses,
+        }
+    except SupabaseError as exc:
+        return {
+            "success": False,
+            "storage_mode": "supabase",
+            "total": 0,
+            "responses": [],
+            "error": str(exc),
+        }
 
 
 def get_feedback_summary() -> Dict[str, Any]:
-    responses: List[Dict[str, Any]] = _load().get("responses", [])
+    try:
+        responses = _read_responses()
+        storage_error = None
+    except SupabaseError as exc:
+        responses = []
+        storage_error = str(exc)
 
     def count_by(key: str) -> Dict[str, int]:
         result: Dict[str, int] = {}
-        for r in responses:
-            value = str(r.get(key, "Unknown"))
+        for response in responses:
+            value = str(response.get(key, "Unknown"))
             result[value] = result.get(value, 0) + 1
         return result
 
     total = len(responses)
-
     return {
         "project": "Rakshak – Earth Immune System AI",
         "summary_type": "User Validation Summary",
+        "storage_mode": "supabase" if is_supabase_configured() else "local_json",
+        "storage_error": storage_error,
         "total_responses": total,
         "usefulness_breakdown": count_by("rakshak_usefulness"),
         "most_useful_feature_breakdown": count_by("most_useful_feature"),
@@ -120,9 +194,9 @@ def get_feedback_summary() -> Dict[str, Any]:
         "timely_alerts_breakdown": count_by("alerts_are_timely"),
         "common_improvements": count_by("improvement_needed"),
         "sample_user_quotes": [
-            r.get("suggestion")
-            for r in responses
-            if r.get("suggestion")
+            response.get("suggestion")
+            for response in responses
+            if response.get("suggestion")
         ][:5],
         "validation_status": "started" if total > 0 else "waiting_for_responses",
         "conclusion": (
@@ -131,61 +205,34 @@ def get_feedback_summary() -> Dict[str, Any]:
             else "No user feedback submitted yet."
         ),
     }
-def get_validation_report() -> Dict[str, Any]:
-    responses: List[Dict[str, Any]] = _load().get("responses", [])
-    summary = get_feedback_summary()
 
+
+def get_validation_report() -> Dict[str, Any]:
+    summary = get_feedback_summary()
     return {
         "project": "Rakshak – Earth Immune System AI",
         "report_type": "Build for Good User Validation Report",
         "generated_at": _now_iso(),
-        "total_people_validated": len(responses),
+        "storage_mode": summary.get("storage_mode"),
+        "total_people_validated": summary.get("total_responses", 0),
         "validation_summary": summary,
-        "key_findings": [
-            "Users need early and simple environmental risk warnings.",
-            "Farmer advisory and disaster warning are the most practical use cases.",
-            "Hindi/Hinglish/local language alerts are important for accessibility.",
-            "WhatsApp/SMS alerts are important future improvements.",
-        ],
         "evidence_collected": {
-            "feedback_responses": len(responses),
+            "feedback_responses": summary.get("total_responses", 0),
             "sample_quotes": summary.get("sample_user_quotes", []),
         },
-        "next_actions": [
-            "Validate with more farmers and rural users.",
-            "Improve local-language advisory messages.",
-            "Connect alerts with WhatsApp/SMS in the next phase.",
-            "Add satellite/NDVI verification for forest monitoring.",
-        ],
-        "status": "validation_started" if responses else "waiting_for_user_feedback",
+        "status": (
+            "validation_started"
+            if summary.get("total_responses", 0)
+            else "waiting_for_user_feedback"
+        ),
     }
 
 
 def export_feedback_csv() -> str:
-    responses: List[Dict[str, Any]] = _load().get("responses", [])
-
+    responses = _read_responses()
     output = StringIO()
-
-    fieldnames = [
-        "feedback_id",
-        "submitted_at",
-        "name",
-        "role",
-        "location",
-        "faced_environment_risk",
-        "current_alert_source",
-        "alerts_are_timely",
-        "rakshak_usefulness",
-        "most_useful_feature",
-        "preferred_language",
-        "improvement_needed",
-        "suggestion",
-    ]
-
-    writer = csv.DictWriter(output, fieldnames=fieldnames)
+    writer = csv.DictWriter(output, fieldnames=FEEDBACK_FIELDS)
     writer.writeheader()
-
     for item in responses:
-        writer.writerow({key: item.get(key, "") for key in fieldnames})
-
+        writer.writerow({key: item.get(key, "") for key in FEEDBACK_FIELDS})
     return output.getvalue()
