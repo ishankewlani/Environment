@@ -1156,6 +1156,7 @@ const Maps = (function () {
 
   // ── India center ──────────────────────────────────────────
   const INDIA = { lat: 20.5937, lng: 78.9629, zoom: 4.5 };
+  const INDIA_BOUNDS = [[6.0, 68.0], [37.0, 97.0]];
 
   // ── City markers ─────────────────────────────────────────
   const CITIES = [
@@ -1341,14 +1342,14 @@ const Maps = (function () {
 
   // ── RISK COLORED REGIONS (overlay polygons) ───────────────
   function addRiskRegions(map) {
-    // Approximate bounding boxes for key risk states
+    // Approximate bounding boxes for key risk states, kept within Indian territory.
     const regions = [
-      { bounds: [[22, 83], [27.5, 88.5]], color: '#FF4D4D', opacity: 0.12, name: 'Bihar+WB Flood' },
-      { bounds: [[18, 83], [22, 87]],     color: '#FF9F1C', opacity: 0.10, name: 'Odisha Risk' },
-      { bounds: [[23, 73], [31, 77]],     color: '#FF9F1C', opacity: 0.10, name: 'Rajasthan Heat' },
-      { bounds: [[20, 75], [24, 80]],     color: '#FFD166', opacity: 0.08, name: 'MP Medium' },
-      { bounds: [[8.5, 77], [11, 80]],    color: '#00FF88', opacity: 0.08, name: 'Kerala Forest' },
-      { bounds: [[24, 90], [28, 96]],     color: '#FF4D4D', opacity: 0.10, name: 'NE Deforestation' },
+      { bounds: [[22.5, 83.6], [27.5, 89.0]], color: '#FF4D4D', opacity: 0.12, name: 'Bihar+WB Flood' },
+      { bounds: [[18.3, 84.0], [22.0, 87.2]], color: '#FF9F1C', opacity: 0.10, name: 'Odisha Risk' },
+      { bounds: [[23.5, 69.0], [30.8, 76.5]], color: '#FF9F1C', opacity: 0.10, name: 'Rajasthan Heat' },
+      { bounds: [[20.5, 75.0], [24.2, 79.8]], color: '#FFD166', opacity: 0.08, name: 'MP Medium' },
+      { bounds: [[8.8, 76.2], [11.0, 80.2]], color: '#00FF88', opacity: 0.08, name: 'Kerala Forest' },
+      { bounds: [[24.5, 90.0], [28.0, 95.2]], color: '#FF4D4D', opacity: 0.10, name: 'NE Deforestation' },
     ];
 
     regions.forEach(r => {
@@ -1374,6 +1375,8 @@ const Maps = (function () {
       scrollWheelZoom:  true,
       minZoom:          3,
       maxZoom:          12,
+      maxBounds:        INDIA_BOUNDS,
+      maxBoundsViscosity: 0.85,
     });
 
     L.tileLayer(TILES.dark, {
@@ -1584,12 +1587,12 @@ const Maps = (function () {
 
     // State-level risk polygons
     const riskZones = [
-      { bounds: [[22,83],[27.5,89]], color:'#FF4D4D', label:'Bihar + WB: FLOOD CRITICAL' },
-      { bounds: [[18,83],[22,87]],   color:'#FF9F1C', label:'Odisha: FLOOD HIGH' },
-      { bounds: [[24,69],[31,77]],   color:'#FF9F1C', label:'Rajasthan: HEATWAVE HIGH' },
-      { bounds: [[22,88],[27,96]],   color:'#FF4D4D', label:'Northeast: CRITICAL' },
-      { bounds: [[8,76],[12,80]],    color:'#FFD166', label:'Kerala: MODERATE' },
-      { bounds: [[20,75],[24,80]],   color:'#FFD166', label:'MP: MODERATE' },
+      { bounds: [[22.5,83.6],[27.5,89.0]], color:'#FF4D4D', label:'Bihar + WB: FLOOD CRITICAL' },
+      { bounds: [[18.3,84.0],[22.0,87.2]], color:'#FF9F1C', label:'Odisha: FLOOD HIGH' },
+      { bounds: [[23.5,69.0],[30.8,76.5]], color:'#FF9F1C', label:'Rajasthan: HEATWAVE HIGH' },
+      { bounds: [[24.5,90.0],[28.0,95.2]], color:'#FF4D4D', label:'Northeast: CRITICAL' },
+      { bounds: [[8.8,76.2],[11.0,80.2]], color:'#FFD166', label:'Kerala: MODERATE' },
+      { bounds: [[20.5,75.0],[24.2,79.8]], color:'#FFD166', label:'MP: MODERATE' },
     ];
 
     riskZones.forEach(z => {
@@ -1614,9 +1617,9 @@ const Maps = (function () {
 
     // Flood warning zones (filled)
     const warningZones = [
-      { bounds: [[23,77],[30,84]], color:'#FF9F1C', opacity:0.12, label:'Punjab + UP: WARNING' },
-      { bounds: [[16,75],[21,82]], color:'#FFD166', opacity:0.10, label:'Maharashtra: WATCH' },
-      { bounds: [[8,76],[12,80]], color:'#FF9F1C', opacity:0.11,  label:'Kerala: WATCH' },
+      { bounds: [[27.8,74.0],[31.2,80.8]], color:'#FF9F1C', opacity:0.12, label:'Punjab + UP: WARNING' },
+      { bounds: [[17.0,74.0],[22.0,81.0]], color:'#FFD166', opacity:0.10, label:'Maharashtra: WATCH' },
+      { bounds: [[8.8,76.2],[11.0,80.2]], color:'#FF9F1C', opacity:0.11, label:'Kerala: WATCH' },
     ];
 
     warningZones.forEach(z => {
@@ -3128,6 +3131,19 @@ const Farmer = (function () {
     });
   }
 
+  function setupLandingAutoLaunch() {
+    const threshold = 120;
+    const onScroll = () => {
+      if (appLaunched || !landing || landing.style.display === 'none') return;
+      const bottom = window.scrollY + window.innerHeight;
+      const pageHeight = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);
+      if (bottom >= pageHeight - threshold) {
+        launchApp();
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
   // ── Hero stats counter (landing page) ────────────────────
   function initHeroCounters() {
     Dashboard.renderHeroStats();
@@ -3252,6 +3268,7 @@ const Farmer = (function () {
 
     window.addEventListener('resize', debounce(onResize, 200));
     setupLightMode();
+    setupLandingAutoLaunch();
 
     // Allow deep-link via URL hash
     const hash = window.location.hash.replace('#', '');
