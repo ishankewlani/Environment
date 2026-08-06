@@ -2205,3 +2205,400 @@ body.light-mode [style*="color:#FF9F1C"] { color: #CC5500 !important; }
     padding: 0.65rem !important;
   }
 }
+
+/* =========================================================
+   RAKSHAK MOBILE RESPONSIVE PATCH
+   ADD THIS AT THE END OF THE EXISTING style.css FILE
+   ========================================================= */
+
+@media (max-width: 900px) {
+  /*
+   * Existing interactive Earth mobile par bhi visible rahega.
+   * Hum ise remove nahi kar rahe, only responsive bana rahe hain.
+   */
+  .earth-hero-wrap {
+    position: relative !important;
+    right: auto !important;
+    top: auto !important;
+    transform: none !important;
+
+    width: 100% !important;
+    height: auto !important;
+    min-height: 420px;
+
+    margin: -1rem auto 2rem;
+    padding: 0 1rem;
+
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #earth-canvas {
+    width: min(88vw, 420px) !important;
+    height: min(88vw, 420px) !important;
+    max-width: 420px;
+    max-height: 420px;
+  }
+
+  .hero-content {
+    width: 100%;
+    max-width: 100% !important;
+    padding: 7rem 1.25rem 2rem !important;
+  }
+
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .hero-stat {
+    padding: 0 !important;
+  }
+
+  .hero-stat-divider {
+    display: none;
+  }
+
+  .ig-chips {
+    width: 100%;
+    max-width: 430px;
+    padding: 0 0.5rem;
+  }
+
+  .ig-chip {
+    white-space: normal;
+    text-align: center;
+  }
+
+  .dashboard-grid,
+  .forest-grid,
+  .plantation-grid,
+  .disaster-grid,
+  .farmer-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .stats-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .map-container {
+    width: 100%;
+    height: 360px !important;
+    min-height: 360px !important;
+  }
+
+  #pages-container {
+    padding: 0.75rem !important;
+    padding-bottom: calc(
+      76px + env(safe-area-inset-bottom)
+    ) !important;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .earth-hero-wrap {
+    min-height: 340px;
+    margin-top: -0.5rem;
+  }
+
+  #earth-canvas {
+    width: min(86vw, 330px) !important;
+    height: min(86vw, 330px) !important;
+  }
+
+  .hero-stats,
+  .stats-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  .map-container {
+    height: 320px !important;
+    min-height: 320px !important;
+  }
+
+  .ig-chips {
+    gap: 0.35rem;
+  }
+
+  .ig-chip {
+    font-size: 0.52rem;
+    padding: 0.25rem 0.45rem;
+  }
+}
+
+/* =========================================================
+   TREE PLANNER FINAL LAYOUT FIX
+   Add at the END of existing style.css
+   ========================================================= */
+
+/* Give Plantation Simulation enough horizontal space */
+@media (min-width: 1101px) {
+  .plantation-grid {
+    grid-template-columns:
+      minmax(270px, 290px)
+      minmax(0, 1fr)
+      minmax(350px, 380px) !important;
+  }
+}
+
+
+/* LEFT PANEL */
+
+.plantation-left {
+  min-width: 0;
+  padding-right: 0.35rem;
+  overflow-x: hidden;
+}
+
+#priority-zones {
+  max-height: 330px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 0.25rem;
+}
+
+.recommended-species-card {
+  flex: 0 0 auto;
+  width: 100%;
+  min-width: 0;
+  min-height: 270px;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+#species-list {
+  width: 100%;
+  min-width: 0;
+  min-height: 190px;
+  max-height: 330px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  padding-right: 0.25rem;
+}
+
+#species-list .species-item {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  grid-template-areas:
+    "icon name"
+    "icon scientific"
+    "benefit benefit";
+
+  column-gap: 0.65rem;
+  row-gap: 0.15rem;
+
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+#species-list .species-icon {
+  grid-area: icon;
+  margin: 0;
+}
+
+#species-list .species-name {
+  grid-area: name;
+
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+#species-list .species-sci {
+  grid-area: scientific;
+
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+#species-list .species-benefit {
+  grid-area: benefit;
+
+  min-width: 0;
+  line-height: 1.5;
+
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.species-loading-state,
+.species-empty-state {
+  width: 100%;
+  min-height: 150px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 1rem;
+
+  text-align: center;
+  line-height: 1.6;
+  font-size: 0.72rem;
+
+  color: var(--text-muted);
+
+  border: 1px dashed rgba(0, 255, 136, 0.25);
+  border-radius: 10px;
+
+  background: rgba(0, 255, 136, 0.03);
+
+  box-sizing: border-box;
+}
+
+
+/* SIMULATION PANEL */
+
+.simulation-card {
+  min-width: 0;
+  overflow-x: hidden !important;
+}
+
+.sim-location {
+  min-width: 0;
+}
+
+.sim-location > div {
+  min-width: 0;
+}
+
+.sim-loc-name,
+.sim-loc-sub {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.sim-metric {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.sm-label {
+  min-width: 0;
+  line-height: 1.4;
+
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/*
+ * New layout:
+ *
+ * NASA POWER          LIVE
+ * 24.94°C
+ */
+.sm-values {
+  width: 100%;
+
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "source status"
+    "value value";
+
+  align-items: center;
+
+  column-gap: 0.6rem;
+  row-gap: 0.25rem;
+
+  margin-bottom: 0.55rem;
+}
+
+.sm-before {
+  grid-area: source;
+
+  min-width: 0;
+
+  font-size: 0.67rem !important;
+  line-height: 1.35;
+
+  color: var(--text-muted);
+
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.sm-arrow {
+  display: none !important;
+}
+
+.sm-after {
+  grid-area: value;
+
+  justify-self: start;
+
+  font-size: 1rem !important;
+  line-height: 1.3;
+
+  white-space: nowrap;
+}
+
+.sm-delta {
+  grid-area: status;
+
+  justify-self: end;
+
+  margin-left: 0 !important;
+  padding: 0.15rem 0.42rem;
+
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  border-radius: 999px;
+
+  background: rgba(0, 255, 136, 0.08);
+
+  font-family: var(--font-mono) !important;
+  font-size: 0.58rem !important;
+  line-height: 1.2;
+
+  white-space: nowrap;
+}
+
+.sm-delta.source-unavailable {
+  color: var(--orange) !important;
+  border-color: rgba(255, 159, 28, 0.35);
+  background: rgba(255, 159, 28, 0.08);
+}
+
+
+/* Mobile */
+@media (max-width: 900px) {
+  .plantation-left,
+  .simulation-card {
+    max-height: none !important;
+    overflow-y: visible !important;
+  }
+
+  #priority-zones {
+    max-height: 360px;
+  }
+
+  #species-list {
+    max-height: none;
+  }
+
+  .recommended-species-card {
+    min-height: 250px;
+  }
+}

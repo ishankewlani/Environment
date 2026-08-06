@@ -131,19 +131,114 @@
       : null;
   }
 
-  function clearMapData(map) {
-    if (!map || typeof L === "undefined") return;
-    map.eachLayer((layer) => {
-      if (!(layer instanceof L.TileLayer)) {
-        try { map.removeLayer(layer); } catch (_) {}
+  function ensureRakshakMapLayers(map) {
+  if (!map || typeof L === "undefined") {
+    return null;
+  }
+
+  if (!map.rakshakLayers) {
+    map.rakshakLayers = {
+      boundary: L.featureGroup().addTo(map),
+      districts: L.featureGroup().addTo(map),
+      hotspots: L.featureGroup().addTo(map),
+      weather: L.featureGroup().addTo(map),
+      risks: L.featureGroup().addTo(map),
+      plantation: L.featureGroup().addTo(map),
+      selection: L.featureGroup().addTo(map),
+    };
+  }
+
+  return map.rakshakLayers;
+}
+
+
+function layerBelongsToGroup(layer, group) {
+  if (!group) return false;
+
+  if (layer === group) {
+    return true;
+  }
+
+  try {
+    return group.hasLayer(layer);
+  } catch (_) {
+    return false;
+  }
+}
+
+
+  function ensureRakshakMapLayers(map) {
+    if (!map || typeof L === "undefined") {
+      return null;
+    }
+
+    if (!map.rakshakLayers) {
+      map.rakshakLayers = {};
+    }
+
+    const layerNames = [
+      "boundary",
+      "districts",
+      "hotspots",
+      "weather",
+      "risks",
+      "plantation",
+      "selection",
+    ];
+
+    layerNames.forEach((name) => {
+      if (!map.rakshakLayers[name]) {
+        map.rakshakLayers[name] =
+          L.featureGroup().addTo(map);
       }
     });
+
+    return map.rakshakLayers;
+  }
+
+
+  function clearMapData(
+    map,
+    layerNames = [
+      "hotspots",
+      "weather",
+      "risks",
+      "plantation",
+      "selection",
+    ]
+  ) {
+    const layers =
+      ensureRakshakMapLayers(map);
+
+    if (!layers) {
+      return;
+    }
+
+    layerNames.forEach((name) => {
+      try {
+        layers[name]?.clearLayers();
+      } catch (error) {
+        console.warn(
+          `[Rakshak] Could not clear ${name}:`,
+          error
+        );
+      }
+    });
+
+    /*
+    * Important:
+    * Boundary and district layers are never removed.
+    */
   }
 
   function renderDashboardMap(data) {
     const map = getMap("dashboard");
+    const layers = ensureRakshakMapLayers(map);
     if (!map || typeof L === "undefined") return;
-    clearMapData(map);
+    clearMapData(
+      map,
+      ["hotspots", "weather"]
+    );
     const hotspots = data.sample_fire_hotspots || [];
     hotspots.forEach((hotspot) => {
       const color = hotspot.severity === "critical" ? "#ff4d4d" : hotspot.severity === "high" ? "#ff9f1c" : "#ffd166";
@@ -154,7 +249,7 @@
         FRP: ${Number(hotspot.frp_mw || 0).toFixed(1)} MW<br>
         Confidence: ${escapeHtml(hotspot.confidence || "unknown")}<br>
         ${escapeHtml(formatDate(hotspot.acquired_at))}
-      `).addTo(map);
+      `).addTo(layers.hotspots);
     });
     L.circleMarker([26.4499, 74.6399], {
       radius: 7, color: "#00d9ff", weight: 2, fillColor: "#00d9ff", fillOpacity: .35,
@@ -162,7 +257,7 @@
       <strong>Ajmer live weather</strong><br>
       Temperature: ${escapeHtml(data.metrics?.temperature_celsius ?? "--")}°C<br>
       Rainfall 1h: ${escapeHtml(data.metrics?.rainfall_1h_mm ?? "--")} mm
-    `).addTo(map);
+    `).addTo(layers.weather);
     map.setView([22.5, 79], 4.5);
 
     const title = document.querySelector("#page-dashboard .map-card .card-title");
@@ -527,198 +622,2066 @@
     }
   }
 
-  async function loadRealDisaster() {
-    const container = document.getElementById("risk-regions");
-    if (!container) return;
-    container.innerHTML = `<div style="padding:1rem;font-size:.72rem;color:var(--text-muted);">Loading live weather and official CAP alerts…</div>`;
+  function getSelectedLocation(
+    prefix
+  ) {
+    const stateSelect =
+      document.getElementById(
+        `${prefix}-state`
+      );
+
+    const districtSelect =
+      document.getElementById(
+        `${prefix}-district`
+      );
+
+    const stateOption =
+      stateSelect?.selectedOptions?.[0];
+
+    const districtOption =
+      districtSelect?.selectedOptions?.[0];
+
+    const latitude = Number(
+      districtOption?.dataset?.lat
+    );
+
+    const longitude = Number(
+      districtOption?.dataset?.lon
+    );
+
+    return {
+      state:
+        stateOption
+          ?.textContent
+          ?.trim()
+        ||
+        stateSelect
+          ?.value
+          ?.trim()
+        ||
+        "Rajasthan",
+
+      district:
+        districtOption
+          ?.textContent
+          ?.trim()
+        ||
+        districtSelect
+          ?.value
+          ?.trim()
+        ||
+        "Ajmer",
+
+      city:
+        districtOption
+          ?.textContent
+          ?.trim()
+        ||
+        "Ajmer",
+
+      latitude:
+        Number.isFinite(latitude)
+          ? latitude
+          : 26.4499,
+
+      longitude:
+        Number.isFinite(longitude)
+          ? longitude
+          : 74.6399,
+    };
+  }
+
+
+  async function populateOfficialDistricts(
+    prefix,
+    stateName,
+    preferredDistrict = "Ajmer"
+  ) {
+    const districtSelect =
+      document.getElementById(
+        `${prefix}-district`
+      );
+
+    if (!districtSelect) {
+      return;
+    }
+
+    districtSelect.disabled = true;
+
+    districtSelect.innerHTML = `
+      <option value="">
+        Loading Districts...
+      </option>
+    `;
+
     try {
-      const data = await realFetch("/api/live/disaster/risk/Ajmer");
+      const data = await realFetch(
+        `/api/live/locations/districts?state=${
+          encodeURIComponent(stateName)
+        }`
+      );
+
+      const districts =
+        Array.isArray(data.districts)
+          ? data.districts
+          : [];
+
+      districtSelect.innerHTML = "";
+
+      if (!districts.length) {
+        districtSelect.innerHTML = `
+          <option value="">
+            No District Data Found
+          </option>
+        `;
+
+        return;
+      }
+
+      districts.forEach((item) => {
+        const option =
+          document.createElement("option");
+
+        option.value =
+          item.district;
+
+        option.textContent =
+          item.district;
+
+        option.dataset.state =
+          item.state || stateName;
+
+        option.dataset.lat =
+          String(
+            item.latitude ?? ""
+          );
+
+        option.dataset.lon =
+          String(
+            item.longitude ?? ""
+          );
+
+        districtSelect.appendChild(
+          option
+        );
+      });
+
+      const preferred =
+        districts.find(
+          (item) =>
+            String(item.district)
+              .toLowerCase()
+            ===
+            String(preferredDistrict)
+              .toLowerCase()
+        );
+
+      districtSelect.value =
+        preferred?.district
+        ||
+        districts[0].district;
+    } catch (error) {
+      console.error(
+        `[Rakshak] ${prefix} districts failed:`,
+        error
+      );
+
+      districtSelect.innerHTML = `
+        <option value="">
+          District Loading Failed
+        </option>
+      `;
+    } finally {
+      districtSelect.disabled = false;
+    }
+  }
+
+
+  async function populateOfficialStates(
+    prefix,
+    preferredState = "Rajasthan",
+    preferredDistrict = "Ajmer"
+  ) {
+    const stateSelect =
+      document.getElementById(
+        `${prefix}-state`
+      );
+
+    if (!stateSelect) {
+      return;
+    }
+
+    stateSelect.disabled = true;
+
+    stateSelect.innerHTML = `
+      <option value="">
+        Loading States...
+      </option>
+    `;
+
+    try {
+      const data = await realFetch(
+        "/api/live/locations/states"
+      );
+
+      const states =
+        Array.isArray(data.states)
+          ? data.states
+          : [];
+
+      stateSelect.innerHTML = "";
+
+      states.forEach((stateName) => {
+        const option =
+          document.createElement("option");
+
+        option.value = stateName;
+        option.textContent = stateName;
+
+        stateSelect.appendChild(
+          option
+        );
+      });
+
+      const matchedState =
+        states.find(
+          (stateName) =>
+            String(stateName)
+              .toLowerCase()
+            ===
+            String(preferredState)
+              .toLowerCase()
+        );
+
+      stateSelect.value =
+        matchedState
+        ||
+        states[0]
+        ||
+        "";
+
+      await populateOfficialDistricts(
+        prefix,
+        stateSelect.value,
+        preferredDistrict
+      );
+    } catch (error) {
+      console.error(
+        `[Rakshak] ${prefix} states failed:`,
+        error
+      );
+
+      stateSelect.innerHTML = `
+        <option value="">
+          State Loading Failed
+        </option>
+      `;
+    } finally {
+      stateSelect.disabled = false;
+    }
+  }
+
+
+  async function setupOfficialLocationControls() {
+    const configurations = [
+      {
+        prefix: "plant",
+        state: "Rajasthan",
+        district: "Ajmer",
+        loader: loadRealPlantation,
+      },
+      {
+        prefix: "farmer",
+        state: "Rajasthan",
+        district: "Ajmer",
+        loader: loadRealFarmer,
+      },
+      {
+        prefix: "disaster",
+        state: "Rajasthan",
+        district: "Ajmer",
+        loader: loadRealDisaster,
+      },
+    ];
+
+    for (const config of configurations) {
+      await populateOfficialStates(
+        config.prefix,
+        config.state,
+        config.district
+      );
+
+      const stateSelect =
+        document.getElementById(
+          `${config.prefix}-state`
+        );
+
+      const districtSelect =
+        document.getElementById(
+          `${config.prefix}-district`
+        );
+
+      if (
+        stateSelect &&
+        !stateSelect.dataset.realBound
+      ) {
+        stateSelect.dataset.realBound =
+          "true";
+
+        stateSelect.addEventListener(
+          "change",
+          async () => {
+            await populateOfficialDistricts(
+              config.prefix,
+              stateSelect.value,
+              ""
+            );
+
+            await config.loader();
+          }
+        );
+      }
+
+      if (
+        districtSelect &&
+        !districtSelect.dataset.realBound
+      ) {
+        districtSelect.dataset.realBound =
+          "true";
+
+        districtSelect.addEventListener(
+          "change",
+          async () => {
+            await config.loader();
+          }
+        );
+      }
+    }
+
+    const disasterButton =
+      document.getElementById(
+        "btn-disaster-location"
+      );
+
+    if (
+      disasterButton &&
+      !disasterButton.dataset.realBound
+    ) {
+      disasterButton.dataset.realBound =
+        "true";
+
+      disasterButton.addEventListener(
+        "click",
+        async () => {
+          disasterButton.disabled = true;
+          disasterButton.textContent =
+            "Loading Location...";
+
+          try {
+            await loadRealDisaster();
+          } finally {
+            disasterButton.disabled = false;
+            disasterButton.textContent =
+              "📍 Load Selected Location";
+          }
+        }
+      );
+    }
+
+    const cropSelector =
+      document.getElementById(
+        "crop-selector"
+      );
+
+    if (
+      cropSelector &&
+      !cropSelector.dataset.realBound
+    ) {
+      cropSelector.dataset.realBound =
+        "true";
+
+      cropSelector.addEventListener(
+        "click",
+        async (event) => {
+          const selectedItem =
+            event.target.closest(
+              ".crop-item"
+            );
+
+          if (
+            !selectedItem ||
+            !cropSelector.contains(
+              selectedItem
+            )
+          ) {
+            return;
+          }
+
+          cropSelector
+            .querySelectorAll(
+              ".crop-item"
+            )
+            .forEach((item) => {
+              item.classList.remove(
+                "active"
+              );
+            });
+
+          selectedItem.classList.add(
+            "active"
+          );
+
+          await loadRealFarmer();
+        }
+      );
+    }
+  }
+  async function loadRealDisaster() {
+    const container =
+      document.getElementById(
+        "risk-regions"
+      );
+
+    if (!container) {
+      return;
+    }
+
+    const location =
+      getSelectedLocation(
+        "disaster"
+      );
+
+    container.innerHTML = `
+      <div style="
+        padding:1rem;
+        font-size:.72rem;
+        color:var(--text-muted);
+      ">
+        Loading ${escapeHtml(
+          location.district
+        )} weather and official alerts...
+      </div>
+    `;
+
+    try {
+      const data = await realFetch(
+        `/api/live/disaster/risk/${
+          encodeURIComponent(
+            location.city
+          )
+        }`
+      );
+
       state.disaster = data;
-      const calculated = data.rakshak_calculated_risk || {};
-      const official = data.official_alerts || [];
+
+      const calculated =
+        data.rakshak_calculated_risk
+        ||
+        {};
+
+      const official =
+        data.official_alerts
+        ||
+        [];
+
       container.innerHTML = `
-        <div class="risk-item" style="outline:1px solid rgba(0,217,255,.4);">
+        <div
+          class="risk-item"
+          style="
+            outline:
+            1px solid
+            rgba(0,217,255,.4);
+          "
+        >
           <div class="risk-item-top">
-            <span class="ri-name">Ajmer <span style="font-size:.68rem;color:var(--text-muted);">Rakshak calculation</span></span>
-            <span class="ri-score">Score ${escapeHtml(calculated.risk_score ?? "--")}/100</span>
+            <span class="ri-name">
+              ${escapeHtml(
+                location.district
+              )}
+              <span style="
+                font-size:.68rem;
+                color:var(--text-muted);
+              ">
+                Rakshak calculation
+              </span>
+            </span>
+
+            <span class="ri-score">
+              Score
+              ${escapeHtml(
+                calculated.risk_score
+                ??
+                "--"
+              )}/100
+            </span>
           </div>
-          <div class="ri-progress"><div class="ri-progress-fill ${calculated.overall_risk === "high" ? "high" : "moderate"}" style="width:${Math.min(100, Number(calculated.risk_score || 0))}%"></div></div>
-          <span class="ri-alert ${calculated.overall_risk === "high" ? "high" : "moderate"}">${escapeHtml(String(calculated.overall_risk || "unknown").toUpperCase())} · rule-based on real inputs</span>
+
+          <div class="ri-progress">
+            <div
+              class="
+                ri-progress-fill
+                ${
+                  calculated.overall_risk
+                  ===
+                  "high"
+                    ? "high"
+                    : "moderate"
+                }
+              "
+              style="
+                width:${
+                  Math.min(
+                    100,
+                    Number(
+                      calculated.risk_score
+                      ||
+                      0
+                    )
+                  )
+                }%
+              "
+            ></div>
+          </div>
+
+          <span
+            class="
+              ri-alert
+              ${
+                calculated.overall_risk
+                ===
+                "high"
+                  ? "high"
+                  : "moderate"
+              }
+            "
+          >
+            ${
+              escapeHtml(
+                String(
+                  calculated.overall_risk
+                  ||
+                  "unknown"
+                ).toUpperCase()
+              )
+            }
+            · rule-based
+          </span>
         </div>
-        ${official.length
-          ? official.slice(0, 8).map((alertItem) => `
-            <div class="risk-item">
-              <div class="risk-item-top">
-                <span class="ri-name">${escapeHtml(alertItem.event || "Official alert")}</span>
-                <span class="ri-score">${escapeHtml(alertItem.severity || "Official")}</span>
-              </div>
-              <div style="font-size:.69rem;line-height:1.55;color:var(--text-secondary);">${escapeHtml(alertItem.headline || alertItem.description || "")}</div>
-              <span class="ri-alert high">OFFICIAL CAP · ${escapeHtml(alertItem.source_agency || "IMD")}</span>
-            </div>`).join("")
-          : `<div style="padding:.85rem;font-size:.7rem;color:var(--text-secondary);border:1px solid rgba(255,255,255,.08);border-radius:12px;">No location-matched official CAP alert found. The calculated weather risk above is not an official warning.</div>`}
+
+        ${
+          official.length
+            ? official
+                .slice(0, 8)
+                .map(
+                  (alertItem) => `
+                    <div class="risk-item">
+                      <div class="risk-item-top">
+                        <span class="ri-name">
+                          ${escapeHtml(
+                            alertItem.event
+                            ||
+                            "Official alert"
+                          )}
+                        </span>
+
+                        <span class="ri-score">
+                          ${escapeHtml(
+                            alertItem.severity
+                            ||
+                            "Official"
+                          )}
+                        </span>
+                      </div>
+
+                      <div style="
+                        font-size:.69rem;
+                        line-height:1.55;
+                        color:
+                        var(--text-secondary);
+                      ">
+                        ${escapeHtml(
+                          alertItem.headline
+                          ||
+                          alertItem.description
+                          ||
+                          ""
+                        )}
+                      </div>
+
+                      <span class="ri-alert high">
+                        OFFICIAL CAP
+                      </span>
+                    </div>
+                  `
+                )
+                .join("")
+            : `
+                <div style="
+                  padding:.85rem;
+                  font-size:.7rem;
+                  color:var(--text-secondary);
+                ">
+                  No location-matched official
+                  CAP alert found.
+                </div>
+              `
+        }
       `;
 
-      const sms = document.getElementById("sms-text");
+      const disasterMap =
+        getMap("disaster");
+
+      if (
+        disasterMap &&
+        typeof L !== "undefined"
+      ) {
+        const layers =
+          ensureRakshakMapLayers(
+            disasterMap
+          );
+
+        clearMapData(
+          disasterMap,
+          ["risks", "selection"]
+        );
+
+        const score = Number(
+          calculated.risk_score
+          ||
+          0
+        );
+
+        const color =
+          score >= 75
+            ? "#ff4d4d"
+            : score >= 45
+              ? "#ff9f1c"
+              : "#00ff88";
+
+        L.circleMarker(
+          [
+            location.latitude,
+            location.longitude,
+          ],
+          {
+            radius: 10,
+            color,
+            weight: 2,
+            fillColor: color,
+            fillOpacity: 0.35,
+          }
+        )
+          .bindPopup(
+            `<strong>${
+              escapeHtml(
+                location.district
+              )
+            }</strong><br>` +
+            `Risk score: ${score}/100<br>` +
+            `Not an official warning`
+          )
+          .addTo(
+            layers.risks
+          );
+
+        disasterMap.setView(
+          [
+            location.latitude,
+            location.longitude,
+          ],
+          8
+        );
+
+        setTimeout(() => {
+          disasterMap.invalidateSize();
+        }, 100);
+      }
+
+      const mapTitle =
+        document.querySelector(
+          "#page-disaster " +
+          ".disaster-map-card " +
+          ".card-title"
+        );
+
+      if (mapTitle) {
+        mapTitle.textContent =
+          `🗺 Live Risk Map — ${
+            location.district
+          }`;
+      }
+
+      const sms =
+        document.getElementById(
+          "sms-text"
+        );
+
       if (sms) {
-        sms.textContent = official.length
-          ? `[OFFICIAL CAP] ${official[0].headline || official[0].event}`
-          : `[RAKSHAK CALCULATED RISK — NOT OFFICIAL] ${calculated.farmer_advisory || "No significant current weather risk."}`;
+        sms.textContent =
+          official.length
+            ? (
+                `[OFFICIAL CAP] ${
+                  official[0].headline
+                  ||
+                  official[0].event
+                }`
+              )
+            : (
+                `[RAKSHAK CALCULATED RISK — ` +
+                `NOT OFFICIAL] ${
+                  calculated.farmer_advisory
+                  ||
+                  "No significant risk."
+                }`
+              );
       }
-      const notification = document.querySelector(".notif-body");
-      if (notification) {
-        notification.textContent = data.disclaimer;
-      }
-      const disasterMap = getMap("disaster");
-      if (disasterMap && typeof L !== "undefined") {
-        clearMapData(disasterMap);
-        const score = Number(calculated.risk_score || 0);
-        const color = score >= 75 ? "#ff4d4d" : score >= 45 ? "#ff9f1c" : "#00ff88";
-        L.circleMarker([26.4499, 74.6399], {
-          radius: 10, color, weight: 2, fillColor: color, fillOpacity: .35,
-        }).bindPopup(`Ajmer Rakshak calculated risk<br>Score ${score}/100<br>This marker is not an official warning`).addTo(disasterMap);
-        disasterMap.setView([26.4499, 74.6399], 7);
-      }
-      const disasterMapTitle = document.querySelector("#page-disaster .map-card .card-title, #page-disaster .card-title");
-      if (disasterMapTitle && disasterMapTitle.textContent.includes("Map")) disasterMapTitle.textContent = "🗺 Real Weather Risk Pilot — Ajmer";
     } catch (error) {
-      showRealError(container, "Live disaster data", error);
+      showRealError(
+        container,
+        "Live disaster data",
+        error
+      );
     }
   }
 
   async function loadRealFarmer() {
-    const sms = document.getElementById("farmer-sms");
-    const checklist = document.getElementById("farmer-checklist");
+    const sms =
+      document.getElementById(
+        "farmer-sms"
+      );
+
+    const checklist =
+      document.getElementById(
+        "farmer-checklist"
+      );
+
+    const location =
+      getSelectedLocation(
+        "farmer"
+      );
+
+    const activeCrop =
+      document.querySelector(
+        "#crop-selector .crop-item.active"
+      )?.dataset.crop
+      ||
+      "rice";
+
+    const growthStages = {
+      rice: "vegetative",
+      wheat: "vegetative",
+      cotton: "flowering",
+      vegetables: "flowering",
+      millets: "vegetative",
+      chickpea: "flowering",
+      mustard: "flowering",
+    };
+
     try {
-      const data = await realFetch("/api/live/farmer/advisory", {
-        method: "POST",
-        body: JSON.stringify({
-          city: "Ajmer",
-          latitude: 26.4499,
-          longitude: 74.6399,
-          crop: "Bajra",
-          growth_stage: "vegetative",
-          language: "hinglish",
-        }),
-      });
+      const data = await realFetch(
+        "/api/live/farmer/advisory",
+        {
+          method: "POST",
+
+          body: JSON.stringify({
+            state: location.state,
+            district: location.district,
+            city: location.city,
+            latitude:
+              location.latitude,
+            longitude:
+              location.longitude,
+            crop: activeCrop,
+            growth_stage:
+              growthStages[activeCrop]
+              ||
+              "vegetative",
+            sowing_date: null,
+            trap_count: null,
+            scouting_count: null,
+            language: "hinglish",
+          }),
+        }
+      );
+
       state.farmer = data;
+
+      const topPest =
+        data.pest_predictions?.[0];
+
       if (sms) {
-        sms.textContent = `[REAL WEATHER + NASA POWER · RULE-BASED] ${data.advisory || "No advisory returned."}`;
+        sms.textContent =
+          topPest
+            ? (
+                `[RAKSHAK PEST RISK · ${
+                  String(
+                    topPest.risk_level
+                  ).toUpperCase()
+                }] ${topPest.pest}. ` +
+                `Yeh confirmed infestation nahi hai. ` +
+                `Field scouting karein.`
+              )
+            : (
+                data.advisory
+                ||
+                "No configured pest model returned."
+              );
       }
+
       if (checklist) {
-        const actions = (data.checklist || []).map((item) => item.task).filter(Boolean);
-        checklist.innerHTML = actions.length
-          ? actions
-              .map(
-                (action) => `<label class="check-item"><input type="checkbox"> ${escapeHtml(action)}</label>`
-              )
-              .join("")
-          : `<div style="font-size:.7rem;color:var(--text-muted);">No additional preventive action triggered.</div>`;
+        const actions =
+          (data.checklist || [])
+            .map((item) => item.task)
+            .filter(Boolean);
+
+        checklist.innerHTML =
+          actions.length
+            ? actions
+                .map(
+                  (action) => `
+                    <label class="check-item">
+                      <input type="checkbox">
+                      ${escapeHtml(action)}
+                    </label>
+                  `
+                )
+                .join("")
+            : `
+                <div style="
+                  font-size:.7rem;
+                  color:var(--text-muted);
+                ">
+                  No preventive action returned.
+                </div>
+              `;
       }
-      const banner = document.getElementById("warning-banner");
+
+      const banner =
+        document.getElementById(
+          "warning-banner"
+        );
+
       if (banner) {
-        const title = banner.querySelector(".wb-title");
-        const sub = banner.querySelector(".wb-sub");
-        if (title) title.textContent = `CURRENT RISK: ${String(data.risk_level || "unknown").toUpperCase()} — AJMER`;
-        if (sub) sub.textContent = data.disclaimer;
-      }
+        const title =
+          banner.querySelector(
+            ".wb-title"
+          );
 
-      const button = document.getElementById("btn-crop-advisory");
-      if (button) {
-        const clean = button.cloneNode(true);
-        clean.textContent = "🌾 Refresh Real Advisory";
-        button.replaceWith(clean);
-        clean.addEventListener("click", async () => {
-          clean.disabled = true;
-          clean.textContent = "Refreshing…";
-          await loadRealFarmer();
-          clean.disabled = false;
-          clean.textContent = "🌾 Refresh Real Advisory";
-        });
-      }
-    } catch (error) {
-      showRealError(checklist || sms, "Real farmer advisory", error);
-    }
-  }
+        const sub =
+          banner.querySelector(
+            ".wb-sub"
+          );
 
-  async function loadRealPlantation() {
-    const speciesList = document.getElementById("species-list");
-    try {
-      const data = await realFetch("/api/live/plantation/recommendation", {
-        method: "POST",
-        body: JSON.stringify({
-          city: "Ajmer",
-          latitude: 26.4499,
-          longitude: 74.6399,
-          area_hectares: 5,
-        }),
-      });
-      state.plantation = data;
-      if (speciesList) {
-        const species = data.recommended_species || [];
-        speciesList.innerHTML = species.length
-          ? species
-              .map(
-                (item) => `
-                  <div class="species-item">
-                    <span class="species-icon">🌳</span>
-                    <span class="species-name">${escapeHtml(item.name)}</span>
-                    <span class="species-sci">${escapeHtml(item.scientific_name)}</span>
-                    <span class="species-benefit">${escapeHtml(item.reason)}</span>
-                  </div>`
-              )
-              .join("")
-          : `<div style="font-size:.7rem;color:var(--text-muted);">No recommendation returned because required real inputs were unavailable.</div>`;
-      }
-      const loc = document.getElementById("sim-location");
-      if (loc) {
-        const name = loc.querySelector(".sim-loc-name");
-        const sub = loc.querySelector(".sim-loc-sub");
-        if (name) name.textContent = "Ajmer · Real environmental inputs";
+        if (title) {
+          title.textContent =
+            topPest
+              ? (
+                  `${topPest.pest}: ${
+                    String(
+                      topPest.risk_level
+                    ).toUpperCase()
+                  } — ${
+                    location.district
+                      .toUpperCase()
+                  }`
+                )
+              : (
+                  `PEST MODEL: ${
+                    String(
+                      data.risk_level
+                      ||
+                      "unavailable"
+                    ).toUpperCase()
+                  } — ${
+                    location.district
+                      .toUpperCase()
+                  }`
+                );
+        }
+
         if (sub) {
-          sub.textContent = `${formatNumber(data.estimated_tree_capacity)} planning capacity · confidence ${Math.round(Number(data.confidence || 0) * 100)}%`;
+          sub.textContent =
+            data.disclaimer
+            ||
+            "Field confirmation is required.";
         }
       }
-      const plantationMap = getMap("plantation");
-      if (plantationMap && typeof L !== "undefined") {
-        clearMapData(plantationMap);
-        L.circleMarker([26.4499, 74.6399], {
-          radius: 10, color: "#00ff88", weight: 2, fillColor: "#00ff88", fillOpacity: .3,
-        }).bindPopup(`Ajmer real-input plantation pilot<br>Capacity estimate: ${formatNumber(data.estimated_tree_capacity)} trees<br>Requires site verification`).addTo(plantationMap);
-        plantationMap.setView([26.4499, 74.6399], 10);
-      }
-      const plantationMapTitle = document.querySelector("#page-plantation .map-card .card-title, #page-plantation .plantation-map-card .card-title");
-      if (plantationMapTitle) plantationMapTitle.textContent = "🗺 Real-Input Plantation Pilot — Ajmer";
 
-      const rows = [...document.querySelectorAll("#page-plantation .sim-metric")];
-      const climate = data.real_inputs?.nasa_power_30_day_climate?.summary || {};
-      const soil = data.real_inputs?.soilgrids_topsoil?.properties || {};
-      const ndvi = data.real_inputs?.copernicus_ndvi || {};
-      const values = [
-        [climate.mean_temperature_celsius, "°C", "30-day mean temperature"],
-        [climate.total_precipitation_mm, " mm", "30-day precipitation"],
-        [soil.phh2o, " pH", "SoilGrids topsoil pH"],
-        [ndvi.current_mean_ndvi, " NDVI", "Sentinel-2 vegetation index"],
-      ];
-      rows.forEach((row, index) => {
-        const [value, suffix, label] = values[index] || [];
-        const before = row.querySelector(".sm-before");
-        const after = row.querySelector(".sm-after");
-        const delta = row.querySelector(".sm-delta");
-        if (before) before.textContent = label || "Real input";
-        if (after) after.textContent = value == null ? "Unavailable" : `${Number(value).toFixed(2)}${suffix}`;
-        if (delta) delta.textContent = data.verified_inputs ? "Verified source" : "Source status unknown";
-      });
+      const button =
+        document.getElementById(
+          "btn-crop-advisory"
+        );
+
+      if (
+        button &&
+        !button.dataset.realBound
+      ) {
+        button.dataset.realBound =
+          "true";
+
+        button.textContent =
+          "🌾 Refresh Pest Risk";
+
+        button.addEventListener(
+          "click",
+          async () => {
+            button.disabled = true;
+            button.textContent =
+              "Checking Weather...";
+
+            try {
+              await loadRealFarmer();
+            } finally {
+              button.disabled = false;
+              button.textContent =
+                "🌾 Refresh Pest Risk";
+            }
+          }
+        );
+      }
     } catch (error) {
-      showRealError(speciesList, "Real plantation inputs", error);
+      showRealError(
+        checklist || sms,
+        "Pest risk advisory",
+        error
+      );
     }
   }
 
-  const pageLoaded = {
-    forest: false,
-    disaster: false,
-    farmer: false,
-    plantation: false,
-  };
+  const plantationResponseCache =
+    new Map();
+
+  const PLANTATION_CACHE_TTL_MS =
+    10 * 60 * 1000;
+
+  let latestPlantationRequestId = 0;
+
+
+  function getPlantationCacheKey(
+    location
+  ) {
+    const latitude =
+      Number(location.latitude)
+        .toFixed(3);
+
+    const longitude =
+      Number(location.longitude)
+        .toFixed(3);
+
+    return [
+      location.state,
+      location.district,
+      latitude,
+      longitude,
+    ]
+      .map((value) =>
+        String(value || "")
+          .trim()
+          .toLowerCase()
+      )
+      .join("|");
+  }
+
+
+  async function fetchPlantationRecommendation(
+    location,
+    {
+      force = false,
+    } = {}
+  ) {
+    const key =
+      getPlantationCacheKey(
+        location
+      );
+
+    const cached =
+      plantationResponseCache.get(
+        key
+      );
+
+    if (
+      !force &&
+      cached &&
+      Date.now() - cached.savedAt
+        <
+        PLANTATION_CACHE_TTL_MS
+    ) {
+      return {
+        data: cached.data,
+        fromCache: true,
+      };
+    }
+
+    const data = await realFetch(
+      "/api/live/plantation/recommendation",
+      {
+        method: "POST",
+
+        body: JSON.stringify({
+          state:
+            location.state,
+
+          district:
+            location.district,
+
+          city:
+            location.city
+            ||
+            location.district,
+
+          latitude:
+            location.latitude,
+
+          longitude:
+            location.longitude,
+
+          area_hectares: 5,
+
+          purpose: "carbon",
+
+          irrigation_level: "low",
+        }),
+      }
+    );
+
+    plantationResponseCache.set(
+      key,
+      {
+        savedAt: Date.now(),
+        data,
+      }
+    );
+
+    return {
+      data,
+      fromCache: false,
+    };
+  }
+
+
+  function showPlantationLoading(
+    location
+  ) {
+    const speciesList =
+      document.getElementById(
+        "species-list"
+      );
+
+    if (speciesList) {
+      speciesList.innerHTML = `
+        <div class="species-loading-state">
+          🌱 Analysing climate, soil and vegetation
+          for
+          <strong>
+            ${escapeHtml(
+              location.district
+            )}
+          </strong>...
+        </div>
+      `;
+    }
+
+    const locationPanel =
+      document.getElementById(
+        "sim-location"
+      );
+
+    if (locationPanel) {
+      const name =
+        locationPanel.querySelector(
+          ".sim-loc-name"
+        );
+
+      const sub =
+        locationPanel.querySelector(
+          ".sim-loc-sub"
+        );
+
+      if (name) {
+        name.textContent =
+          `${location.district}, ${location.state}`;
+      }
+
+      if (sub) {
+        sub.textContent =
+          "Loading verified environmental sources...";
+      }
+    }
+  }
+
+
+  function previewPlantationLocation(
+    location
+  ) {
+    const map =
+      getMap("plantation");
+
+    if (
+      !map ||
+      typeof L === "undefined"
+    ) {
+      return;
+    }
+
+    const layers =
+      ensureRakshakMapLayers(map);
+
+    clearMapData(
+      map,
+      ["selection"]
+    );
+
+    L.circleMarker(
+      [
+        location.latitude,
+        location.longitude,
+      ],
+      {
+        radius: 8,
+        color: "#00d9ff",
+        weight: 2,
+        fillColor: "#00d9ff",
+        fillOpacity: 0.25,
+      }
+    )
+      .bindPopup(
+        `<strong>${
+          escapeHtml(
+            location.district
+          )
+        }</strong><br>` +
+        `Loading plantation analysis...`
+      )
+      .addTo(
+        layers.selection
+      );
+
+    /*
+    * Map moves immediately.
+    * It does not wait for NASA/SoilGrids APIs.
+    */
+    map.setView(
+      [
+        location.latitude,
+        location.longitude,
+      ],
+      8,
+      {
+        animate: true,
+      }
+    );
+
+    setTimeout(() => {
+      map.invalidateSize({
+        pan: false,
+      });
+    }, 80);
+  }
+
+
+  function normaliseSoilPh(
+    rawValue
+  ) {
+    const value =
+      Number(rawValue);
+
+    if (!Number.isFinite(value)) {
+      return null;
+    }
+
+    /*
+    * SoilGrids can return pH × 10,
+    * for example 72 means 7.2.
+    */
+    return value > 14
+      ? value / 10
+      : value;
+  }
+
+
+  function formatPlantationValue(
+    value,
+    suffix = "",
+    digits = 2
+  ) {
+    const number =
+      Number(value);
+
+    if (!Number.isFinite(number)) {
+      return "Data unavailable";
+    }
+
+    return `${number.toFixed(
+      digits
+    )}${suffix}`;
+  }
+
+
+  function renderPlantationMetrics(
+    data
+  ) {
+    const climate =
+      data.real_inputs
+        ?.nasa_power_365_day_climate
+        ?.summary
+      ||
+      data.real_inputs
+        ?.nasa_power_30_day_climate
+        ?.summary
+      ||
+      {};
+
+    const soil =
+      data.real_inputs
+        ?.soilgrids_topsoil
+        ?.properties
+      ||
+      {};
+
+    const ndviData =
+      data.real_inputs
+        ?.copernicus_ndvi
+      ||
+      {};
+
+    const soilPh =
+      normaliseSoilPh(
+        soil.phh2o
+        ??
+        soil.ph
+      );
+
+    const ndvi =
+      ndviData.current_mean_ndvi
+      ??
+      ndviData.mean_ndvi
+      ??
+      ndviData.ndvi
+      ??
+      null;
+
+    const temperature =
+      climate.mean_temperature_celsius;
+
+    const rainfall =
+      climate.total_precipitation_mm;
+
+    const metrics = [
+      {
+        icon: "🌡",
+        title: "Mean Temperature",
+        source: "NASA POWER",
+        value:
+          formatPlantationValue(
+            temperature,
+            "°C",
+            1
+          ),
+        available:
+          Number.isFinite(
+            Number(temperature)
+          ),
+        progress:
+          Number.isFinite(
+            Number(temperature)
+          )
+            ? Math.min(
+                100,
+                Math.max(
+                  10,
+                  Number(temperature)
+                  /
+                  50
+                  *
+                  100
+                )
+              )
+            : 0,
+      },
+
+      {
+        icon: "🌧",
+        title: "Observed Precipitation",
+        source: "NASA POWER",
+        value:
+          formatPlantationValue(
+            rainfall,
+            " mm",
+            1
+          ),
+        available:
+          Number.isFinite(
+            Number(rainfall)
+          ),
+        progress:
+          Number.isFinite(
+            Number(rainfall)
+          )
+            ? Math.min(
+                100,
+                Math.max(
+                  5,
+                  Number(rainfall)
+                  /
+                  500
+                  *
+                  100
+                )
+              )
+            : 0,
+      },
+
+      {
+        icon: "🧪",
+        title: "Topsoil pH",
+        source: "SoilGrids",
+        value:
+          formatPlantationValue(
+            soilPh,
+            " pH",
+            1
+          ),
+        available:
+          Number.isFinite(
+            Number(soilPh)
+          ),
+        progress:
+          Number.isFinite(
+            Number(soilPh)
+          )
+            ? Math.min(
+                100,
+                Number(soilPh)
+                /
+                14
+                *
+                100
+              )
+            : 0,
+      },
+
+      {
+        icon: "🌿",
+        title: "Vegetation Index",
+        source: "Sentinel-2",
+        value:
+          formatPlantationValue(
+            ndvi,
+            " NDVI",
+            2
+          ),
+        available:
+          Number.isFinite(
+            Number(ndvi)
+          ),
+        progress:
+          Number.isFinite(
+            Number(ndvi)
+          )
+            ? Math.min(
+                100,
+                Math.max(
+                  0,
+                  (
+                    Number(ndvi)
+                    +
+                    1
+                  )
+                  /
+                  2
+                  *
+                  100
+                )
+              )
+            : 0,
+      },
+    ];
+
+    const rows = [
+      ...document.querySelectorAll(
+        "#page-plantation .sim-metric"
+      ),
+    ];
+
+    rows.forEach(
+      (row, index) => {
+        const metric =
+          metrics[index];
+
+        if (!metric) {
+          return;
+        }
+
+        const label =
+          row.querySelector(
+            ".sm-label"
+          );
+
+        const before =
+          row.querySelector(
+            ".sm-before"
+          );
+
+        const arrow =
+          row.querySelector(
+            ".sm-arrow"
+          );
+
+        const after =
+          row.querySelector(
+            ".sm-after"
+          );
+
+        const delta =
+          row.querySelector(
+            ".sm-delta"
+          );
+
+        const progress =
+          row.querySelector(
+            ".im-bar-fill"
+          );
+
+        if (label) {
+          label.innerHTML = `
+            <span>
+              ${metric.icon}
+            </span>
+            ${escapeHtml(
+              metric.title
+            )}
+          `;
+        }
+
+        if (before) {
+          before.textContent =
+            metric.source;
+        }
+
+        if (arrow) {
+          arrow.textContent = "";
+        }
+
+        if (after) {
+          after.textContent =
+            metric.value;
+        }
+
+        if (delta) {
+          delta.textContent =
+            metric.available
+              ? "LIVE"
+              : "N/A";
+
+          delta.classList.toggle(
+            "source-unavailable",
+            !metric.available
+          );
+        }
+
+        if (progress) {
+          progress.style.width =
+            `${metric.progress}%`;
+        }
+      }
+    );
+  }
+
+  async function loadRealPlantation(
+    locationOverride = null,
+    {
+      force = false,
+    } = {}
+  ) {
+    const speciesList =
+      document.getElementById(
+        "species-list"
+      );
+
+    const location =
+      locationOverride
+      ||
+      getSelectedLocation(
+        "plant"
+      );
+
+    location.city =
+      location.city
+      ||
+      location.district;
+
+    const requestId =
+      ++latestPlantationRequestId;
+
+    /*
+    * Immediate visual response.
+    */
+    showPlantationLoading(
+      location
+    );
+
+    previewPlantationLocation(
+      location
+    );
+
+    try {
+      const {
+        data,
+        fromCache,
+      } =
+        await fetchPlantationRecommendation(
+          location,
+          {
+            force,
+          }
+        );
+
+      /*
+      * User selected another location while
+      * the previous request was still loading.
+      * Ignore the older response.
+      */
+      if (
+        requestId
+        !==
+        latestPlantationRequestId
+      ) {
+        return;
+      }
+
+      state.plantation = data;
+
+      const species =
+        data.recommended_species
+        ||
+        data.recommended_mix
+        ||
+        data.species
+        ||
+        [];
+
+      if (speciesList) {
+        speciesList.innerHTML =
+          species.length
+            ? species
+                .map(
+                  (item) => {
+                    const score =
+                      item.suitability_score
+                      != null
+                        ? `${
+                            Number(
+                              item.suitability_score
+                            ).toFixed(1)
+                          }/100`
+                        : "Score unavailable";
+
+                    const allocation =
+                      item.allocation_percent
+                      != null
+                        ? `${
+                            item.allocation_percent
+                          }% mix`
+                        : "Allocation unavailable";
+
+                    return `
+                      <div class="species-item">
+                        <span class="species-icon">
+                          🌳
+                        </span>
+
+                        <span class="species-name">
+                          ${escapeHtml(
+                            item.name
+                            ||
+                            "Unnamed species"
+                          )}
+                          ·
+                          ${escapeHtml(
+                            allocation
+                          )}
+                        </span>
+
+                        <span class="species-sci">
+                          ${escapeHtml(
+                            item.scientific_name
+                            ||
+                            ""
+                          )}
+                        </span>
+
+                        <span class="species-benefit">
+                          <strong>
+                            Suitability:
+                            ${escapeHtml(
+                              score
+                            )}
+                          </strong>
+
+                          <br>
+
+                          ${escapeHtml(
+                            item.reason
+                            ||
+                            "Best available catalog match for this location."
+                          )}
+                        </span>
+                      </div>
+                    `;
+                  }
+                )
+                .join("")
+            : `
+                <div class="species-empty-state">
+                  No species were returned for
+                  ${escapeHtml(
+                    location.district
+                  )}.
+
+                  Check tree catalog coverage and
+                  verified environmental inputs.
+                </div>
+              `;
+      }
+
+      const locationPanel =
+        document.getElementById(
+          "sim-location"
+        );
+
+      if (locationPanel) {
+        const name =
+          locationPanel.querySelector(
+            ".sim-loc-name"
+          );
+
+        const sub =
+          locationPanel.querySelector(
+            ".sim-loc-sub"
+          );
+
+        const capacity =
+          Number(
+            data.estimated_tree_capacity
+            ||
+            0
+          );
+
+        const confidence =
+          Math.round(
+            Number(
+              data.confidence
+              ||
+              0
+            )
+            *
+            100
+          );
+
+        if (name) {
+          name.textContent =
+            `${location.district}, ${location.state}`;
+        }
+
+        if (sub) {
+          sub.textContent =
+            `${formatNumber(
+              capacity
+            )} planning capacity · ` +
+            `confidence ${confidence}%` +
+            (
+              fromCache
+                ? " · cached result"
+                : ""
+            );
+        }
+      }
+
+      renderPlantationMetrics(
+        data
+      );
+
+      const map =
+        getMap("plantation");
+
+      if (
+        map &&
+        typeof L !== "undefined"
+      ) {
+        const layers =
+          ensureRakshakMapLayers(
+            map
+          );
+
+        clearMapData(
+          map,
+          [
+            "plantation",
+            "selection",
+          ]
+        );
+
+        L.circleMarker(
+          [
+            location.latitude,
+            location.longitude,
+          ],
+          {
+            radius: 10,
+            color: "#00ff88",
+            weight: 2,
+            fillColor: "#00ff88",
+            fillOpacity: 0.3,
+          }
+        )
+          .bindPopup(
+            `<strong>${
+              escapeHtml(
+                location.district
+              )
+            }</strong><br>` +
+            `Capacity: ${
+              formatNumber(
+                data.estimated_tree_capacity
+                ||
+                0
+              )
+            } trees<br>` +
+            `Site verification required`
+          )
+          .addTo(
+            layers.plantation
+          );
+
+        map.setView(
+          [
+            location.latitude,
+            location.longitude,
+          ],
+          9,
+          {
+            animate: true,
+          }
+        );
+
+        setTimeout(() => {
+          map.invalidateSize({
+            pan: false,
+          });
+        }, 100);
+      }
+
+      const mapTitle =
+        document.querySelector(
+          "#page-plantation " +
+          ".plantation-map-card " +
+          ".card-title"
+        );
+
+      if (mapTitle) {
+        mapTitle.textContent =
+          `🗺 Plantation Plan — ${
+            location.district
+          }`;
+      }
+
+      /*
+      * Priority Zone click ke baad species
+      * section automatically visible hoga.
+      */
+      if (locationOverride) {
+        setTimeout(() => {
+          document
+            .querySelector(
+              ".recommended-species-card"
+            )
+            ?.scrollIntoView({
+              behavior: "smooth",
+              block: "nearest",
+            });
+        }, 120);
+      }
+    } catch (error) {
+      /*
+      * Ignore errors belonging to an older request.
+      */
+      if (
+        requestId
+        !==
+        latestPlantationRequestId
+      ) {
+        return;
+      }
+
+      showRealError(
+        speciesList,
+        "Plantation recommendation",
+        error
+      );
+    }
+  }
+
+  function findSelectOption(
+    selectElement,
+    requestedValue
+  ) {
+    if (
+      !selectElement ||
+      !requestedValue
+    ) {
+      return null;
+    }
+
+    const normalisedRequest =
+      String(requestedValue)
+        .trim()
+        .toLowerCase();
+
+    return [
+      ...selectElement.options,
+    ].find((option) => {
+      const optionValue =
+        String(
+          option.value || ""
+        )
+          .trim()
+          .toLowerCase();
+
+      const optionText =
+        String(
+          option.textContent || ""
+        )
+          .trim()
+          .toLowerCase();
+
+      return (
+        optionValue
+          ===
+          normalisedRequest
+        ||
+        optionText
+          ===
+          normalisedRequest
+      );
+    }) || null;
+  }
+
+
+  async function selectPlantationPriorityZone(
+    zone
+  ) {
+    if (!zone) {
+      return;
+    }
+
+    const stateSelect =
+      document.getElementById(
+        "plant-state"
+      );
+
+    const districtSelect =
+      document.getElementById(
+        "plant-district"
+      );
+
+    if (
+      !stateSelect ||
+      !districtSelect
+    ) {
+      console.error(
+        "[Rakshak] Plantation location selectors not found."
+      );
+
+      return;
+    }
+
+    /*
+    * Show loading status immediately.
+    */
+    const speciesList =
+      document.getElementById(
+        "species-list"
+      );
+
+    if (speciesList) {
+      speciesList.innerHTML = `
+        <div class="species-loading-state">
+          Analysing climate, soil and vegetation
+          for ${escapeHtml(
+            zone.district
+          )}...
+        </div>
+      `;
+    }
+
+    /*
+    * Find the requested state in the
+    * already populated official state list.
+    */
+    let stateOption =
+      findSelectOption(
+        stateSelect,
+        zone.state
+      );
+
+    /*
+    * State list not ready or state missing:
+    * reload official state data.
+    */
+    if (!stateOption) {
+      await populateOfficialStates(
+        "plant",
+        zone.state,
+        zone.district
+      );
+
+      stateOption =
+        findSelectOption(
+          stateSelect,
+          zone.state
+        );
+    }
+
+    if (!stateOption) {
+      throw new Error(
+        `State not found in location data: ${zone.state}`
+      );
+    }
+
+    stateSelect.value =
+      stateOption.value;
+
+    /*
+    * Load all official districts
+    * belonging to selected state.
+    */
+    await populateOfficialDistricts(
+      "plant",
+      stateOption.value,
+      zone.district
+    );
+
+    let districtOption =
+      findSelectOption(
+        districtSelect,
+        zone.district
+      );
+
+    /*
+    * Some datasets use slightly different
+    * district naming. Try partial matching.
+    */
+    if (!districtOption) {
+      const requestedDistrict =
+        String(zone.district)
+          .toLowerCase();
+
+      districtOption = [
+        ...districtSelect.options,
+      ].find((option) => {
+        const optionName =
+          String(
+            option.textContent || ""
+          )
+            .trim()
+            .toLowerCase();
+
+        return (
+          optionName.includes(
+            requestedDistrict
+          )
+          ||
+          requestedDistrict.includes(
+            optionName
+          )
+        );
+      }) || null;
+    }
+
+    if (!districtOption) {
+      throw new Error(
+        `District not found in location data: ${zone.district}`
+      );
+    }
+
+    districtSelect.value =
+      districtOption.value;
+
+    /*
+    * Prefer district GeoJSON coordinates.
+    * Zone coordinates act as safe fallback.
+    */
+    if (
+      !districtOption.dataset.lat
+      ||
+      !Number.isFinite(
+        Number(
+          districtOption.dataset.lat
+        )
+      )
+    ) {
+      districtOption.dataset.lat =
+        String(zone.latitude);
+    }
+
+    if (
+      !districtOption.dataset.lon
+      ||
+      !Number.isFinite(
+        Number(
+          districtOption.dataset.lon
+        )
+      )
+    ) {
+      districtOption.dataset.lon =
+        String(zone.longitude);
+    }
+
+    /*
+    * This function:
+    * - sends selected location to backend
+    * - updates species
+    * - updates simulation
+    * - updates plantation map
+    */
+    await loadRealPlantation();
+
+    if (
+      typeof showToast
+      ===
+      "function"
+    ) {
+      showToast(
+        `🌿 Species updated for ${districtOption.textContent}, ${stateOption.textContent}`
+      );
+    }
+  }
+
+
+  window.addEventListener(
+    "rakshak:priority-zone-selected",
+    (event) => {
+      selectPlantationPriorityZone(
+        event.detail
+      ).catch((error) => {
+        console.error(
+          "[Rakshak] Priority Zone selection failed:",
+          error
+        );
+
+        const speciesList =
+          document.getElementById(
+            "species-list"
+          );
+
+        showRealError(
+          speciesList,
+          "Priority Zone plantation analysis",
+          error
+        );
+      });
+    }
+  );
 
   function checkActiveRealPage() {
     const jobs = [
@@ -782,26 +2745,69 @@
     document.getElementById("validation-summary-panel")?.remove();
   }
 
-  function start() {
-    document.getElementById("pilot-validation-report-panel")?.remove();
-    document.getElementById("validation-summary-panel")?.remove();
-    loadLiveDashboard();
+  async function start() {
+    document
+      .getElementById(
+        "pilot-validation-report-panel"
+      )
+      ?.remove();
 
-    const pages = document.getElementById("pages-container");
+    document
+      .getElementById(
+        "validation-summary-panel"
+      )
+      ?.remove();
+
+    /*
+    * Must run before plantation,
+    * farmer and disaster loaders.
+    */
+    await setupOfficialLocationControls();
+
+    await loadLiveDashboard();
+
+    const pages =
+      document.getElementById(
+        "pages-container"
+      );
+
     if (pages) {
-      new MutationObserver(checkActiveRealPage).observe(pages, {
-        subtree: true,
-        attributes: true,
-        attributeFilter: ["class", "style"],
-      });
+      new MutationObserver(
+        checkActiveRealPage
+      ).observe(
+        pages,
+        {
+          subtree: true,
+          attributes: true,
+          attributeFilter: [
+            "class",
+            "style",
+          ],
+        }
+      );
     }
+
     checkActiveRealPage();
-    window.setInterval(loadLiveDashboard, 5 * 60 * 1000);
+
+    window.setInterval(
+      loadLiveDashboard,
+      5 * 60 * 1000
+    );
   }
 
   function boot() {
     neutralizeShowcaseClaims();
-    setTimeout(start, 250);
+    setTimeout(
+      () => {
+        start().catch((error) => {
+          console.error(
+            "[Rakshak] Startup failed:",
+            error
+          );
+        });
+      },
+      250
+    );
     // Legacy api.js may render later; re-apply real dashboard values afterwards.
     setTimeout(loadLiveDashboard, 4500);
   }

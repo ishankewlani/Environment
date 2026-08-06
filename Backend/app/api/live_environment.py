@@ -14,14 +14,25 @@ from app.services.live_environment_service import (
     get_live_dashboard,
     get_nasa_power_climate,
     get_real_disaster_risk,
-    get_real_farmer_advisory,
-    get_real_plantation_recommendation,
     get_sachet_cap_alert,
     get_sachet_status,
     get_soilgrids_properties,
     get_source_statuses,
 )
 
+from app.services.spatial_service import (
+    list_districts,
+    list_states,
+    resolve_district,
+)
+
+from app.services.tree_service_v2 import (
+    get_tree_recommendation_v2,
+)
+
+from app.services.pest_service_v2 import (
+    get_farmer_pest_advisory_v2,
+)
 
 router = APIRouter()
 
@@ -94,25 +105,42 @@ async def disaster_risk(city: str):
     return await get_real_disaster_risk(city)
 
 
-@router.post("/farmer/advisory", summary="Farmer advisory from real weather and climate inputs")
-async def farmer_advisory(payload: FarmerRealAdvisoryRequest):
-    return await get_real_farmer_advisory(
+@router.post(
+    "/farmer/advisory",
+    summary="Weather-based crop and pest risk advisory",
+)
+async def farmer_advisory(
+    payload: FarmerRealAdvisoryRequest,
+):
+    return await get_farmer_pest_advisory_v2(
+        state=payload.state,
+        district=payload.district,
         city=payload.city,
         latitude=payload.latitude,
         longitude=payload.longitude,
         crop=payload.crop,
         growth_stage=payload.growth_stage,
         language=payload.language,
+        trap_count=payload.trap_count,
+        scouting_count=payload.scouting_count,
     )
 
-
-@router.post("/plantation/recommendation", summary="Plantation planning from real climate, soil and NDVI")
-async def plantation_recommendation(payload: PlantationRealRecommendationRequest):
-    return await get_real_plantation_recommendation(
+@router.post(
+    "/plantation/recommendation",
+    summary="Location-specific mixed tree recommendation",
+)
+async def plantation_recommendation(
+    payload: PlantationRealRecommendationRequest,
+):
+    return await get_tree_recommendation_v2(
+        state=payload.state,
+        district=payload.district,
         city=payload.city,
         latitude=payload.latitude,
         longitude=payload.longitude,
         area_hectares=payload.area_hectares,
+        purpose=payload.purpose,
+        irrigation_level=payload.irrigation_level,
     )
 
 
@@ -123,3 +151,46 @@ async def india_data(
     offset: int = Query(default=0, ge=0),
 ):
     return await get_data_gov_resource(resource_id, limit=limit, offset=offset)
+
+@router.get(
+    "/location/resolve",
+    summary="Resolve official district from coordinates",
+)
+def location_resolve(
+    lat: float = Query(
+        ...,
+        ge=-90,
+        le=90,
+    ),
+    lon: float = Query(
+        ...,
+        ge=-180,
+        le=180,
+    ),
+):
+    return resolve_district(
+        latitude=lat,
+        longitude=lon,
+    )
+
+
+@router.get(
+    "/locations/states",
+    summary="List states from official boundary data",
+)
+def official_states():
+    return list_states()
+
+
+@router.get(
+    "/locations/districts",
+    summary="List official districts for a state",
+)
+def official_districts(
+    state: str = Query(
+        ...,
+        min_length=2,
+        max_length=100,
+    ),
+):
+    return list_districts(state)

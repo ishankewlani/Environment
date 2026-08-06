@@ -9,6 +9,9 @@ import httpx
 
 OPENWEATHER_BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
 
+OPENWEATHER_FORECAST_URL = (
+    "https://api.openweathermap.org/data/2.5/forecast"
+)
 
 FALLBACK_WEATHER: Dict[str, Dict[str, Any]] = {
     "ajmer": {
@@ -286,3 +289,202 @@ def _make_farmer_advisory(
     return (
         "Current weather risk is low. Continue regular crop monitoring and follow local weather updates."
     )
+async def get_weather_forecast(
+    latitude: float,
+    longitude: float,
+) -> Dict[str, Any]:
+    api_key = os.getenv(
+        "OPENWEATHER_API_KEY",
+        "",
+    ).strip()
+
+    if not api_key:
+        return {
+            "verified": False,
+            "data_mode": "unavailable",
+            "source": "OpenWeather forecast",
+            "periods": [],
+            "summary": {},
+            "error": (
+                "OPENWEATHER_API_KEY is missing"
+            ),
+        }
+
+    params = {
+        "lat": latitude,
+        "lon": longitude,
+        "appid": api_key,
+        "units": "metric",
+    }
+
+    try:
+        async with httpx.AsyncClient(
+            timeout=15.0
+        ) as client:
+            response = await client.get(
+                OPENWEATHER_FORECAST_URL,
+                params=params,
+            )
+
+            response.raise_for_status()
+            data = response.json()
+
+        periods = []
+
+        temperatures = []
+        humidity_values = []
+        rainfall_values = []
+
+        for item in data.get(
+            "list",
+            [],
+        ):
+            main = item.get(
+                "main",
+                {},
+            )
+
+            rain = item.get(
+                "rain",
+                {},
+            )
+
+            temperature = float(
+                main.get(
+                    "temp",
+                    0,
+                )
+            )
+
+            humidity = float(
+                main.get(
+                    "humidity",
+                    0,
+                )
+            )
+
+            rainfall = float(
+                rain.get(
+                    "3h",
+                    0,
+                )
+            )
+
+            temperatures.append(
+                temperature
+            )
+
+            humidity_values.append(
+                humidity
+            )
+
+            rainfall_values.append(
+                rainfall
+            )
+
+            periods.append(
+                {
+                    "forecast_at": item.get(
+                        "dt_txt"
+                    ),
+                    "temperature_celsius": round(
+                        temperature,
+                        1,
+                    ),
+                    "humidity_percent": round(
+                        humidity,
+                        1,
+                    ),
+                    "rainfall_3h_mm": round(
+                        rainfall,
+                        1,
+                    ),
+                    "wind_speed_mps": round(
+                        float(
+                            item.get(
+                                "wind",
+                                {},
+                            ).get(
+                                "speed",
+                                0,
+                            )
+                        ),
+                        1,
+                    ),
+                    "condition": (
+                        (
+                            item.get(
+                                "weather",
+                                [{}],
+                            )
+                            or [{}]
+                        )[0].get(
+                            "description",
+                            "unknown",
+                        )
+                    ),
+                }
+            )
+
+        summary = {
+            "mean_temperature_celsius": (
+                round(
+                    sum(temperatures)
+                    /
+                    len(temperatures),
+                    1,
+                )
+                if temperatures
+                else None
+            ),
+            "mean_humidity_percent": (
+                round(
+                    sum(humidity_values)
+                    /
+                    len(humidity_values),
+                    1,
+                )
+                if humidity_values
+                else None
+            ),
+            "maximum_humidity_percent": (
+                max(humidity_values)
+                if humidity_values
+                else None
+            ),
+            "total_forecast_rainfall_mm": round(
+                sum(rainfall_values),
+                1,
+            ),
+            "high_humidity_periods": sum(
+                1
+                for value
+                in humidity_values
+                if value >= 80
+            ),
+            "periods_returned": len(
+                periods
+            ),
+        }
+
+        return {
+            "verified": bool(periods),
+            "data_mode": "five_day_forecast",
+            "source": {
+                "name": "OpenWeather",
+                "type": "five_day_forecast",
+                "fetched_at": _now_iso(),
+            },
+            "periods": periods,
+            "summary": summary,
+        }
+
+    except Exception as exc:
+        return {
+            "verified": False,
+            "data_mode": "error",
+            "source": "OpenWeather forecast",
+            "periods": [],
+            "summary": {},
+            "error": str(exc),
+        }

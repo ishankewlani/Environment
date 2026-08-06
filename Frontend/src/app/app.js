@@ -1364,29 +1364,70 @@ const Maps = (function () {
   }
 
   // ── Build base map ────────────────────────────────────────
-  function createBase(id, options = {}) {
-    const defaults = { center: [INDIA.lat, INDIA.lng], zoom: INDIA.zoom };
-    const opts = { ...defaults, ...options };
+    function createBase(id, options = {}) {
+      const defaults = {
+        center: [INDIA.lat, INDIA.lng],
+        zoom: INDIA.zoom,
+      };
 
-    const map = L.map(id, {
-      center:           [opts.center[0], opts.center[1]],
-      zoom:             opts.zoom,
-      zoomControl:      true,
-      scrollWheelZoom:  true,
-      minZoom:          3,
-      maxZoom:          12,
-      maxBounds:        INDIA_BOUNDS,
-      maxBoundsViscosity: 0.85,
-    });
+      const opts = {
+        ...defaults,
+        ...options,
+      };
 
-    L.tileLayer(TILES.dark, {
-      attribution: TILES.attrib,
-      subdomains:  'abcd',
-      maxZoom:     19,
-    }).addTo(map);
+      const map = L.map(id, {
+        center: [opts.center[0], opts.center[1]],
+        zoom: opts.zoom,
+        zoomControl: true,
+        scrollWheelZoom: true,
+        minZoom: 3,
+        maxZoom: 14,
+        maxBounds: INDIA_BOUNDS,
+        maxBoundsViscosity: 0.85,
+        zoomSnap: 0.25,
+      });
 
-    return map;
-  }
+      /*
+      * No-label tiles are used because the official India boundary
+      * will be drawn through our own GeoJSON layer.
+      */
+      L.tileLayer(TILES.darkNoLabels, {
+        attribution: TILES.attrib,
+        subdomains: "abcd",
+        maxZoom: 19,
+      }).addTo(map);
+
+      /*
+      * Every data category gets a separate layer group.
+      * Refreshing hotspots will no longer remove the India boundary.
+      */
+      map.rakshakLayers = {
+        boundary: L.featureGroup().addTo(map),
+        districts: L.featureGroup().addTo(map),
+        hotspots: L.featureGroup().addTo(map),
+        weather: L.featureGroup().addTo(map),
+        risks: L.featureGroup().addTo(map),
+        plantation: L.featureGroup().addTo(map),
+        selection: L.featureGroup().addTo(map),
+      };
+
+      /*
+      * india-boundary.js listens for this event and adds the
+      * official boundary when each map becomes available.
+      */
+      setTimeout(() => {
+        window.dispatchEvent(
+          new CustomEvent("rakshak:map-ready", {
+            detail: {
+              map,
+              mapId: id,
+            },
+          })
+        );
+      }, 0);
+
+      return map;
+    }
 
   // ── DASHBOARD MAP ─────────────────────────────────────────
   function initDashboard() {
@@ -2128,28 +2169,93 @@ const Plantation = (function () {
   // ── Dummy data ────────────────────────────────────────────
   const PRIORITY_ZONES = [
     {
-      tag: 'CRITICAL', tagClass: 'critical',
-      title: 'Rajasthan — Jaisalmer',
-      sub:   '+6.3°C above avg · No green cover',
-      borderClass: 'high',
+      tag: "CRITICAL",
+      tagClass: "critical",
+      borderClass: "high",
+
+      title: "Rajasthan — Jaisalmer",
+      sub: "Hot-arid zone · Very low green cover",
+
+      state: "Rajasthan",
+      district: "Jaisalmer",
+
+      latitude: 26.9157,
+      longitude: 70.9083,
     },
+
     {
-      tag: 'HIGH', tagClass: 'high',
-      title: 'MP — Vindhyachal Central — West',
-      sub:   '+1.8°C above avg · 18% green cover',
-      borderClass: 'medium',
+      tag: "HIGH",
+      tagClass: "high",
+      borderClass: "high",
+
+      title: "Madhya Pradesh — Bhopal",
+      sub: "Urban heat and degraded land priority",
+
+      state: "Madhya Pradesh",
+      district: "Bhopal",
+
+      latitude: 23.2599,
+      longitude: 77.4126,
     },
+
     {
-      tag: 'MEDIUM', tagClass: 'medium',
-      title: 'Telangana & South-Central India',
-      sub:   '+1.8°C above avg avg · 39% green cover',
-      borderClass: 'medium',
+      tag: "HIGH",
+      tagClass: "high",
+      borderClass: "medium",
+
+      title: "Telangana — Hyderabad",
+      sub: "Urban heat island plantation priority",
+
+      state: "Telangana",
+      district: "Hyderabad",
+
+      latitude: 17.385,
+      longitude: 78.4867,
     },
+
     {
-      tag: 'LOW', tagClass: 'low',
-      title: 'Maharashtra — Vidarbha — Marathwada',
-      sub:   '+1°C above avg · 55% green cover',
-      borderClass: 'low',
+      tag: "MEDIUM",
+      tagClass: "medium",
+      borderClass: "medium",
+
+      title: "Maharashtra — Nagpur",
+      sub: "Dry tropical restoration priority",
+
+      state: "Maharashtra",
+      district: "Nagpur",
+
+      latitude: 21.1458,
+      longitude: 79.0882,
+    },
+
+    {
+      tag: "MEDIUM",
+      tagClass: "medium",
+      borderClass: "medium",
+
+      title: "Assam — Kamrup Metropolitan",
+      sub: "High rainfall and erosion-management zone",
+
+      state: "Assam",
+      district: "Kamrup Metropolitan",
+
+      latitude: 26.1445,
+      longitude: 91.7362,
+    },
+
+    {
+      tag: "LOW",
+      tagClass: "low",
+      borderClass: "low",
+
+      title: "Kerala — Ernakulam",
+      sub: "Humid tropical biodiversity zone",
+
+      state: "Kerala",
+      district: "Ernakulam",
+
+      latitude: 9.9816,
+      longitude: 76.2999,
     },
   ];
 
@@ -2449,9 +2555,35 @@ const Plantation = (function () {
 
   // ── Public init ───────────────────────────────────────────
   function init() {
+    /*
+    * Priority Zones app.js render karega because
+    * these are clickable UI cards.
+    */
     renderPriorityZones();
-    renderSpecies();
-    setupSelectors();
+
+    /*
+    * Old static species render nahi karna.
+    * Species live plantation API se aayengi.
+    */
+    const speciesList =
+      document.getElementById(
+        "species-list"
+      );
+
+    if (speciesList) {
+      speciesList.innerHTML = `
+        <div class="species-loading-state">
+          Select a state, district or Priority Zone
+          to load location-specific species.
+        </div>
+      `;
+    }
+
+    /*
+    * setupSelectors() call mat karna.
+    * Official state and district selectors
+    * real-data.js handle karta hai.
+    */
   }
 
   return { init };
@@ -2591,9 +2723,14 @@ const Disaster = (function () {
   function init() {
     renderRiskRegions();
     setupLayerControls();
-    setupSearch();
     setupReportBtn();
     animateTimeline();
+
+    /*
+    * setupSearch() mat call karna.
+    * Disaster location state/district dropdown
+    * real-data.js handle karega.
+    */
   }
 
   return { init };
@@ -2816,13 +2953,27 @@ const Farmer = (function () {
 
   // ── Public init ───────────────────────────────────────────
   function init() {
-    renderWarnings('rice');
-    updateSMS('rice');
-    updateChecklist('rice');
-    updateBanner('punjab');
+    /*
+    * Initial UI content.
+    */
+    renderWarnings("rice");
+    updateSMS("rice");
+    updateChecklist("rice");
+    updateBanner("punjab");
+
+    /*
+    * Crop cards clickable rehni chahiye.
+    */
     setupCropSelector();
-    setupStateSelector();
-    setupAdvisoryBtn();
+
+    /*
+    * Do not call:
+    * setupStateSelector()
+    * setupAdvisoryBtn()
+    *
+    * State/district live API se aayenge.
+    * Advisory button real-data.js handle karega.
+    */
   }
 
   return { init };

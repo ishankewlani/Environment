@@ -503,24 +503,51 @@
                 <div class="priority-zones" id="priority-zones"></div>
               </div>
 
-              <div class="glass-card">
-                <div class="card-header"><span class="card-title">🌿 Recommended Species</span></div>
-                <div class="species-list" id="species-list"></div>
+              <div class="glass-card recommended-species-card">
+                <div class="card-header recommended-species-header">
+                  <span class="card-title">
+                    🌿 Recommended Species
+                  </span>
+                </div>
+
+                <div
+                  class="species-list"
+                  id="species-list"
+                >
+                  <div class="species-loading-state">
+                    Select a district or Priority Zone to load
+                    location-specific recommendations.
+                  </div>
+                </div>
               </div>
             </div>
-
+            
             <!-- Center Map -->
             <div class="glass-card plantation-map-card">
               <div class="card-header">
-                <span class="card-title">🗺 India Plantation Priority Heat Map</span>
+                <span class="card-title">
+                  🗺 India Plantation Priority Heat Map
+                </span>
               </div>
-              <div id="plantation-map" class="map-container"></div>
+
+              <div
+                id="plantation-map"
+                class="map-container"
+              ></div>
+
               <div class="heatmap-legend">
-                <span class="hl-label">Plantation Priority</span>
+                <span class="hl-label">
+                  Plantation Priority
+                </span>
+
                 <div class="hl-bar">
                   <div class="hl-grad"></div>
+
                   <div class="hl-labels">
-                    <span>Low</span><span>Medium</span><span>High</span><span>Critical</span>
+                    <span>Low</span>
+                    <span>Medium</span>
+                    <span>High</span>
+                    <span>Critical</span>
                   </div>
                 </div>
               </div>
@@ -598,7 +625,32 @@
             <div class="disaster-left">
               <div class="glass-card">
                 <div class="card-header"><span class="card-title">📍 Select Location</span></div>
-                <input type="text" class="search-input" placeholder="🔍 Search location..." id="disaster-search" />
+                <select
+                  class="premium-select"
+                  id="disaster-state"
+                >
+                  <option value="">
+                    Loading States...
+                  </option>
+                </select>
+
+                <select
+                  class="premium-select"
+                  id="disaster-district"
+                  style="margin-top:0.75rem"
+                >
+                  <option value="">
+                    Select District
+                  </option>
+                </select>
+
+                <button
+                  class="btn-generate"
+                  id="btn-disaster-location"
+                  style="margin-top:0.75rem;width:100%"
+                >
+                  📍 Load Selected Location
+                </button>
               </div>
 
               <div class="glass-card">
@@ -751,6 +803,21 @@
                   <div class="crop-item" data-crop="millets">
                     <span class="crop-icon">🌱</span>
                     <span>Millets</span>
+                  </div>
+                  <div
+                    class="crop-item"
+                    data-crop="chickpea"
+                  >
+                    <span class="crop-icon">🫘</span>
+                    <span>Chickpea</span>
+                  </div>
+
+                  <div
+                    class="crop-item"
+                    data-crop="mustard"
+                  >
+                    <span class="crop-icon">🌼</span>
+                    <span>Mustard</span>
                   </div>
                 </div>
               </div>

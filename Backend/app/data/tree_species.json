@@ -23,7 +23,7 @@
       "soil_types": ["clay loam", "alluvial", "red soil", "black cotton soil"],
       "rainfall_range_mm": [600, 1500],
       "climate_type": ["tropical", "sub-tropical", "urban"],
-      "benefits": ["24-hour oxygen production", "urban heat island reduction", "wildlife habitat", "longevity", "spiritual-cultural value"],
+      "benefits": ["large mature canopy and urban shade", "urban heat island reduction", "wildlife habitat", "longevity", "spiritual-cultural value"],
       "growth_rate": "moderate",
       "water_requirement": "moderate",
       "carbon_absorption_score": 9,
