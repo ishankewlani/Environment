@@ -79,16 +79,13 @@ class TreeSpeciesSchema(BaseModel):
     id: str
     name: str
     scientific_name: str
-    suitable_regions: List[str]
-    soil_types: List[str]
-    rainfall_range_mm: List[float]
-    climate_type: List[str]
-    benefits: List[str]
-    growth_rate: str
+    suitability_score: float
+    co2_sequestration_kg_per_year: float
+    ecological_benefit: str | None = None
+    growth_rate: str | None = None
     water_requirement: str
-    carbon_absorption_score: int
-    flood_control_score: int
-    heat_reduction_score: int
+    reason: str
+    benefits: List[str]
 
 
 class PlantationRecommendationSchema(BaseModel):

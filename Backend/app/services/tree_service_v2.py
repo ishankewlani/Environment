@@ -21,7 +21,7 @@ TREE_FILE = (
     /
     "data"
     /
-    "tree_species.json"
+    "trees.json"
 )
 
 
@@ -35,7 +35,7 @@ def load_tree_catalog() -> List[Dict[str, Any]]:
 
     return list(
         data.get(
-            "species",
+            "trees",
             [],
         )
     )
@@ -164,6 +164,25 @@ def _water_score(
     )
 
 
+def _range_score(
+    value: float | None,
+    ideal_range: list[float],
+    tolerance: float = 100.0,
+) -> float:
+    if value is None:
+        return 8.0
+
+    minimum = float(ideal_range[0])
+    maximum = float(ideal_range[1])
+
+    if minimum <= value <= maximum:
+        return 20.0
+
+    distance = min(abs(value - minimum), abs(value - maximum))
+    spread = max(1.0, maximum - minimum, tolerance)
+    return max(0.0, 20.0 * (1.0 - distance / spread))
+
+
 def _allocation_percentages(
     recommendations: List[Dict[str, Any]],
 ) -> None:
@@ -219,6 +238,7 @@ def recommend_species(
     clay_percent: float | None,
     irrigation_level: str,
     purpose: str,
+    temperature_celsius: float | None,
 ) -> List[Dict[str, Any]]:
     state_normalised = _normalise(state)
     texture = _soil_texture(
@@ -233,50 +253,35 @@ def recommend_species(
             _normalise(region)
             for region
             in species.get(
-                "suitable_regions",
+                "suitableStates",
                 [],
             )
         }
 
-        region_score = (
-            25.0
-            if state_normalised
-            in regions
-            else 0.0
-        )
+        region_score = 30.0 if state_normalised in regions else 5.0
 
-        rainfall_range = (
-            species.get(
-                "rainfall_range_mm",
-                [0, 3000],
-            )
-        )
-
-        rainfall_score = _rainfall_score(
+        rainfall_score = _range_score(
             annual_rainfall_mm,
-            float(
-                rainfall_range[0]
-            ),
-            float(
-                rainfall_range[1]
-            ),
+            species.get("idealRainfallMm", [0.0, 3000.0]),
+            tolerance=250.0,
+        )
+
+        temperature_score = _range_score(
+            temperature_celsius,
+            species.get("idealTemperatureRange", [10.0, 40.0]),
+            tolerance=10.0,
         )
 
         suitable_soils = {
             _normalise(item)
             for item
             in species.get(
-                "soil_types",
+                "suitableSoil",
                 [],
             )
         }
 
-        soil_score = (
-            15.0
-            if _normalise(texture)
-            in suitable_soils
-            else 6.0
-        )
+        soil_score = 20.0 if _normalise(texture) in suitable_soils else 6.0
 
         water_score = _water_score(
             species.get(
@@ -286,109 +291,77 @@ def recommend_species(
             irrigation_level,
         )
 
-        carbon_relative = float(
+        co2_value = float(
             species.get(
-                "carbon_absorption_score",
-                5,
+                "co2SequestrationKgPerYear",
+                20,
             )
         )
 
         carbon_score = min(
-            20.0,
-            carbon_relative
-            /
-            10.0
-            *
-            20.0,
+            25.0,
+            co2_value / 40.0 * 25.0,
         )
 
-        heat_relative = float(
-            species.get(
-                "heat_reduction_score",
-                5,
-            )
-        )
+        benefit_bonus = 0.0
+        ecological = _normalise(species.get("ecologicalBenefit", ""))
+        if "heat" in ecological or "drought" in ecological:
+            benefit_bonus += 5.0
+        if "soil" in ecological or "erosion" in ecological:
+            benefit_bonus += 5.0
+        if "co2" in ecological or "carbon" in ecological:
+            benefit_bonus += 5.0
 
-        heat_score = min(
-            10.0,
-            heat_relative,
-        )
-
-        if (
-            _normalise(purpose)
-            ==
-            "carbon"
-        ):
-            carbon_score = min(
-                24.0,
-                carbon_score
-                *
-                1.2,
-            )
+        if _normalise(purpose) == "carbon":
+            carbon_score = min(28.0, carbon_score * 1.15)
+        elif _normalise(purpose) == "heat_reduction":
+            benefit_bonus += 8.0
+        elif _normalise(purpose) == "soil_restoration":
+            benefit_bonus += 8.0
 
         total = min(
             100.0,
             region_score
-            +
-            rainfall_score
-            +
-            soil_score
-            +
-            water_score
-            +
-            carbon_score
-            +
-            heat_score,
+            + rainfall_score
+            + temperature_score
+            + soil_score
+            + water_score
+            + carbon_score
+            + benefit_bonus,
         )
 
         reasons = []
-
-        if region_score >= 20:
-            reasons.append(
-                f"listed as suitable for {state}"
-            )
-
+        if region_score >= 25:
+            reasons.append(f"Suitable for {state} and local climate.")
         if rainfall_score >= 15:
-            reasons.append(
-                "annual rainfall is within or near its preferred range"
-            )
-
+            reasons.append("Rainfall matches the species' preferred range.")
+        if temperature_score >= 15:
+            reasons.append("Temperature profile is suitable for growth.")
         if soil_score >= 12:
-            reasons.append(
-                f"compatible with {texture} conditions"
-            )
-
+            reasons.append(f"Compatible with {texture} soil conditions.")
         if water_score >= 8:
-            reasons.append(
-                "water requirement matches available irrigation"
-            )
-
-        reasons.append(
-            (
-                "carbon score is a relative planning index, "
-                "not a measured CO2 value"
-            )
-        )
+            reasons.append("Water needs align with available irrigation.")
+        if carbon_score >= 18:
+            reasons.append("High CO2 sequestration potential for this site.")
+        if benefit_bonus > 0:
+            reasons.append(species.get("ecologicalBenefit", "Supports local ecological benefits."))
 
         scored.append(
             {
                 "id": species.get("id"),
-                "name": species.get("name"),
+                "name": species.get("commonName"),
                 "scientific_name": species.get(
-                    "scientific_name"
+                    "botanicalName"
                 ),
-                "suitability_score": round(
-                    total,
-                    1,
-                ),
-                "relative_carbon_score": carbon_relative,
-                "growth_rate": species.get(
-                    "growth_rate"
-                ),
+                "suitability_score": round(total, 1),
+                "co2_sequestration_kg_per_year": co2_value,
+                "ecological_benefit": species.get("ecologicalBenefit"),
+                "growth_rate": species.get("growthRate"),
                 "water_requirement": species.get(
-                    "water_requirement"
+                    "water_requirement",
+                    "moderate",
                 ),
-                "reason": ". ".join(reasons),
+                "reason": ". ".join(reasons) or "Well-suited to local ecosystem requirements.",
                 "benefits": species.get(
                     "benefits",
                     [],
@@ -397,49 +370,26 @@ def recommend_species(
         )
 
     scored.sort(
-        key=lambda item:
+        key=lambda item: (
             item["suitability_score"],
+            item["co2_sequestration_kg_per_year"],
+        ),
         reverse=True,
     )
 
-    # First prefer species with a strong location match.
-    strong_matches = [
-        item
-        for item
-        in scored
-        if item["suitability_score"] >= 45
-    ]
+    selected = scored[:5]
 
-    selected = strong_matches[:5]
-
-    # Every Indian location should receive a response.
-    # When fewer than five strong matches exist,
-    # add the best available catalog matches.
     if len(selected) < 5:
-        selected_ids = {
-            item.get("id")
-            for item in selected
-        }
-
+        selected_ids = {item.get("id") for item in selected}
         for item in scored:
             if item.get("id") in selected_ids:
                 continue
-
             selected.append(item)
-            selected_ids.add(
-                item.get("id")
-            )
-
+            selected_ids.add(item.get("id"))
             if len(selected) >= 5:
                 break
 
-    _allocation_percentages(
-        selected
-    )
-
-    _allocation_percentages(
-        selected
-    )
+    _allocation_percentages(selected)
 
     return selected
 
@@ -520,6 +470,7 @@ async def get_tree_recommendation_v2(
         clay_percent=clay_percent,
         irrigation_level=irrigation_level,
         purpose=purpose,
+        temperature_celsius=weather.get("weather", {}).get("temperature_celsius"),
     )
 
         # Approximately 5 m spacing.

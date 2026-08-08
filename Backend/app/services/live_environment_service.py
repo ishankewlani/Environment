@@ -197,6 +197,55 @@ def _parse_datetime(value: str | None) -> str | None:
             return value
 
 
+def _parse_timestamp(value: str | None) -> datetime | None:
+    if not value:
+        return None
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        try:
+            return parsedate_to_datetime(value)
+        except Exception:
+            return None
+
+
+def _is_recent(value: str | None, hours: int = 48) -> bool:
+    timestamp = _parse_timestamp(value)
+    if not timestamp:
+        return False
+    if timestamp.tzinfo is None:
+        timestamp = timestamp.replace(tzinfo=timezone.utc)
+    return timestamp >= datetime.now(timezone.utc) - timedelta(hours=hours)
+
+
+def _confidence_score_from_certainty(certainty: str | None) -> int:
+    if not certainty:
+        return 50
+    normalized = certainty.strip().casefold()
+    return {
+        "observed": 100,
+        "likely": 85,
+        "probable": 80,
+        "possible": 65,
+        "uncertain": 40,
+        "unlikely": 30,
+        "unknown": 50,
+    }.get(normalized, 50)
+
+
+def _extract_coordinates(root: ET.Element) -> list[list[float]]:
+    coordinates: list[list[float]] = []
+    for element in root.iter():
+        if _local_name(element.tag).lower() == "polygon" and element.text:
+            tokens = re.findall(r"-?\d+\.\d+|-?\d+", element.text)
+            values = [float(token) for token in tokens]
+            for i in range(0, len(values) - 1, 2):
+                coordinates.append([values[i + 1], values[i]])
+            if coordinates:
+                return coordinates
+    return coordinates
+
+
 def _normalize_bounds(bounds: str) -> str:
     parts = [part.strip() for part in bounds.split(",")]
     if len(parts) != 4:
@@ -303,18 +352,28 @@ async def get_firms_hotspots(
                     "id": external_id,
                     "latitude": lat,
                     "longitude": lon,
+                    "coordinates": [lat, lon],
                     "brightness_kelvin": _safe_float(
                         row.get("bright_ti4") or row.get("brightness")
                     ),
                     "frp_mw": frp,
                     "confidence": confidence,
+                    "confidenceScore": _confidence_score_from_certainty(confidence),
                     "severity": _fire_severity(frp, confidence),
                     "satellite": row.get("satellite"),
                     "instrument": row.get("instrument"),
                     "daynight": row.get("daynight"),
+                    "timestamp": acquired_at,
                     "acquired_at": acquired_at,
                 }
             )
+
+        hotspots = [
+            item
+            for item
+            in hotspots
+            if _is_recent(item.get("timestamp"), hours=48)
+        ]
 
         result = {
             "verified": True,
@@ -949,6 +1008,10 @@ def _parse_cap_xml(xml_text: str, fallback: Dict[str, Any] | None = None) -> Dic
     root = ET.fromstring(xml_text)
     identifier = _xml_first_text(root, ["identifier"]) or fallback.get("id", "")
     sender = _xml_first_text(root, ["senderName", "sender"]) or fallback.get("source", "")
+    sent_at = _parse_datetime(_xml_first_text(root, ["sent"]) or fallback.get("published"))
+    effective_at = _parse_datetime(_xml_first_text(root, ["effective"]))
+    expires_at = _parse_datetime(_xml_first_text(root, ["expires"]))
+    certainty = _xml_first_text(root, ["certainty"]) or "Unknown"
     return {
         "id": identifier,
         "source_agency": sender or "Official CAP source",
@@ -960,11 +1023,14 @@ def _parse_cap_xml(xml_text: str, fallback: Dict[str, Any] | None = None) -> Dic
         "instruction": _clean_text(_xml_first_text(root, ["instruction"])),
         "severity": _xml_first_text(root, ["severity"]) or "Unknown",
         "urgency": _xml_first_text(root, ["urgency"]) or "Unknown",
-        "certainty": _xml_first_text(root, ["certainty"]) or "Unknown",
+        "certainty": certainty,
+        "confidenceScore": _confidence_score_from_certainty(certainty),
         "area": _xml_first_text(root, ["areaDesc"]) or fallback.get("area", "India"),
-        "sent_at": _parse_datetime(_xml_first_text(root, ["sent"]) or fallback.get("published")),
-        "effective_at": _parse_datetime(_xml_first_text(root, ["effective"])),
-        "expires_at": _parse_datetime(_xml_first_text(root, ["expires"])),
+        "sent_at": sent_at,
+        "effective_at": effective_at,
+        "expires_at": expires_at,
+        "timestamp": sent_at or effective_at,
+        "coordinates": _extract_coordinates(root),
         "link": fallback.get("link", ""),
         "official": True,
     }
@@ -1025,16 +1091,25 @@ async def get_imd_cap_alerts(
                     "severity": "Unknown",
                     "urgency": "Unknown",
                     "certainty": "Unknown",
+                    "confidenceScore": 50,
                     "area": location_filter or "India",
                     "sent_at": _parse_datetime(published),
                     "effective_at": None,
                     "expires_at": None,
+                    "timestamp": _parse_datetime(published),
                     "link": link,
                     "official": True,
                 }
             )
             if len(raw_items) >= limit:
                 break
+
+        raw_items = [
+            item
+            for item
+            in raw_items
+            if _is_recent(item.get("sent_at") or item.get("effective_at"), hours=48)
+        ]
 
         alerts: List[Dict[str, Any]] = []
         # Enrich only a few links to keep the endpoint fast.

@@ -2380,20 +2380,127 @@ const Plantation = (function () {
 
   // ── Render priority zones ─────────────────────────────────
   function renderPriorityZones() {
-    const container = document.getElementById('priority-zones');
-    if (!container) return;
+    const container =
+      document.getElementById(
+        "priority-zones"
+      );
 
-    PRIORITY_ZONES.forEach(z => {
-      const div = document.createElement('div');
-      div.className = `pz-item ${z.borderClass}`;
-      div.innerHTML = `
-        <span class="pz-tag ${z.tagClass}">${z.tag}</span>
-        <div class="pz-title">${z.title}</div>
-        <div class="pz-sub">${z.sub}</div>
-      `;
-      div.addEventListener('click', () => showToast(`📍 Selected: ${z.title}`));
-      container.appendChild(div);
-    });
+    if (!container) {
+      return;
+    }
+
+    /*
+    * Prevent duplicate cards when module
+    * is initialised more than once.
+    */
+    container.innerHTML = "";
+
+    PRIORITY_ZONES.forEach(
+      (zone) => {
+        const item =
+          document.createElement("button");
+
+        item.type = "button";
+
+        item.className =
+          `pz-item ${zone.borderClass}`;
+
+        item.dataset.state =
+          zone.state;
+
+        item.dataset.district =
+          zone.district;
+
+        item.dataset.lat =
+          String(zone.latitude);
+
+        item.dataset.lon =
+          String(zone.longitude);
+
+        item.innerHTML = `
+          <span
+            class="pz-tag ${zone.tagClass}"
+          >
+            ${zone.tag}
+          </span>
+
+          <div class="pz-title">
+            ${zone.title}
+          </div>
+
+          <div class="pz-sub">
+            ${zone.sub}
+          </div>
+
+          <div class="pz-action-text">
+            Click to analyse this location
+          </div>
+        `;
+
+        item.addEventListener(
+          "click",
+          () => {
+            /*
+            * Remove previous active state.
+            */
+            container
+              .querySelectorAll(
+                ".pz-item"
+              )
+              .forEach((card) => {
+                card.classList.remove(
+                  "active"
+                );
+              });
+
+            item.classList.add(
+              "active"
+            );
+
+            /*
+            * Send the selected zone to real-data.js.
+            */
+            window.dispatchEvent(
+              new CustomEvent(
+                "rakshak:priority-zone-selected",
+                {
+                  detail: {
+                    state:
+                      zone.state,
+
+                    district:
+                      zone.district,
+
+                    latitude:
+                      zone.latitude,
+
+                    longitude:
+                      zone.longitude,
+
+                    title:
+                      zone.title,
+                  },
+                }
+              )
+            );
+
+            if (
+              typeof showToast
+              ===
+              "function"
+            ) {
+              showToast(
+                `📍 Loading plantation data for ${zone.title}`
+              );
+            }
+          }
+        );
+
+        container.appendChild(
+          item
+        );
+      }
+    );
   }
 
   // ── Render species list ───────────────────────────────────

@@ -539,6 +539,11 @@ async def get_farmer_pest_advisory_v2(
         risk_level = highest[
             "risk_level"
         ]
+        active_alert = risk_level in {"moderate", "high", "critical"}
+        alert_preview = (
+            f"[RAKSHAK PEST RISK] {highest['pest']} - "
+            f"{risk_level.upper()}. {highest['main_factors'][0] if highest['main_factors'] else 'Monitor field conditions.'}"
+        )
     else:
         advisory = (
             "Selected crop ke liye abhi koi "
@@ -555,9 +560,33 @@ async def get_farmer_pest_advisory_v2(
             ),
         ]
 
-        risk_level = "unknown"
+        risk_level = "low"
+        active_alert = False
+        alert_preview = "No active threat detected. Continue normal monitoring and consult local agricultural advisors if conditions change."
 
     return {
+        "verified": bool(
+            weather.get("verified")
+            and forecast.get("verified")
+        ),
+        "prediction_generated": bool(
+            predictions
+        ),
+        "location": {
+            "state": state,
+            "district": district,
+            "city": city,
+            "latitude": latitude,
+            "longitude": longitude,
+        },
+        "crop": crop,
+        "growth_stage": growth_stage,
+        "language": language,
+        "risk_level": risk_level,
+        "active_alert": active_alert,
+        "alert_preview": alert_preview,
+        "advisory": advisory,
+        "pest_predictions": predictions,
         "verified": bool(
             weather.get("verified")
             and forecast.get("verified")

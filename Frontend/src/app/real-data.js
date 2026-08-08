@@ -1411,21 +1411,9 @@ function layerBelongsToGroup(layer, group) {
 
       if (sms) {
         sms.textContent =
-          topPest
-            ? (
-                `[RAKSHAK PEST RISK · ${
-                  String(
-                    topPest.risk_level
-                  ).toUpperCase()
-                }] ${topPest.pest}. ` +
-                `Yeh confirmed infestation nahi hai. ` +
-                `Field scouting karein.`
-              )
-            : (
-                data.advisory
-                ||
-                "No configured pest model returned."
-              );
+          data.alert_preview ||
+          data.advisory ||
+          "No active threat detected. Continue regular monitoring.";
       }
 
       if (checklist) {
@@ -1467,43 +1455,58 @@ function layerBelongsToGroup(layer, group) {
             ".wb-title"
           );
 
+        const icon =
+          document.getElementById(
+            "farmer-warning-icon"
+          );
+
+        const badge =
+          document.getElementById(
+            "farmer-warning-label"
+          );
+
         const sub =
           banner.querySelector(
             ".wb-sub"
           );
 
+        const active = data.active_alert === true;
+
+        banner.style.background = active
+          ? "rgba(255,100,0,0.1)"
+          : "rgba(0,255,136,0.12)";
+        banner.style.border = active
+          ? "2px solid #FF7B00"
+          : "2px solid #00ff88";
+        banner.style.boxShadow = active
+          ? "0 0 60px rgba(255,100,0,0.2), 0 0 120px rgba(255,77,77,0.1)"
+          : "0 0 40px rgba(0,255,136,0.18), 0 0 80px rgba(0,255,136,0.12)";
+        banner.style.animation = active
+          ? "emergencyPulse 2.5s ease-in-out infinite"
+          : "none";
+
+        if (icon) {
+          icon.textContent = active ? "🚨" : "✅";
+        }
+
+        if (badge) {
+          badge.textContent = active
+            ? "⚠ EMERGENCY WARNING"
+            : "✅ NO ACTIVE THREAT";
+          badge.style.background = active ? "#FF7B00" : "#00FF88";
+          badge.style.color = active ? "#ffffff" : "#003300";
+        }
+
         if (title) {
-          title.textContent =
-            topPest
-              ? (
-                  `${topPest.pest}: ${
-                    String(
-                      topPest.risk_level
-                    ).toUpperCase()
-                  } — ${
-                    location.district
-                      .toUpperCase()
-                  }`
-                )
-              : (
-                  `PEST MODEL: ${
-                    String(
-                      data.risk_level
-                      ||
-                      "unavailable"
-                    ).toUpperCase()
-                  } — ${
-                    location.district
-                      .toUpperCase()
-                  }`
-                );
+          title.textContent = active
+            ? `PEST RISK: ${String(data.risk_level || "UNKNOWN").toUpperCase()} — ${location.district.toUpperCase()}`
+            : `NO ACTIVE THREAT — ${location.district.toUpperCase()}`;
         }
 
         if (sub) {
-          sub.textContent =
-            data.disclaimer
-            ||
-            "Field confirmation is required.";
+          sub.textContent = active
+            ? data.disclaimer || "Field confirmation is required."
+            : "Normal conditions detected. Maintain routine crop monitoring and local advisory checks.";
         }
       }
 
