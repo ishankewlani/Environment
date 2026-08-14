@@ -1,10 +1,31 @@
 from __future__ import annotations
 
 import os
+import time
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
 import httpx
+
+_WEATHER_CACHE: Dict[str, tuple[float, Any]] = {}
+
+
+def _cache_get(key: str) -> Any | None:
+    cached = _WEATHER_CACHE.get(key)
+    if cached is None:
+        return None
+
+    expires_at, value = cached
+    if time.time() >= expires_at:
+        _WEATHER_CACHE.pop(key, None)
+        return None
+
+    return value
+
+
+def _cache_set(key: str, value: Any, ttl_seconds: int) -> Any:
+    _WEATHER_CACHE[key] = (time.time() + ttl_seconds, value)
+    return value
 
 
 OPENWEATHER_BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
@@ -107,13 +128,20 @@ def _fallback_for_city(city: str, reason: str) -> Dict[str, Any]:
 
 
 async def get_live_weather(city: str) -> Dict[str, Any]:
+    normalized_city = (city or "").strip()
+    cache_key = f"weather:live:{normalized_city.lower()}"
+    cached = _cache_get(cache_key)
+    if cached is not None:
+        return cached
+
     api_key = os.getenv("OPENWEATHER_API_KEY")
 
     if not api_key or api_key == "your-openweather-api-key-here":
-        return _fallback_for_city(city, "OPENWEATHER_API_KEY is missing")
+        result = _fallback_for_city(city, "OPENWEATHER_API_KEY is missing")
+        return _cache_set(cache_key, result, 600)
 
     params = {
-        "q": f"{city},IN",
+        "q": f"{normalized_city},IN",
         "appid": api_key,
         "units": "metric",
     }
@@ -134,7 +162,7 @@ async def get_live_weather(city: str) -> Dict[str, Any]:
         if weather_items and isinstance(weather_items, list):
             condition = weather_items[0].get("description", "unknown")
 
-        return {
+        result = {
             "city": data.get("name", city),
             "country": data.get("sys", {}).get("country", "IN"),
             "data_mode": "live",
@@ -155,9 +183,11 @@ async def get_live_weather(city: str) -> Dict[str, Any]:
                 "condition": condition,
             },
         }
+        return _cache_set(cache_key, result, 600)
 
     except Exception as exc:
-        return _fallback_for_city(city, f"OpenWeather request failed: {str(exc)}")
+        result = _fallback_for_city(city, f"OpenWeather request failed: {str(exc)}")
+        return _cache_set(cache_key, result, 300)
 
 
 def calculate_weather_risk(weather_response: Dict[str, Any]) -> Dict[str, Any]:
@@ -293,6 +323,11 @@ async def get_weather_forecast(
     latitude: float,
     longitude: float,
 ) -> Dict[str, Any]:
+    cache_key = f"weather:forecast:{latitude:.4f}:{longitude:.4f}"
+    cached = _cache_get(cache_key)
+    if cached is not None:
+        return cached
+
     api_key = os.getenv(
         "OPENWEATHER_API_KEY",
         "",
@@ -467,7 +502,7 @@ async def get_weather_forecast(
             ),
         }
 
-        return {
+        result = {
             "verified": bool(periods),
             "data_mode": "five_day_forecast",
             "source": {
@@ -478,9 +513,10 @@ async def get_weather_forecast(
             "periods": periods,
             "summary": summary,
         }
+        return _cache_set(cache_key, result, 900)
 
     except Exception as exc:
-        return {
+        result = {
             "verified": False,
             "data_mode": "error",
             "source": "OpenWeather forecast",
@@ -488,3 +524,4 @@ async def get_weather_forecast(
             "summary": {},
             "error": str(exc),
         }
+        return _cache_set(cache_key, result, 180)

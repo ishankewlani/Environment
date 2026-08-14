@@ -37,6 +37,35 @@ DISTRICT_KEYS = (
     "NAME_2",
 )
 
+NON_AGRICULTURE_STATES = {
+    "andaman and nicobar islands",
+    "chandigarh",
+    "dadra and nagar haveli and daman and diu",
+    "delhi",
+    "lakshadweep",
+    "ladakh",
+    "puducherry",
+}
+
+
+def _normalize_name(value: str | None) -> str | None:
+    if value is None:
+        return None
+
+    normalized = str(value).strip()
+    return normalized or None
+
+
+def _is_agriculture_state(state: str | None) -> bool:
+    if state is None:
+        return False
+
+    normalized = _normalize_name(state)
+    if normalized is None:
+        return False
+
+    return normalized.casefold() not in NON_AGRICULTURE_STATES
+
 
 def _first_property(
     properties: Dict[str, Any],
@@ -74,6 +103,22 @@ def load_district_geojson() -> Dict[str, Any]:
         )
 
     return data
+
+
+@lru_cache(maxsize=1)
+def _agricultural_features() -> List[Dict[str, Any]]:
+    data = load_district_geojson()
+    features: List[Dict[str, Any]] = []
+
+    for feature in data.get("features", []):
+        properties = feature.get("properties") or {}
+        state = _first_property(properties, STATE_KEYS)
+        district = _first_property(properties, DISTRICT_KEYS)
+
+        if state and district and _is_agriculture_state(state):
+            features.append(feature)
+
+    return features
 
 
 def _point_in_ring(
@@ -339,72 +384,44 @@ def resolve_district(
     }
 
 
+@lru_cache(maxsize=128)
 def list_states() -> Dict[str, Any]:
-    data = load_district_geojson()
-
     states = set()
 
-    for feature in data.get(
-        "features",
-        [],
-    ):
-        properties = (
-            feature.get("properties")
-            or {}
-        )
-
-        state = _first_property(
-            properties,
-            STATE_KEYS,
-        )
+    for feature in _agricultural_features():
+        properties = feature.get("properties") or {}
+        state = _first_property(properties, STATE_KEYS)
 
         if state:
             states.add(state)
 
+    ordered_states = sorted(states)
     return {
-        "verified": bool(states),
-        "states": sorted(states),
-        "total": len(states),
+        "verified": bool(ordered_states),
+        "states": ordered_states,
+        "total": len(ordered_states),
     }
 
 
+@lru_cache(maxsize=128)
 def list_districts(
     state_name: str,
 ) -> Dict[str, Any]:
-    data = load_district_geojson()
-
     requested_state = (
-        state_name
-        .strip()
-        .casefold()
-    )
+        _normalize_name(state_name) or ""
+    ).casefold()
 
     districts = []
 
-    for feature in data.get(
-        "features",
-        [],
-    ):
-        properties = (
-            feature.get("properties")
-            or {}
-        )
-
-        state = _first_property(
-            properties,
-            STATE_KEYS,
-        )
-
-        district = _first_property(
-            properties,
-            DISTRICT_KEYS,
-        )
+    for feature in _agricultural_features():
+        properties = feature.get("properties") or {}
+        state = _first_property(properties, STATE_KEYS)
+        district = _first_property(properties, DISTRICT_KEYS)
 
         if (
             not state
             or not district
-            or state.casefold()
-            != requested_state
+            or state.casefold() != requested_state
         ):
             continue
 
@@ -424,10 +441,7 @@ def list_districts(
             }
         )
 
-    districts.sort(
-        key=lambda item:
-            item["district"]
-    )
+    districts.sort(key=lambda item: item["district"])
 
     return {
         "verified": bool(districts),
